@@ -13,6 +13,7 @@
     
     <style>
         :root {
+            /* Dark Theme */
             --bg-body: #09090b;
             --card-bg: rgba(24, 24, 27, 0.65);
             --card-border: rgba(255, 255, 255, 0.08);
@@ -26,6 +27,7 @@
         }
 
         [data-theme="light"] {
+            /* Light Theme */
             --bg-body: #f8fafc;
             --card-bg: rgba(255, 255, 255, 0.85);
             --card-border: rgba(0, 0, 0, 0.06);
@@ -49,7 +51,11 @@
             transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        .container { width: 100%; max-width: 440px; padding: 20px; }
+        .container {
+            width: 100%;
+            max-width: 440px; 
+            padding: 20px;
+        }
 
         .card {
             background: var(--card-bg);
@@ -57,7 +63,8 @@
             border-radius: 24px;
             padding: 28px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             display: flex; flex-direction: column; gap: 18px;
         }
 
@@ -81,7 +88,10 @@
             cursor: pointer; 
             transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
         }
-        .email-display-group:hover { border-color: var(--accent); background: rgba(99, 102, 241, 0.05); }
+        .email-display-group:hover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.05);
+        }
         .email-display-group:active { transform: scale(0.98); }
 
         .email-text {
@@ -95,12 +105,15 @@
 
         .action-icon-btn {
             background: var(--btn-border); border: none;
-            width: 42px; height: 42px; border-radius: 12px;
+            width: 42px; height: 42px; 
+            border-radius: 12px;
             color: var(--text-primary); cursor: pointer;
             display: flex; justify-content: center; align-items: center; font-size: 16px;
             pointer-events: none; 
         }
-        .email-display-group:hover .action-icon-btn { background: var(--accent); color: #fff; }
+        .email-display-group:hover .action-icon-btn {
+            background: var(--accent); color: #fff;
+        }
 
         .controls { display: flex; gap: 10px; }
         .btn {
@@ -124,13 +137,19 @@
         }
 
         .radar { display: flex; align-items: center; gap: 6px; }
-        .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 2s infinite; }
+        .dot {
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            animation: blink 2s infinite;
+        }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
 
         .inbox-list {
             display: flex; flex-direction: column; gap: 12px;
-            min-height: 80px; max-height: 250px; overflow-y: auto; padding-right: 4px;
+            min-height: 80px; 
+            max-height: 250px; 
+            overflow-y: auto; padding-right: 4px;
         }
+        
         .inbox-list::-webkit-scrollbar { width: 4px; }
         .inbox-list::-webkit-scrollbar-thumb { background: var(--btn-border); border-radius: 4px; }
 
@@ -139,35 +158,68 @@
             height: 80px; gap: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 300;
         }
 
+        /* --- THE REFINED MESSAGE CARD --- */
         .message {
-            background: var(--box-bg); border: 1px solid var(--btn-border);
-            border-radius: 16px; padding: 12px 14px; 
-            display: flex; flex-direction: column; gap: 6px; 
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 16px;
+            padding: 12px 14px; /* پدینگ به شدت کاهش یافته برای مینیمال شدن ارتفاع */
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* فاصله بسیار کم بین نام فرستنده و کد */
             animation: fadeUp 0.3s ease forwards;
         }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* نام فرستنده (چپ‌چین و مینیمال و فقط خاکستری) */
         .msg-sender { 
-            font-size: 10px; font-weight: 600; color: var(--text-secondary); 
-            text-transform: uppercase; letter-spacing: 1.5px; text-align: left; 
-            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 2px;
+            font-size: 10px; 
+            font-weight: 600;
+            color: var(--text-secondary); /* فقط رنگ خاکستری ملایم */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-align: left; /* تراز سمت چپ */
+            width: 100%;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            padding-left: 2px;
         }
 
+        /* باکس بنفش کد (متقارن و کم‌ارتفاع) */
         .extracted-code {
-            background: var(--code-bg); color: var(--accent);
-            border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px;
-            padding: 8px 20px; font-size: 26px; font-weight: 700; letter-spacing: 8px;
-            cursor: pointer; width: 100%; text-align: center;
-            transition: all 0.2s ease; will-change: transform;
+            background: var(--code-bg);
+            color: var(--accent);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 12px;
+            padding: 8px 20px; /* فضای عمودی (بالا و پایین) جمع‌تر شد */
+            font-size: 26px; /* سایز متناسب برای چشم */
+            font-weight: 700;
+            letter-spacing: 8px; /* فاصله‌گذاری بیشتر بین اعداد برای زیبایی */
+            cursor: pointer;
+            width: 100%;
+            text-align: center; /* اعداد کاملاً در مرکز */
+            transition: all 0.2s ease;
+            will-change: transform;
         }
-        .extracted-code:hover { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
-        .extracted-code:active { transform: scale(0.97); box-shadow: none; }
+        
+        .extracted-code:hover { 
+            background: var(--accent); 
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .extracted-code:active { 
+            transform: scale(0.97); 
+            box-shadow: none;
+        }
 
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
             background: var(--text-primary); color: var(--bg-body);
-            font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 20px;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+            font-size: 13px; font-weight: 600;
+            padding: 10px 20px; border-radius: 20px;
+            opacity: 0; pointer-events: none; 
+            transition: opacity 0.2s ease, transform 0.2s ease;
             box-shadow: var(--shadow); z-index: 100;
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -200,7 +252,7 @@
                     <i class="fa-solid fa-rotate-right"></i> Refresh
                 </button>
                 <button class="btn" id="serverBtn" onclick="switchServerAndCreate()">
-                    <i class="fa-solid fa-server"></i> Change Domain
+                    <i class="fa-solid fa-server"></i> Change Server
                 </button>
             </div>
 
@@ -224,13 +276,16 @@
     </div>
 
     <script>
-        const domains = ['areueally.info', 'oeralb.com'];
-        let currentServerIndex = 0;
-        
         let currentEmail = "";
+        let currentPassword = "";
+        let currentToken = "";
         let checkInterval;
+        
         let seenDomains = new Set();
         let knownMessageIds = new Set();
+        
+        const servers = ['https://api.mail.tm', 'https://api.mail.gw'];
+        let currentServerIndex = 0;
 
         function toggleTheme() {
             const body = document.body;
@@ -251,7 +306,7 @@
             document.getElementById('themeIcon').className = 'fa-regular fa-moon';
         }
 
-        function createEmail() {
+        async function createEmail() {
             const display = document.getElementById('emailDisplay');
             const status = document.getElementById('scanStatus');
             const radar = document.getElementById('radarDot');
@@ -260,26 +315,64 @@
             
             seenDomains.clear();
             knownMessageIds.clear();
+            
+            display.innerText = "Generating...";
+            display.classList.add('loading');
+            status.innerText = "Connecting...";
+            radar.style.background = "var(--text-secondary)";
+            inbox.innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
+            
             if(checkInterval) clearInterval(checkInterval);
 
-            const domain = domains[currentServerIndex % domains.length];
-            const randomStr = Math.random().toString(36).substring(2, 12);
-            currentEmail = `${randomStr}@${domain}`;
+            const baseURL = servers[currentServerIndex];
 
-            display.classList.remove('loading');
-            display.innerText = currentEmail;
-            status.innerText = "Scanning";
-            radar.style.background = "var(--accent)";
-            serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Domain';
-            inbox.innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
+            try {
+                const domainRes = await fetch(`${baseURL}/domains`);
+                const domainData = await domainRes.json();
+                
+                const domainsList = domainData['hydra:member'];
+                const randomDomain = domainsList[Math.floor(Math.random() * domainsList.length)].domain;
 
-            checkInterval = setInterval(checkInbox, 4000);
+                const randomStr = Math.random().toString(36).substring(2, 10);
+                currentEmail = `${randomStr}@${randomDomain}`;
+                currentPassword = randomStr + "X9!";
+
+                await fetch(`${baseURL}/accounts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address: currentEmail, password: currentPassword })
+                });
+
+                const tokenRes = await fetch(`${baseURL}/token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address: currentEmail, password: currentPassword })
+                });
+                const tokenData = await tokenRes.json();
+                currentToken = tokenData.token;
+
+                display.classList.remove('loading');
+                display.innerText = currentEmail;
+                status.innerText = "Scanning";
+                radar.style.background = "var(--accent)";
+                
+                serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Server';
+
+                checkInterval = setInterval(checkInbox, 5000);
+            } catch (error) {
+                display.innerText = "Connection Failed";
+                status.innerText = "Error";
+                radar.style.background = "#ef4444";
+                serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Server';
+            }
         }
 
         function switchServerAndCreate() {
             const serverBtn = document.getElementById('serverBtn');
             serverBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Switching...';
-            currentServerIndex++;
+            document.getElementById('emailDisplay').innerText = "Changing Server...";
+            
+            currentServerIndex = (currentServerIndex + 1) % servers.length;
             createEmail();
         }
 
@@ -314,38 +407,17 @@
             setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-        // یک تابع کوچک برای پیدا کردن کد با Regex
-        function extractCodeNumber(text) {
-            if(!text) return null;
-            const cleanText = text.replace(/<[^>]*>?/gm, ' '); 
-            const codeRegex = /\b\d{4,8}\b/g; 
-            const matches = cleanText.match(codeRegex);
-            return (matches && matches.length > 0) ? matches[0] : null;
-        }
-
         async function checkInbox() {
-            if(!currentEmail) return;
-
-            const statusText = document.getElementById('scanStatus');
-            statusText.innerText = "Checking..."; 
+            if(!currentToken) return;
+            
+            const baseURL = servers[currentServerIndex];
 
             try {
-                const encodedEmail = encodeURIComponent(currentEmail);
-                
-                // درخواست مستقیم به سرور اصلی (بدون واسطه و پروکسی)
-                const targetUrl = `https://web.mailporary.com/api/v1/mailbox/${encodedEmail}?_t=${Date.now()}`;
-                
-                const res = await fetch(targetUrl, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
+                const res = await fetch(`${baseURL}/messages`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
                 });
-                
-                if(!res.ok) {
-                    console.error("Server connection failed:", res.status);
-                    return;
-                }
-                
-                const messages = await res.json();
+                const data = await res.json();
+                const messages = data['hydra:member'];
 
                 if(messages && messages.length > 0) {
                     let hasNew = false;
@@ -355,39 +427,13 @@
                         if (!knownMessageIds.has(msg.id)) {
                             knownMessageIds.add(msg.id);
                             
-                            let senderStr = "";
-                            if(typeof msg.from === 'string') senderStr = msg.from;
-                            else if(msg.from && msg.from.address) senderStr = msg.from.address;
-                            else senderStr = "Unknown";
-
-                            let senderDomain = senderStr.includes('@') ? senderStr.split('@')[1] : senderStr;
-                            const emailMatch = senderStr.match(/<([^>]+)>/);
-                            if(emailMatch) senderDomain = emailMatch[1].split('@')[1] || senderDomain;
-                            senderDomain = senderDomain.toLowerCase().replace('>', '');
+                            const senderAddress = msg.from.address;
+                            const senderDomain = senderAddress.split('@')[1] || senderAddress;
 
                             if (!seenDomains.has(senderDomain)) {
                                 seenDomains.add(senderDomain); 
                                 hasNew = true;
-                                
-                                // اول سعی کن کد را از عنوان ایمیل (Subject) پیدا کنی
-                                let extractedCode = extractCodeNumber(msg.subject);
-
-                                // اگر کد در عنوان نبود، ایمیل را باز کن و بگرد!
-                                if (!extractedCode) {
-                                    try {
-                                        const msgUrl = `https://web.mailporary.com/api/v1/mailbox/${encodedEmail}/${msg.id}?_t=${Date.now()}`;
-                                        const msgRes = await fetch(msgUrl, { headers: { 'Accept': 'application/json' } });
-                                        if (msgRes.ok) {
-                                            const fullMsg = await msgRes.json();
-                                            const searchSpace = `${fullMsg.text || ''} ${fullMsg.html || ''} ${fullMsg.body || ''}`;
-                                            extractedCode = extractCodeNumber(searchSpace);
-                                        }
-                                    } catch(e) {
-                                        console.error("Failed to fetch email body:", e);
-                                    }
-                                }
-
-                                renderMessage(extractedCode, senderDomain, senderStr);
+                                fetchMessageDetails(msg.id, baseURL, senderDomain);
                             }
                         }
                     }
@@ -395,29 +441,37 @@
                         document.getElementById('inboxContainer').innerHTML = '';
                     }
                 }
-            } catch (e) {
-                console.error("Check Inbox Error:", e);
-            } finally {
-                setTimeout(() => { if(statusText.innerText === "Checking...") statusText.innerText = "Scanning"; }, 1000);
-            }
+            } catch (e) { }
         }
 
-        function renderMessage(extractedCode, senderDomain, senderStr) {
+        async function fetchMessageDetails(id, baseURL, senderDomain) {
+            const res = await fetch(`${baseURL}/messages/${id}`, {
+                headers: { 'Authorization': `Bearer ${currentToken}` }
+            });
+            const msgData = await res.json();
+
+            const rawText = msgData.text || msgData.html || msgData.intro || "";
+            const textBody = rawText.replace(/<[^>]*>?/gm, ' '); 
+            
+            const codeRegex = /\b\d{4,8}\b/g;
+            const matches = textBody.match(codeRegex);
+            let extractedCode = (matches && matches.length > 0) ? matches[0] : null;
+
             const inbox = document.getElementById('inboxContainer');
+            
             const msgEl = document.createElement('div');
             msgEl.className = 'message';
             
-            let senderName = senderDomain.split('.')[0];
-            if(senderStr.includes('<')) {
-                senderName = senderStr.split('<')[0].trim().replace(/['"]/g, '');
-            }
+            const senderName = msgData.from.name || senderDomain.split('.')[0];
 
-            let html = `<div class="msg-sender">${senderName}</div>`;
+            let html = `
+                <div class="msg-sender">${senderName}</div>
+            `;
 
             if (extractedCode) {
                 html += `<div class="extracted-code" onclick="copyText('${extractedCode}', true)">${extractedCode}</div>`;
             } else {
-                html += `<div style="font-size: 11px; color: var(--text-secondary); text-align:center; padding: 10px 0;">Code not found</div>`;
+                html += `<div style="font-size: 11px; color: var(--text-secondary);">Code not found</div>`;
             }
 
             msgEl.innerHTML = html;
