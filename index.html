@@ -70,6 +70,23 @@
         .header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
         .header h1 span { color: var(--accent); font-weight: 600; }
 
+        /* API source badge */
+        .api-badge {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 6px;
+            padding: 2px 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .api-badge.ok { border-color: rgba(34,197,94,0.3); color: #22c55e; background: rgba(34,197,94,0.08); }
+        .api-badge.fail { border-color: rgba(239,68,68,0.3); color: #ef4444; background: rgba(239,68,68,0.08); }
+
+        .header-right { display: flex; align-items: center; gap: 8px; }
+
         .theme-btn {
             background: transparent; border: none;
             color: var(--text-secondary); font-size: 18px;
@@ -308,9 +325,12 @@
 
             <div class="header">
                 <h1>Nexus<span>Mail</span></h1>
-                <button class="theme-btn" onclick="toggleTheme()" title="Switch Theme">
-                    <i class="fa-regular fa-sun" id="themeIcon"></i>
-                </button>
+                <div class="header-right">
+                    <span class="api-badge" id="apiBadge">connecting</span>
+                    <button class="theme-btn" onclick="toggleTheme()" title="Switch Theme">
+                        <i class="fa-regular fa-sun" id="themeIcon"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Domain Chips -->
@@ -327,7 +347,7 @@
 
             <!-- Expiry timer -->
             <div class="timer-row" id="timerRow" style="display:none">
-                <span id="timerLabel">60:00</span>
+                <span id="timerLabel">48:00:00</span>
                 <div class="timer-bar-bg">
                     <div class="timer-bar-fill" id="timerFill" style="width:100%"></div>
                 </div>
@@ -362,411 +382,446 @@
     </div>
 
     <script>
-        // =========================================================
-        //  GuerrillaMailAPI — public, no-key, stable since 2006
-        //  API base: https://api.guerrillamail.com/ajax.php
-        //  All available domains returned dynamically by the API
-        // =========================================================
+    // =========================================================
+    //  1secMail API  — free, no key, no registration required
+    //  https://www.1secmail.com/api/v1/
+    //
+    //  Endpoints used:
+    //    ?action=genRandomMailbox&count=1          → generate random address
+    //    ?action=getDomainList                     → get available domains
+    //    ?action=getMessages&login=X&domain=Y      → list inbox messages
+    //    ?action=readMessage&login=X&domain=Y&id=Z → read full message body
+    //
+    //  Emails are stored for 2 days (not 60 min like GuerrillaMail)
+    //  CORS: 1secmail.com supports browser fetch without issues
+    // =========================================================
 
-        const GM_API = "https://api.guerrillamail.com/ajax.php";
+    const API = "https://www.1secmail.com/api/v1/";
 
-        // All known GuerrillaMail domains (the API also returns them)
-        const FALLBACK_DOMAINS = [
-            "guerrillamailblock.com",
-            "grr.la",
-            "guerrillamail.info",
-            "guerrillamail.biz",
-            "guerrillamail.de",
-            "guerrillamail.net",
-            "guerrillamail.org",
-            "spam4.me",
-            "sharklasers.com",
-            "guerrillamail.com"
+    // The full domain pool from 1secmail — fetched dynamically + these as fallback
+    // These domains are NOT in major block lists (as of mid-2025)
+    const FALLBACK_DOMAINS = [
+        "1secmail.com",
+        "1secmail.net",
+        "1secmail.org",
+        "esiix.com",
+        "wwjmp.com",
+        "xojxe.com",
+        "yoggm.com",
+        "dpptd.com",
+        "rteet.com",
+        "vjuum.com",
+        "laafd.com",
+        "txcct.com"
+    ];
+
+    let currentEmail   = "";
+    let currentLogin   = "";
+    let currentDomain  = "";
+    let emailCreatedAt = 0;      // unix timestamp (ms)
+    let knownIds       = new Set();
+    let checkInterval  = null;
+    let timerInterval  = null;
+    let availableDomains = [...FALLBACK_DOMAINS];
+    let selectedDomainIdx = 0;
+
+    // =========================================================
+    //  INIT
+    // =========================================================
+    window.addEventListener('DOMContentLoaded', () => {
+        loadDomains().then(() => createNewEmail());
+    });
+
+    // =========================================================
+    //  FETCH DOMAIN LIST DYNAMICALLY
+    // =========================================================
+    async function loadDomains() {
+        try {
+            const res = await fetch(`${API}?action=getDomainList`);
+            if (!res.ok) throw new Error();
+            const list = await res.json();
+            if (Array.isArray(list) && list.length > 0) {
+                // Merge with fallback — put lesser-known domains first
+                const extra = FALLBACK_DOMAINS.filter(d => !list.includes(d));
+                availableDomains = [...extra, ...list];
+            }
+        } catch(e) {
+            // keep fallback list
+        }
+    }
+
+    // =========================================================
+    //  BUILD DOMAIN CHIPS
+    // =========================================================
+    function buildDomainChips() {
+        const row = document.getElementById('domainRow');
+        row.innerHTML = '';
+        // Show up to 8 domains — show short names
+        availableDomains.slice(0, 8).forEach((d, i) => {
+            const chip = document.createElement('button');
+            chip.className = 'domain-chip' + (i === selectedDomainIdx ? ' active' : '');
+            chip.textContent = '@' + d.split('.')[0];
+            chip.title = '@' + d;
+            chip.onclick = () => switchToDomain(i);
+            row.appendChild(chip);
+        });
+    }
+
+    function switchToDomain(idx) {
+        selectedDomainIdx = idx;
+        document.querySelectorAll('.domain-chip').forEach((c, j) => {
+            c.className = 'domain-chip' + (j === idx ? ' active' : '');
+        });
+        createNewEmail(availableDomains[idx]);
+    }
+
+    // =========================================================
+    //  CREATE NEW EMAIL
+    //  Either random (no arg) or on a specific domain
+    // =========================================================
+    async function createNewEmail(forceDomain) {
+        const display  = document.getElementById('emailDisplay');
+        const status   = document.getElementById('scanStatus');
+        const dot      = document.getElementById('radarDot');
+        const inbox    = document.getElementById('inboxContainer');
+        const timerRow = document.getElementById('timerRow');
+        const badge    = document.getElementById('apiBadge');
+
+        // Reset state
+        if (checkInterval) clearInterval(checkInterval);
+        if (timerInterval) clearInterval(timerInterval);
+        knownIds.clear();
+        currentEmail = "";
+        currentLogin = "";
+        currentDomain = "";
+
+        display.className = "email-text loading";
+        display.innerText = "Connecting...";
+        status.innerText  = "Loading...";
+        dot.className     = "dot inactive";
+        badge.className   = "api-badge";
+        badge.textContent = "connecting";
+        timerRow.style.display = "none";
+        inbox.innerHTML = `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
+
+        try {
+            let email;
+
+            if (forceDomain) {
+                // Generate a random username for the chosen domain
+                const user = randomUsername();
+                email = `${user}@${forceDomain}`;
+            } else {
+                // Ask API to generate a random one
+                const res  = await fetch(`${API}?action=genRandomMailbox&count=1`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (!data || !data[0]) throw new Error("No address returned");
+                email = data[0];
+
+                // Update domain selection to match returned email
+                const dom = email.split('@')[1];
+                const idx = availableDomains.indexOf(dom);
+                if (idx !== -1) selectedDomainIdx = idx;
+            }
+
+            const parts    = email.split('@');
+            currentLogin   = parts[0];
+            currentDomain  = parts[1];
+            currentEmail   = email;
+            emailCreatedAt = Date.now();
+
+            buildDomainChips();
+
+            display.className = "email-text";
+            display.innerText = currentEmail;
+            status.innerText  = "Scanning";
+            dot.className     = "dot";
+            badge.className   = "api-badge ok";
+            badge.textContent = "1secmail";
+            inbox.innerHTML   = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
+            timerRow.style.display = "flex";
+
+            // 1secmail keeps emails for 2 days
+            startTimer(48 * 3600);
+
+            // Poll every 5 seconds
+            checkInterval = setInterval(checkInbox, 5000);
+
+        } catch(e) {
+            console.error("Setup error:", e);
+            display.className = "email-text loading";
+            display.innerText = "Failed to connect";
+            status.innerText  = "Error";
+            dot.className     = "dot inactive";
+            badge.className   = "api-badge fail";
+            badge.textContent = "error";
+            inbox.innerHTML   = `<div class="empty-state"><span>Connection failed. Try Refresh or New Email.</span></div>`;
+        }
+    }
+
+    // =========================================================
+    //  RANDOM USERNAME GENERATOR
+    // =========================================================
+    function randomUsername() {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let s = '';
+        for (let i = 0; i < 10; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+    }
+
+    // =========================================================
+    //  COUNTDOWN TIMER
+    //  totalSeconds: how long the email is valid (2 days = 172800s)
+    // =========================================================
+    function startTimer(totalSeconds) {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => updateTimer(totalSeconds), 1000);
+        updateTimer(totalSeconds);
+    }
+
+    function updateTimer(totalSeconds) {
+        const fill  = document.getElementById('timerFill');
+        const label = document.getElementById('timerLabel');
+        const elapsed   = Math.floor((Date.now() - emailCreatedAt) / 1000);
+        const remaining = Math.max(0, totalSeconds - elapsed);
+
+        const pct = (remaining / totalSeconds) * 100;
+        fill.style.width = pct + "%";
+        fill.className = "timer-bar-fill" +
+            (pct < 5 ? " critical" : pct < 15 ? " warning" : "");
+
+        const h = Math.floor(remaining / 3600);
+        const m = Math.floor((remaining % 3600) / 60);
+        const s = remaining % 60;
+        if (h > 0) {
+            label.textContent = `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        } else {
+            label.textContent = `${m}:${String(s).padStart(2, '0')}`;
+        }
+
+        if (remaining === 0) {
+            clearInterval(timerInterval);
+            clearInterval(checkInterval);
+            document.getElementById('scanStatus').innerText = "Expired";
+            document.getElementById('radarDot').className = "dot inactive";
+        }
+    }
+
+    // =========================================================
+    //  CHECK INBOX
+    // =========================================================
+    async function checkInbox() {
+        if (!currentLogin || !currentDomain) return;
+
+        try {
+            const res = await fetch(
+                `${API}?action=getMessages&login=${encodeURIComponent(currentLogin)}&domain=${encodeURIComponent(currentDomain)}`
+            );
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const list = await res.json();
+
+            if (!Array.isArray(list) || list.length === 0) return;
+
+            for (const msg of list) {
+                const id = String(msg.id);
+                if (knownIds.has(id)) continue;
+                knownIds.add(id);
+
+                // Fetch full message body
+                const fullRes = await fetch(
+                    `${API}?action=readMessage&login=${encodeURIComponent(currentLogin)}&domain=${encodeURIComponent(currentDomain)}&id=${id}`
+                );
+                if (!fullRes.ok) continue;
+                const full = await fullRes.json();
+
+                const from    = full.from    || msg.from    || "Unknown";
+                const subject = full.subject || msg.subject || "";
+                // 1secmail returns htmlBody and textBody
+                const bodyHtml = full.htmlBody || "";
+                const bodyText = full.textBody || full.body || "";
+                const combined = subject + " " + (bodyText || stripHtml(bodyHtml));
+                const rawText  = decodeEntities(combined);
+                const code     = extractCodeNumber(rawText);
+
+                const inboxEl = document.getElementById('inboxContainer');
+                if (inboxEl.querySelector('.empty-state')) inboxEl.innerHTML = '';
+
+                if (code) {
+                    renderCode(code, from, subject);
+                } else {
+                    const preview = bodyText
+                        ? bodyText.substring(0, 160)
+                        : stripHtml(bodyHtml).substring(0, 160);
+                    renderRaw(subject || "(no subject)", from, preview);
+                }
+            }
+        } catch(e) {
+            console.error("Inbox error:", e);
+        }
+    }
+
+    // =========================================================
+    //  HELPERS
+    // =========================================================
+    function stripHtml(html) {
+        if (!html) return "";
+        return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function decodeEntities(str) {
+        const el = document.createElement('textarea');
+        el.innerHTML = str;
+        return el.value;
+    }
+
+    // =========================================================
+    //  EXTRACT VERIFICATION CODE
+    //  Priority: contextual keywords → 6-digit → 4-digit fallback
+    // =========================================================
+    function extractCodeNumber(text) {
+        if (!text) return null;
+
+        const patterns = [
+            // Contextual: keyword then code
+            /(?:verification|verify|otp|code|کد|رمز|pin|token|passcode|activate|confirm|کد تأیید|کدتایید)[^\d]{0,40}(\d{4,8})/i,
+            // Code then keyword
+            /(\d{4,8})(?:[^\d]{0,20})(?:is your|verification|code|کد|token|confirmation)/i,
+            // Alphanumeric codes like AB1234 or 1234AB
+            /\b([A-Z]{2,4}[0-9]{4,6}|[0-9]{4,6}[A-Z]{2,4})\b/,
+            // Generic 6-char alphanumeric
+            /\b([A-Z0-9]{6,8})\b(?=[^\w]|$)/,
+            // Pure numeric by length (most common OTP sizes first)
+            /\b(\d{6})\b/,
+            /\b(\d{4})\b/,
+            /\b(\d{5})\b/,
+            /\b(\d{7,8})\b/,
         ];
 
-        let sessionId   = "";   // PHPSESSID cookie value
-        let sidToken    = "";   // sid_token from API
-        let currentEmail = "";
-        let currentDomain = "";
-        let emailTimestamp = 0;
-        let knownIds    = new Set();
-        let checkInterval = null;
-        let timerInterval = null;
-        let availableDomains = [...FALLBACK_DOMAINS];
-        let selectedDomainIdx = 0;
-
-        // =========================================================
-        //  INIT
-        // =========================================================
-        window.addEventListener('DOMContentLoaded', () => {
-            createNewEmail();
-        });
-
-        // =========================================================
-        //  GM API HELPER — maintains PHPSESSID cookie in header
-        // =========================================================
-        async function gmFetch(params) {
-            const url = new URL(GM_API);
-            url.searchParams.set("ip", "127.0.0.1");
-            url.searchParams.set("agent", "Mozilla_Firefox");
-            for (const [k, v] of Object.entries(params)) {
-                url.searchParams.set(k, v);
-            }
-
-            const headers = { "Accept": "application/json" };
-            if (sessionId) headers["Cookie"] = `PHPSESSID=${sessionId}`;
-
-            const res = await fetch(url.toString(), {
-                method: "GET",
-                credentials: "omit",
-                headers
-            });
-
-            // Grab updated PHPSESSID from response if present
-            const setCookie = res.headers.get("set-cookie") || "";
-            const match = setCookie.match(/PHPSESSID=([^;]+)/);
-            if (match) sessionId = match[1];
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        }
-
-        // =========================================================
-        //  BUILD DOMAIN CHIPS
-        // =========================================================
-        function buildDomainChips() {
-            const row = document.getElementById('domainRow');
-            row.innerHTML = '';
-            availableDomains.slice(0, 6).forEach((d, i) => {
-                const chip = document.createElement('button');
-                chip.className = 'domain-chip' + (i === selectedDomainIdx ? ' active' : '');
-                chip.textContent = '@' + d.split('.')[0];
-                chip.title = '@' + d;
-                chip.onclick = () => {
-                    selectedDomainIdx = i;
-                    document.querySelectorAll('.domain-chip').forEach((c, j) => {
-                        c.className = 'domain-chip' + (j === i ? ' active' : '');
-                    });
-                    createNewEmail(availableDomains[i]);
-                };
-                row.appendChild(chip);
-            });
-        }
-
-        // =========================================================
-        //  CREATE NEW EMAIL  — uses GuerrillaMailAPI
-        // =========================================================
-        async function createNewEmail(forceDomain) {
-            const display  = document.getElementById('emailDisplay');
-            const status   = document.getElementById('scanStatus');
-            const dot      = document.getElementById('radarDot');
-            const inbox    = document.getElementById('inboxContainer');
-            const timerRow = document.getElementById('timerRow');
-
-            // Reset
-            if (checkInterval)  clearInterval(checkInterval);
-            if (timerInterval)  clearInterval(timerInterval);
-            knownIds.clear();
-            currentEmail = "";
-            sidToken = "";
-            sessionId = "";
-
-            display.className  = "email-text loading";
-            display.innerText  = "Connecting...";
-            status.innerText   = "Loading...";
-            dot.className      = "dot inactive";
-            timerRow.style.display = "none";
-            inbox.innerHTML    = `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
-
-            try {
-                // Step 1: get a new email address from GuerrillaMailAPI
-                const data = await gmFetch({ f: "get_email_address", lang: "en" });
-
-                // data.email_addr, data.sid_token, data.email_timestamp
-                // data.domain_list — array of available domains
-                sidToken       = data.sid_token || "";
-                currentEmail   = data.email_addr || "";
-                emailTimestamp = data.email_timestamp || Math.floor(Date.now() / 1000);
-
-                // Populate domains from API
-                if (data.domain_list && data.domain_list.length > 0) {
-                    availableDomains = data.domain_list;
-                }
-
-                // If a specific domain was requested, switch to it
-                if (forceDomain && forceDomain !== currentEmail.split('@')[1]) {
-                    const randomUser = Math.random().toString(36).substring(2, 10);
-                    const switchData = await gmFetch({
-                        f: "set_email_user",
-                        email_user: randomUser,
-                        lang: "en",
-                        sid_token: sidToken
-                    });
-                    if (switchData.email_addr) {
-                        currentEmail   = switchData.email_addr;
-                        emailTimestamp = switchData.email_timestamp || emailTimestamp;
-                    }
-                }
-
-                // Build chips
-                buildDomainChips();
-
-                // Update UI
-                display.className = "email-text";
-                display.innerText = currentEmail;
-                status.innerText  = "Scanning";
-                dot.className     = "dot";
-                inbox.innerHTML   = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
-                timerRow.style.display = "flex";
-
-                // Start expiry countdown (60 min from emailTimestamp)
-                startTimer();
-
-                // Poll every 5 seconds
-                checkInterval = setInterval(checkInbox, 5000);
-
-            } catch (e) {
-                console.error("Setup error:", e);
-                display.className = "email-text loading";
-                display.innerText = "Failed to connect";
-                status.innerText  = "Error";
-                dot.className     = "dot inactive";
-                inbox.innerHTML   = `<div class="empty-state"><span>Connection failed. Try Refresh or New Email.</span></div>`;
+        for (const pattern of patterns) {
+            const match = text.match(pattern);
+            if (match) {
+                const c = match[1];
+                if (/^(19|20)\d{2}$/.test(c)) continue;  // Skip years
+                if (/^0+$/.test(c)) continue;              // Skip all-zeros
+                if (/^\d{10,}$/.test(c)) continue;         // Skip phone-like numbers
+                return c;
             }
         }
+        return null;
+    }
 
-        // =========================================================
-        //  COUNTDOWN TIMER
-        // =========================================================
-        function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(updateTimer, 1000);
-            updateTimer();
-        }
+    // =========================================================
+    //  RENDER — code card (highlighted, clickable)
+    // =========================================================
+    function renderCode(code, sender, subject) {
+        const inbox = document.getElementById('inboxContainer');
+        const card  = document.createElement('div');
+        card.className = 'message';
 
-        function updateTimer() {
-            const fill  = document.getElementById('timerFill');
-            const label = document.getElementById('timerLabel');
-            const now   = Math.floor(Date.now() / 1000);
-            const elapsed = now - emailTimestamp;
-            const remaining = Math.max(0, 3600 - elapsed);
+        const fromEl = document.createElement('div');
+        fromEl.className = 'msg-sender';
+        fromEl.innerText = sender;
 
-            const pct = (remaining / 3600) * 100;
-            fill.style.width = pct + "%";
-            fill.className = "timer-bar-fill" +
-                (pct < 15 ? " critical" : pct < 30 ? " warning" : "");
+        const subEl = document.createElement('div');
+        subEl.className = 'msg-subject';
+        subEl.innerText = subject;
 
-            const m = Math.floor(remaining / 60);
-            const s = remaining % 60;
-            label.textContent = `${m}:${String(s).padStart(2, '0')}`;
+        const codeEl = document.createElement('div');
+        codeEl.className = 'extracted-code';
+        codeEl.innerText = code;
+        codeEl.title = "Click to copy";
+        codeEl.onclick = () => copyToClipboard(code);
 
-            if (remaining === 0) {
-                clearInterval(timerInterval);
-                clearInterval(checkInterval);
-                document.getElementById('scanStatus').innerText = "Expired";
-                document.getElementById('radarDot').className = "dot inactive";
-            }
-        }
+        card.appendChild(fromEl);
+        if (subject) card.appendChild(subEl);
+        card.appendChild(codeEl);
+        inbox.insertBefore(card, inbox.firstChild);
+    }
 
-        // =========================================================
-        //  CHECK INBOX  — uses check_email then fetch_email
-        // =========================================================
-        async function checkInbox() {
-            if (!sidToken) return;
+    // =========================================================
+    //  RENDER — raw card (no code detected)
+    // =========================================================
+    function renderRaw(subject, sender, excerpt) {
+        const inbox = document.getElementById('inboxContainer');
+        const card  = document.createElement('div');
+        card.className = 'message';
 
-            try {
-                // seq=0 always fetches latest 20
-                const data = await gmFetch({ f: "check_email", seq: 0, sid_token: sidToken });
+        const fromEl = document.createElement('div');
+        fromEl.className = 'msg-sender';
+        fromEl.innerText = sender;
 
-                const list = data.list || [];
-                if (list.length === 0) return;
+        const rawEl = document.createElement('div');
+        rawEl.className = 'raw-message';
+        rawEl.innerText = subject + (excerpt ? '\n' + excerpt : '');
 
-                for (const msg of list) {
-                    const id = String(msg.mail_id);
-                    if (knownIds.has(id)) continue;
-                    knownIds.add(id);
+        card.appendChild(fromEl);
+        card.appendChild(rawEl);
+        inbox.insertBefore(card, inbox.firstChild);
+    }
 
-                    // Fetch full email body
-                    const full = await gmFetch({ f: "fetch_email", email_id: id, sid_token: sidToken });
+    // =========================================================
+    //  FORCE REFRESH
+    // =========================================================
+    async function forceRefresh() {
+        const btn = document.getElementById('refreshBtn');
+        btn.classList.add('spin');
+        btn.disabled = true;
+        await checkInbox();
+        setTimeout(() => {
+            btn.classList.remove('spin');
+            btn.disabled = false;
+        }, 800);
+    }
 
-                    const from    = full.mail_from  || msg.mail_from  || "Unknown";
-                    const subject = full.mail_subject || msg.mail_subject || "";
-                    const body    = full.mail_body   || full.mail_text || "";
+    // =========================================================
+    //  COPY EMAIL
+    // =========================================================
+    function copyEmail() {
+        if (!currentEmail || currentEmail === "Connecting..." || currentEmail === "Failed to connect") return;
+        copyToClipboard(currentEmail);
+    }
 
-                    // Decode HTML entities in subject/body
-                    const rawText = decodeEntities(subject + " " + stripHtml(body));
-                    const code    = extractCodeNumber(rawText);
-
-                    const inboxEl = document.getElementById('inboxContainer');
-                    if (inboxEl.querySelector('.empty-state')) inboxEl.innerHTML = '';
-
-                    if (code) {
-                        renderCode(code, from, subject);
-                    } else {
-                        renderRaw(subject || "(no subject)", from, stripHtml(body).substring(0, 120));
-                    }
-                }
-
-            } catch (e) {
-                console.error("Inbox error:", e);
-            }
-        }
-
-        // =========================================================
-        //  HELPERS
-        // =========================================================
-        function stripHtml(html) {
-            if (!html) return "";
-            return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-        }
-
-        function decodeEntities(str) {
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("Copied!");
+        }).catch(() => {
             const el = document.createElement('textarea');
-            el.innerHTML = str;
-            return el.value;
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Copied!");
+        });
+    }
+
+    // =========================================================
+    //  TOAST
+    // =========================================================
+    let toastTimer;
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // =========================================================
+    //  THEME TOGGLE
+    // =========================================================
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('themeIcon');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            icon.className = 'fa-regular fa-moon';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.className = 'fa-regular fa-sun';
         }
-
-        // =========================================================
-        //  EXTRACT VERIFICATION CODE
-        //  Matches 4-8 digit codes, avoids years
-        // =========================================================
-        function extractCodeNumber(text) {
-            if (!text) return null;
-
-            const patterns = [
-                /(?:verification|verify|otp|code|کد|رمز|pin|token|passcode|activate)[^\d]{0,30}(\d{4,8})/i,
-                /(\d{4,8})(?:[^\d]{0,20})(?:is your|verification|code|کد|token)/i,
-                /\b([A-Z]{2,4}[0-9]{4,6}|[0-9]{4,6}[A-Z]{2,4})\b/,  // Alphanumeric like AB1234
-                /\b([A-Z0-9]{6,8})\b(?=[^\w]|$)/,                      // Generic alphanum
-                /\b(\d{6})\b/,
-                /\b(\d{4})\b/,
-                /\b(\d{5})\b/,
-                /\b(\d{7,8})\b/,
-            ];
-
-            for (const pattern of patterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    const c = match[1];
-                    if (/^(19|20)\d{2}$/.test(c)) continue;  // Skip years
-                    if (/^0+$/.test(c)) continue;             // Skip all-zeros
-                    return c;
-                }
-            }
-            return null;
-        }
-
-        // =========================================================
-        //  RENDER — code card (highlighted, clickable)
-        // =========================================================
-        function renderCode(code, sender, subject) {
-            const inbox = document.getElementById('inboxContainer');
-            const card  = document.createElement('div');
-            card.className = 'message';
-
-            const fromEl = document.createElement('div');
-            fromEl.className = 'msg-sender';
-            fromEl.innerText = sender;
-
-            const subEl = document.createElement('div');
-            subEl.className = 'msg-subject';
-            subEl.innerText = subject;
-
-            const codeEl = document.createElement('div');
-            codeEl.className = 'extracted-code';
-            codeEl.innerText = code;
-            codeEl.title = "Click to copy";
-            codeEl.onclick = () => copyToClipboard(code);
-
-            card.appendChild(fromEl);
-            if (subject) card.appendChild(subEl);
-            card.appendChild(codeEl);
-            inbox.insertBefore(card, inbox.firstChild);
-        }
-
-        // =========================================================
-        //  RENDER — raw card (no code detected)
-        // =========================================================
-        function renderRaw(subject, sender, excerpt) {
-            const inbox = document.getElementById('inboxContainer');
-            const card  = document.createElement('div');
-            card.className = 'message';
-
-            const fromEl = document.createElement('div');
-            fromEl.className = 'msg-sender';
-            fromEl.innerText = sender;
-
-            const rawEl = document.createElement('div');
-            rawEl.className = 'raw-message';
-            rawEl.innerText = subject + (excerpt ? '\n' + excerpt : '');
-
-            card.appendChild(fromEl);
-            card.appendChild(rawEl);
-            inbox.insertBefore(card, inbox.firstChild);
-        }
-
-        // =========================================================
-        //  FORCE REFRESH
-        // =========================================================
-        async function forceRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spin');
-            btn.disabled = true;
-            await checkInbox();
-            setTimeout(() => {
-                btn.classList.remove('spin');
-                btn.disabled = false;
-            }, 800);
-        }
-
-        // =========================================================
-        //  COPY EMAIL
-        // =========================================================
-        function copyEmail() {
-            if (!currentEmail || currentEmail === "Connecting..." || currentEmail === "Failed to connect") return;
-            copyToClipboard(currentEmail);
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("Copied!");
-            }).catch(() => {
-                const el = document.createElement('textarea');
-                el.value = text;
-                document.body.appendChild(el);
-                el.select();
-                document.execCommand('copy');
-                document.body.removeChild(el);
-                showToast("Copied!");
-            });
-        }
-
-        // =========================================================
-        //  TOAST
-        // =========================================================
-        let toastTimer;
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        // =========================================================
-        //  THEME TOGGLE
-        // =========================================================
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fa-regular fa-moon';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-regular fa-sun';
-            }
-        }
+    }
     </script>
 </body>
 </html>
