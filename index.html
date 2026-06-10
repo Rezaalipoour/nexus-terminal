@@ -303,12 +303,11 @@ let currentEmail = "";
             checkInterval = setInterval(checkInbox, 3000); // اسکن سریع هر 3 ثانیه
         }
 
-        async function checkInbox() {
+async function checkInbox() {
             if(!currentEmail) return;
 
             try {
-                // آدرس مستقیم API سایت mailporary (بدون پروکسی)
-                const url = `https://web.mailporary.com/api/v1/mailbox/${encodeURIComponent(currentEmail)}`;
+                const url = `https://web.mailporary.com/api/v1/mailbox/${encodeURIComponent(currentEmail)}?_t=${Date.now()}`;
                 const res = await fetch(url);
                 if(!res.ok) return;
 
@@ -319,56 +318,25 @@ let currentEmail = "";
                         if (!knownMessageIds.has(msg.id)) {
                             knownMessageIds.add(msg.id);
                             
-                            // استخراج کد عددی از Subject
-                            const codeRegex = /\b\d{4,8}\b/g;
-                            const matches = msg.subject.match(codeRegex);
-                            const extractedCode = (matches && matches.length > 0) ? matches[0] : null;
+                            // 1. جستجو در عنوان (Subject)
+                            let extractedCode = extractCodeNumber(msg.subject);
+
+                            // 2. اگر در عنوان نبود، متنِ کامل را لود کن (جستجوی عمیق)
+                            if (!extractedCode) {
+                                const msgRes = await fetch(`https://web.mailporary.com/api/v1/mailbox/${encodeURIComponent(currentEmail)}/${msg.id}`);
+                                const fullMsg = await msgRes.json();
+                                extractedCode = extractCodeNumber(fullMsg.textBody + " " + fullMsg.htmlBody);
+                            }
 
                             if (extractedCode) {
                                 renderMessage(extractedCode, "OpenArt/AI");
-                                if(document.querySelector('.empty-state')) 
-                                    document.getElementById('inboxContainer').innerHTML = '';
+                                if(document.querySelector('.empty-state')) document.getElementById('inboxContainer').innerHTML = '';
                             }
                         }
                     }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error:", e); }
         }
-
-        function renderMessage(code, senderName) {
-            const inbox = document.getElementById('inboxContainer');
-            const msgEl = document.createElement('div');
-            msgEl.className = 'message';
-            msgEl.innerHTML = `
-                <div class="msg-sender">${senderName}</div>
-                <div class="extracted-code" onclick="copyText('${code}', true)">${code}</div>
-            `;
-            inbox.prepend(msgEl);
-        }
-
-        function copyText(text, isCode = false) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(isCode ? "Code Copied!" : "Email Copied!");
-            });
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1500);
-        }
-
-        function forceRefresh() {
-            checkInbox();
-        }
-
-        // دکمه تغییر سرور را به "ساخت ایمیل جدید" تغییر دادیم
-        function switchServerAndCreate() {
-            createEmail();
-        }
-
-        createEmail();
     </script>
 </body>
 </html>
