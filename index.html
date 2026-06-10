@@ -294,6 +294,35 @@
         });
 
         // ===================================================
+        //  FETCH NEWEST DOMAIN FROM mail.tm
+        //  Pages through all available domains and picks
+        //  the one added most recently (least abused)
+        // ===================================================
+        async function fetchNewestDomain() {
+            let allDomains = [];
+            let page = 1;
+
+            // Collect all pages of domains
+            while (true) {
+                const res = await fetch(`https://api.mail.tm/domains?page=${page}`);
+                if (!res.ok) break;
+                const data = await res.json();
+                const batch = data["hydra:member"] || [];
+                if (batch.length === 0) break;
+                allDomains = allDomains.concat(batch);
+                // If we got fewer than 30 items, no more pages
+                if (batch.length < 30) break;
+                page++;
+            }
+
+            if (allDomains.length === 0) throw new Error("No domains available");
+
+            // Sort by createdAt descending → pick the newest domain
+            allDomains.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            return allDomains[0].domain;
+        }
+
+        // ===================================================
         //  CREATE NEW EMAIL  (mail.tm API)
         // ===================================================
         async function createNewEmail() {
@@ -315,16 +344,9 @@
             inbox.innerHTML = `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
 
             try {
-                // 1. Get available domains
-                const domainsRes = await fetch("https://api.mail.tm/domains");
-                const domainsData = await domainsRes.json();
-                availableDomains = domainsData["hydra:member"];
+                // 1. Get the newest (least-blocked) domain
+                const domain = await fetchNewestDomain();
 
-                if (!availableDomains || availableDomains.length === 0) {
-                    throw new Error("No domains available");
-                }
-
-                const domain = availableDomains[0].domain;
                 const randomStr = Math.random().toString(36).substring(2, 12);
                 const email = `${randomStr}@${domain}`;
                 const password = Math.random().toString(36).substring(2, 18);
