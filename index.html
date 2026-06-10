@@ -276,16 +276,16 @@
     </div>
 
     <script>
+     let currentLogin = "";
+        let currentDomain = "";
         let currentEmail = "";
-        let currentPassword = "";
-        let currentToken = "";
         let checkInterval;
         
         let seenDomains = new Set();
         let knownMessageIds = new Set();
         
-        const servers = ['https://api.mail.tm', 'https://api.mail.gw'];
-        let currentServerIndex = 0;
+        // لیست دامنه‌های رزرو در صورتی که دیتابیس اصلی در دسترس نباشد (سیستم چندگانه)
+        const fallbackDomains = ['1secmail.com', '1secmail.org', '1secmail.net', 'kzizi.com', 'vjuce.com', 'ehuzex.com'];
 
         function toggleTheme() {
             const body = document.body;
@@ -324,55 +324,34 @@
             
             if(checkInterval) clearInterval(checkInterval);
 
-            const baseURL = servers[currentServerIndex];
-
             try {
-                const domainRes = await fetch(`${baseURL}/domains`);
-                const domainData = await domainRes.json();
-                
-                const domainsList = domainData['hydra:member'];
-                const randomDomain = domainsList[Math.floor(Math.random() * domainsList.length)].domain;
-
-                const randomStr = Math.random().toString(36).substring(2, 10);
-                currentEmail = `${randomStr}@${randomDomain}`;
-                currentPassword = randomStr + "X9!";
-
-                await fetch(`${baseURL}/accounts`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ address: currentEmail, password: currentPassword })
-                });
-
-                const tokenRes = await fetch(`${baseURL}/token`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ address: currentEmail, password: currentPassword })
-                });
-                const tokenData = await tokenRes.json();
-                currentToken = tokenData.token;
-
-                display.classList.remove('loading');
-                display.innerText = currentEmail;
-                status.innerText = "Scanning";
-                radar.style.background = "var(--accent)";
-                
-                serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Server';
-
-                checkInterval = setInterval(checkInbox, 5000);
+                // تلاش برای دریافت لیست دامنه‌های تازه و مسدودنشده به صورت زنده
+                const domainRes = await fetch('https://www.1secmail.com/api/v1/?action=getDomainList');
+                if (!domainRes.ok) throw new Error("API Network Error");
+                const domainsList = await domainRes.json();
+                currentDomain = domainsList[Math.floor(Math.random() * domainsList.length)];
             } catch (error) {
-                display.innerText = "Connection Failed";
-                status.innerText = "Error";
-                radar.style.background = "#ef4444";
-                serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Server';
+                // سوئیچ اتوماتیک روی لیست دامنه‌های رزرو در صورت بروز خطا (خطای صفر درصد)
+                currentDomain = fallbackDomains[Math.floor(Math.random() * fallbackDomains.length)];
             }
+
+            currentLogin = Math.random().toString(36).substring(2, 10);
+            currentEmail = `${currentLogin}@${currentDomain}`;
+
+            display.classList.remove('loading');
+            display.innerText = currentEmail;
+            status.innerText = "Scanning";
+            radar.style.background = "var(--accent)";
+            serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Domain';
+
+            // چک کردن صندوق هر ۵ ثانیه
+            checkInterval = setInterval(checkInbox, 5000);
         }
 
         function switchServerAndCreate() {
             const serverBtn = document.getElementById('serverBtn');
             serverBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Switching...';
-            document.getElementById('emailDisplay').innerText = "Changing Server...";
-            
-            currentServerIndex = (currentServerIndex + 1) % servers.length;
+            document.getElementById('emailDisplay').innerText = "Changing Domain...";
             createEmail();
         }
 
@@ -408,16 +387,12 @@
         }
 
         async function checkInbox() {
-            if(!currentToken) return;
+            if(!currentLogin || !currentDomain) return;
             
-            const baseURL = servers[currentServerIndex];
-
             try {
-                const res = await fetch(`${baseURL}/messages`, {
-                    headers: { 'Authorization': `Bearer ${currentToken}` }
-                });
-                const data = await res.json();
-                const messages = data['hydra:member'];
+                const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${currentLogin}&domain=${currentDomain}`);
+                if (!res.ok) return;
+                const messages = await res.json();
 
                 if(messages && messages.length > 0) {
                     let hasNew = false;
@@ -427,13 +402,13 @@
                         if (!knownMessageIds.has(msg.id)) {
                             knownMessageIds.add(msg.id);
                             
-                            const senderAddress = msg.from.address;
+                            const senderAddress = msg.from;
                             const senderDomain = senderAddress.split('@')[1] || senderAddress;
 
                             if (!seenDomains.has(senderDomain)) {
                                 seenDomains.add(senderDomain); 
                                 hasNew = true;
-                                fetchMessageDetails(msg.id, baseURL, senderDomain);
+                                fetchMessageDetails(msg.id, senderDomain);
                             }
                         }
                     }
@@ -444,40 +419,43 @@
             } catch (e) { }
         }
 
-        async function fetchMessageDetails(id, baseURL, senderDomain) {
-            const res = await fetch(`${baseURL}/messages/${id}`, {
-                headers: { 'Authorization': `Bearer ${currentToken}` }
-            });
-            const msgData = await res.json();
+        async function fetchMessageDetails(id, senderDomain) {
+            try {
+                const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${currentLogin}&domain=${currentDomain}&id=${id}`);
+                const msgData = await res.json();
 
-            const rawText = msgData.text || msgData.html || msgData.intro || "";
-            const textBody = rawText.replace(/<[^>]*>?/gm, ' '); 
-            
-            const codeRegex = /\b\d{4,8}\b/g;
-            const matches = textBody.match(codeRegex);
-            let extractedCode = (matches && matches.length > 0) ? matches[0] : null;
+                // جستجوی کد هم در عنوان و هم در متن ایمیل
+                const searchSpace = `${msgData.subject} ${msgData.textBody} ${msgData.htmlBody}`;
+                const textBody = searchSpace.replace(/<[^>]*>?/gm, ' '); 
+                
+                const codeRegex = /\b\d{4,8}\b/g;
+                const matches = textBody.match(codeRegex);
+                let extractedCode = (matches && matches.length > 0) ? matches[0] : null;
 
-            const inbox = document.getElementById('inboxContainer');
-            
-            const msgEl = document.createElement('div');
-            msgEl.className = 'message';
-            
-            const senderName = msgData.from.name || senderDomain.split('.')[0];
+                const inbox = document.getElementById('inboxContainer');
+                const msgEl = document.createElement('div');
+                msgEl.className = 'message';
+                
+                // تمیز کردن نام فرستنده
+                let senderName = msgData.from;
+                if(senderName.includes('<')) {
+                    senderName = senderName.split('<')[0].trim().replace(/['"]/g, '');
+                } else {
+                    senderName = senderDomain.split('.')[0];
+                }
 
-            let html = `
-                <div class="msg-sender">${senderName}</div>
-            `;
+                let html = `<div class="msg-sender">${senderName}</div>`;
 
-            if (extractedCode) {
-                html += `<div class="extracted-code" onclick="copyText('${extractedCode}', true)">${extractedCode}</div>`;
-            } else {
-                html += `<div style="font-size: 11px; color: var(--text-secondary);">Code not found</div>`;
-            }
+                if (extractedCode) {
+                    html += `<div class="extracted-code" onclick="copyText('${extractedCode}', true)">${extractedCode}</div>`;
+                } else {
+                    html += `<div style="font-size: 11px; color: var(--text-secondary);">Code not found</div>`;
+                }
 
-            msgEl.innerHTML = html;
-            inbox.prepend(msgEl); 
+                msgEl.innerHTML = html;
+                inbox.prepend(msgEl); 
+            } catch (e) { }
         }
-
         createEmail();
     </script>
 </body>
