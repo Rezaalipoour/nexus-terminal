@@ -276,107 +276,80 @@
     </div>
 
     <script>
-     let currentLogin = "";
-        let currentDomain = "";
-        let currentEmail = "";
+let currentEmail = "";
         let checkInterval;
-        
-        let seenDomains = new Set();
         let knownMessageIds = new Set();
-        
-        // لیست دامنه‌های رزرو در صورتی که دیتابیس اصلی در دسترس نباشد (سیستم چندگانه)
-        const fallbackDomains = ['1secmail.com', '1secmail.org', '1secmail.net', 'kzizi.com', 'vjuce.com', 'ehuzex.com'];
 
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fa-regular fa-moon';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-regular fa-sun';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.setAttribute('data-theme', 'light');
-            document.getElementById('themeIcon').className = 'fa-regular fa-moon';
-        }
-
+        // ساخت ایمیل با الگوی Mailporary
         async function createEmail() {
             const display = document.getElementById('emailDisplay');
             const status = document.getElementById('scanStatus');
             const radar = document.getElementById('radarDot');
             const inbox = document.getElementById('inboxContainer');
-            const serverBtn = document.getElementById('serverBtn');
             
-            seenDomains.clear();
             knownMessageIds.clear();
-            
-            display.innerText = "Generating...";
-            display.classList.add('loading');
-            status.innerText = "Connecting...";
-            radar.style.background = "var(--text-secondary)";
-            inbox.innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
-            
             if(checkInterval) clearInterval(checkInterval);
 
-            try {
-                // تلاش برای دریافت لیست دامنه‌های تازه و مسدودنشده به صورت زنده
-                const domainRes = await fetch('https://www.1secmail.com/api/v1/?action=getDomainList');
-                if (!domainRes.ok) throw new Error("API Network Error");
-                const domainsList = await domainRes.json();
-                currentDomain = domainsList[Math.floor(Math.random() * domainsList.length)];
-            } catch (error) {
-                // سوئیچ اتوماتیک روی لیست دامنه‌های رزرو در صورت بروز خطا (خطای صفر درصد)
-                currentDomain = fallbackDomains[Math.floor(Math.random() * fallbackDomains.length)];
-            }
-
-            currentLogin = Math.random().toString(36).substring(2, 10);
-            currentEmail = `${currentLogin}@${currentDomain}`;
+            // ایجاد یک آدرس ایمیل رندوم برای سایت mailporary
+            const randomStr = Math.random().toString(36).substring(2, 12);
+            currentEmail = `${randomStr}@oeralb.com`; // از همان دامنه ای که کار میکرد استفاده میکنیم
 
             display.classList.remove('loading');
             display.innerText = currentEmail;
             status.innerText = "Scanning";
             radar.style.background = "var(--accent)";
-            serverBtn.innerHTML = '<i class="fa-solid fa-server"></i> Change Domain';
+            inbox.innerHTML = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
 
-            // چک کردن صندوق هر ۵ ثانیه
-            checkInterval = setInterval(checkInbox, 5000);
+            checkInterval = setInterval(checkInbox, 3000); // اسکن سریع هر 3 ثانیه
         }
 
-        function switchServerAndCreate() {
-            const serverBtn = document.getElementById('serverBtn');
-            serverBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Switching...';
-            document.getElementById('emailDisplay').innerText = "Changing Domain...";
-            createEmail();
+        async function checkInbox() {
+            if(!currentEmail) return;
+
+            try {
+                // آدرس مستقیم API سایت mailporary (بدون پروکسی)
+                const url = `https://web.mailporary.com/api/v1/mailbox/${encodeURIComponent(currentEmail)}`;
+                const res = await fetch(url);
+                if(!res.ok) return;
+
+                const messages = await res.json(); 
+
+                if(messages && messages.length > 0) {
+                    for (const msg of messages) {
+                        if (!knownMessageIds.has(msg.id)) {
+                            knownMessageIds.add(msg.id);
+                            
+                            // استخراج کد عددی از Subject
+                            const codeRegex = /\b\d{4,8}\b/g;
+                            const matches = msg.subject.match(codeRegex);
+                            const extractedCode = (matches && matches.length > 0) ? matches[0] : null;
+
+                            if (extractedCode) {
+                                renderMessage(extractedCode, "OpenArt/AI");
+                                if(document.querySelector('.empty-state')) 
+                                    document.getElementById('inboxContainer').innerHTML = '';
+                            }
+                        }
+                    }
+                }
+            } catch (e) { console.error(e); }
         }
 
-        async function forceRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spin');
-            await checkInbox();
-            setTimeout(() => btn.classList.remove('spin'), 600);
+        function renderMessage(code, senderName) {
+            const inbox = document.getElementById('inboxContainer');
+            const msgEl = document.createElement('div');
+            msgEl.className = 'message';
+            msgEl.innerHTML = `
+                <div class="msg-sender">${senderName}</div>
+                <div class="extracted-code" onclick="copyText('${code}', true)">${code}</div>
+            `;
+            inbox.prepend(msgEl);
         }
 
         function copyText(text, isCode = false) {
             navigator.clipboard.writeText(text).then(() => {
                 showToast(isCode ? "Code Copied!" : "Email Copied!");
-                if(!isCode) {
-                    const icon = document.getElementById('copyIcon');
-                    icon.className = 'fa-solid fa-check';
-                    setTimeout(() => icon.className = 'fa-regular fa-copy', 1500);
-                }
             });
-        }
-
-        function copyEmail() {
-            if(currentEmail && !document.getElementById('emailDisplay').classList.contains('loading')) {
-                copyText(currentEmail, false);
-            }
         }
 
         function showToast(msg) {
@@ -386,76 +359,15 @@
             setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-        async function checkInbox() {
-            if(!currentLogin || !currentDomain) return;
-            
-            try {
-                const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${currentLogin}&domain=${currentDomain}`);
-                if (!res.ok) return;
-                const messages = await res.json();
-
-                if(messages && messages.length > 0) {
-                    let hasNew = false;
-                    const reversedMessages = [...messages].reverse();
-
-                    for (const msg of reversedMessages) {
-                        if (!knownMessageIds.has(msg.id)) {
-                            knownMessageIds.add(msg.id);
-                            
-                            const senderAddress = msg.from;
-                            const senderDomain = senderAddress.split('@')[1] || senderAddress;
-
-                            if (!seenDomains.has(senderDomain)) {
-                                seenDomains.add(senderDomain); 
-                                hasNew = true;
-                                fetchMessageDetails(msg.id, senderDomain);
-                            }
-                        }
-                    }
-                    if(hasNew && document.querySelector('.empty-state')) {
-                        document.getElementById('inboxContainer').innerHTML = '';
-                    }
-                }
-            } catch (e) { }
+        function forceRefresh() {
+            checkInbox();
         }
 
-        async function fetchMessageDetails(id, senderDomain) {
-            try {
-                const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${currentLogin}&domain=${currentDomain}&id=${id}`);
-                const msgData = await res.json();
-
-                // جستجوی کد هم در عنوان و هم در متن ایمیل
-                const searchSpace = `${msgData.subject} ${msgData.textBody} ${msgData.htmlBody}`;
-                const textBody = searchSpace.replace(/<[^>]*>?/gm, ' '); 
-                
-                const codeRegex = /\b\d{4,8}\b/g;
-                const matches = textBody.match(codeRegex);
-                let extractedCode = (matches && matches.length > 0) ? matches[0] : null;
-
-                const inbox = document.getElementById('inboxContainer');
-                const msgEl = document.createElement('div');
-                msgEl.className = 'message';
-                
-                // تمیز کردن نام فرستنده
-                let senderName = msgData.from;
-                if(senderName.includes('<')) {
-                    senderName = senderName.split('<')[0].trim().replace(/['"]/g, '');
-                } else {
-                    senderName = senderDomain.split('.')[0];
-                }
-
-                let html = `<div class="msg-sender">${senderName}</div>`;
-
-                if (extractedCode) {
-                    html += `<div class="extracted-code" onclick="copyText('${extractedCode}', true)">${extractedCode}</div>`;
-                } else {
-                    html += `<div style="font-size: 11px; color: var(--text-secondary);">Code not found</div>`;
-                }
-
-                msgEl.innerHTML = html;
-                inbox.prepend(msgEl); 
-            } catch (e) { }
+        // دکمه تغییر سرور را به "ساخت ایمیل جدید" تغییر دادیم
+        function switchServerAndCreate() {
+            createEmail();
         }
+
         createEmail();
     </script>
 </body>
