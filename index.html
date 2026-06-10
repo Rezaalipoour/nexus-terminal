@@ -13,7 +13,6 @@
     
     <style>
         :root {
-            /* Dark Theme */
             --bg-body: #09090b;
             --card-bg: rgba(24, 24, 27, 0.65);
             --card-border: rgba(255, 255, 255, 0.08);
@@ -27,7 +26,6 @@
         }
 
         [data-theme="light"] {
-            /* Light Theme */
             --bg-body: #f8fafc;
             --card-bg: rgba(255, 255, 255, 0.85);
             --card-border: rgba(0, 0, 0, 0.06);
@@ -53,7 +51,7 @@
 
         .container {
             width: 100%;
-            max-width: 440px; 
+            max-width: 440px;
             padding: 20px;
         }
 
@@ -85,7 +83,7 @@
             border-radius: 16px;
             padding: 8px 8px 8px 18px;
             display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; 
+            cursor: pointer;
             transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
         }
         .email-display-group:hover {
@@ -95,9 +93,11 @@
         .email-display-group:active { transform: scale(0.98); }
 
         .email-text {
-            font-size: 16px; font-weight: 500; letter-spacing: 0.2px;
+            font-size: 15px; font-weight: 500; letter-spacing: 0.2px;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             color: var(--text-primary);
+            flex: 1;
+            margin-right: 8px;
         }
 
         .email-text.loading { color: var(--text-secondary); animation: pulse 1.5s infinite; }
@@ -105,11 +105,13 @@
 
         .action-icon-btn {
             background: var(--btn-border); border: none;
-            width: 42px; height: 42px; 
+            width: 42px; height: 42px;
             border-radius: 12px;
             color: var(--text-primary); cursor: pointer;
             display: flex; justify-content: center; align-items: center; font-size: 16px;
-            pointer-events: none; 
+            flex-shrink: 0;
+            pointer-events: none;
+            transition: background 0.2s ease, color 0.2s ease;
         }
         .email-display-group:hover .action-icon-btn {
             background: var(--accent); color: #fff;
@@ -125,6 +127,8 @@
         }
         .btn:hover { background: var(--btn-border); }
         .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
         .spin i { animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -141,15 +145,16 @@
             width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
             animation: blink 2s infinite;
         }
+        .dot.inactive { background: var(--text-secondary); animation: none; opacity: 0.5; }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
 
         .inbox-list {
             display: flex; flex-direction: column; gap: 12px;
-            min-height: 80px; 
-            max-height: 250px; 
+            min-height: 80px;
+            max-height: 250px;
             overflow-y: auto; padding-right: 4px;
         }
-        
+
         .inbox-list::-webkit-scrollbar { width: 4px; }
         .inbox-list::-webkit-scrollbar-thumb { background: var(--btn-border); border-radius: 4px; }
 
@@ -158,58 +163,55 @@
             height: 80px; gap: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 300;
         }
 
-        /* --- THE REFINED MESSAGE CARD --- */
         .message {
             background: var(--box-bg);
             border: 1px solid var(--btn-border);
             border-radius: 16px;
-            padding: 12px 14px; /* پدینگ به شدت کاهش یافته برای مینیمال شدن ارتفاع */
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 6px; /* فاصله بسیار کم بین نام فرستنده و کد */
+            gap: 6px;
             animation: fadeUp 0.3s ease forwards;
         }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* نام فرستنده (چپ‌چین و مینیمال و فقط خاکستری) */
-        .msg-sender { 
-            font-size: 10px; 
+        .msg-sender {
+            font-size: 10px;
             font-weight: 600;
-            color: var(--text-secondary); /* فقط رنگ خاکستری ملایم */
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            text-align: left; /* تراز سمت چپ */
+            text-align: left;
             width: 100%;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             padding-left: 2px;
         }
 
-        /* باکس بنفش کد (متقارن و کم‌ارتفاع) */
         .extracted-code {
             background: var(--code-bg);
             color: var(--accent);
             border: 1px solid rgba(99, 102, 241, 0.25);
             border-radius: 12px;
-            padding: 8px 20px; /* فضای عمودی (بالا و پایین) جمع‌تر شد */
-            font-size: 26px; /* سایز متناسب برای چشم */
+            padding: 8px 20px;
+            font-size: 26px;
             font-weight: 700;
-            letter-spacing: 8px; /* فاصله‌گذاری بیشتر بین اعداد برای زیبایی */
+            letter-spacing: 8px;
             cursor: pointer;
             width: 100%;
-            text-align: center; /* اعداد کاملاً در مرکز */
+            text-align: center;
             transition: all 0.2s ease;
             will-change: transform;
         }
-        
-        .extracted-code:hover { 
-            background: var(--accent); 
+
+        .extracted-code:hover {
+            background: var(--accent);
             color: #fff;
             border-color: var(--accent);
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
-        
-        .extracted-code:active { 
-            transform: scale(0.97); 
+
+        .extracted-code:active {
+            transform: scale(0.97);
             box-shadow: none;
         }
 
@@ -218,12 +220,11 @@
             background: var(--text-primary); color: var(--bg-body);
             font-size: 13px; font-weight: 600;
             padding: 10px 20px; border-radius: 20px;
-            opacity: 0; pointer-events: none; 
+            opacity: 0; pointer-events: none;
             transition: opacity 0.2s ease, transform 0.2s ease;
             box-shadow: var(--shadow); z-index: 100;
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
     </style>
 </head>
 <body data-theme="dark">
@@ -232,7 +233,7 @@
 
     <div class="container">
         <div class="card">
-            
+
             <div class="header">
                 <h1>Nexus<span>Mail</span></h1>
                 <button class="theme-btn" onclick="toggleTheme()" title="Switch Theme">
@@ -251,8 +252,8 @@
                 <button class="btn" id="refreshBtn" onclick="forceRefresh()">
                     <i class="fa-solid fa-rotate-right"></i> Refresh
                 </button>
-                <button class="btn" id="serverBtn" onclick="switchServerAndCreate()">
-                    <i class="fa-solid fa-server"></i> Change Server
+                <button class="btn" id="newEmailBtn" onclick="createNewEmail()">
+                    <i class="fa-solid fa-plus"></i> New Email
                 </button>
             </div>
 
@@ -262,7 +263,7 @@
                 <span>Verification Codes</span>
                 <div class="radar">
                     <div class="dot" id="radarDot"></div>
-                    <span id="scanStatus" style="font-size: 9px;">Scanning...</span>
+                    <span id="scanStatus" style="font-size: 9px;">Starting...</span>
                 </div>
             </div>
 
@@ -276,66 +277,279 @@
     </div>
 
     <script>
-let currentEmail = "";
-        let checkInterval;
+        // ===================================================
+        //  STATE
+        // ===================================================
+        let currentEmail = "";
+        let authToken = "";
+        let checkInterval = null;
         let knownMessageIds = new Set();
+        let availableDomains = [];
 
-        // ساخت ایمیل با الگوی Mailporary
-        async function createEmail() {
+        // ===================================================
+        //  INIT
+        // ===================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            createNewEmail();
+        });
+
+        // ===================================================
+        //  CREATE NEW EMAIL  (mail.tm API)
+        // ===================================================
+        async function createNewEmail() {
             const display = document.getElementById('emailDisplay');
             const status = document.getElementById('scanStatus');
-            const radar = document.getElementById('radarDot');
+            const dot = document.getElementById('radarDot');
             const inbox = document.getElementById('inboxContainer');
-            
+
+            // Reset state
+            if (checkInterval) clearInterval(checkInterval);
             knownMessageIds.clear();
-            if(checkInterval) clearInterval(checkInterval);
+            currentEmail = "";
+            authToken = "";
 
-            // ایجاد یک آدرس ایمیل رندوم برای سایت mailporary
-            const randomStr = Math.random().toString(36).substring(2, 12);
-            currentEmail = `${randomStr}@oeralb.com`; // از همان دامنه ای که کار میکرد استفاده میکنیم
-
-            display.classList.remove('loading');
-            display.innerText = currentEmail;
-            status.innerText = "Scanning";
-            radar.style.background = "var(--accent)";
-            inbox.innerHTML = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
-
-            checkInterval = setInterval(checkInbox, 3000); // اسکن سریع هر 3 ثانیه
-        }
-
-async function checkInbox() {
-            if(!currentEmail) return;
+            display.className = "email-text loading";
+            display.innerText = "Connecting...";
+            status.innerText = "Loading...";
+            dot.className = "dot inactive";
+            inbox.innerHTML = `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
 
             try {
-                const url = `https://web.mailporary.com/api/v1/mailbox/${encodeURIComponent(currentEmail)}?_t=${Date.now()}`;
-                const res = await fetch(url);
-                if(!res.ok) return;
+                // 1. Get available domains
+                const domainsRes = await fetch("https://api.mail.tm/domains");
+                const domainsData = await domainsRes.json();
+                availableDomains = domainsData["hydra:member"];
 
-                const messages = await res.json(); 
+                if (!availableDomains || availableDomains.length === 0) {
+                    throw new Error("No domains available");
+                }
 
-                if(messages && messages.length > 0) {
-                    for (const msg of messages) {
-                        if (!knownMessageIds.has(msg.id)) {
-                            knownMessageIds.add(msg.id);
-                            
-                            // 1. جستجو در عنوان (Subject)
-                            let extractedCode = extractCodeNumber(msg.subject);
+                const domain = availableDomains[0].domain;
+                const randomStr = Math.random().toString(36).substring(2, 12);
+                const email = `${randomStr}@${domain}`;
+                const password = Math.random().toString(36).substring(2, 18);
 
-                            // 2. اگر در عنوان نبود، متنِ کامل را لود کن (جستجوی عمیق)
-                            if (!extractedCode) {
-                                const msgRes = await fetch(`https://web.mailporary.com/api/v1/mailbox/${encodeURIComponent(currentEmail)}/${msg.id}`);
-                                const fullMsg = await msgRes.json();
-                                extractedCode = extractCodeNumber(fullMsg.textBody + " " + fullMsg.htmlBody);
-                            }
+                // 2. Create account
+                const createRes = await fetch("https://api.mail.tm/accounts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ address: email, password: password })
+                });
 
-                            if (extractedCode) {
-                                renderMessage(extractedCode, "OpenArt/AI");
-                                if(document.querySelector('.empty-state')) document.getElementById('inboxContainer').innerHTML = '';
-                            }
-                        }
+                if (!createRes.ok) {
+                    const err = await createRes.json();
+                    throw new Error(err["hydra:description"] || "Account creation failed");
+                }
+
+                // 3. Get auth token
+                const tokenRes = await fetch("https://api.mail.tm/token", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ address: email, password: password })
+                });
+
+                if (!tokenRes.ok) throw new Error("Authentication failed");
+
+                const tokenData = await tokenRes.json();
+                authToken = tokenData.token;
+                currentEmail = email;
+
+                // Update UI
+                display.className = "email-text";
+                display.innerText = currentEmail;
+                status.innerText = "Scanning";
+                dot.className = "dot";
+                inbox.innerHTML = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
+
+                // Start polling every 4 seconds
+                checkInterval = setInterval(checkInbox, 4000);
+
+            } catch (e) {
+                console.error("Setup error:", e);
+                display.className = "email-text loading";
+                display.innerText = "Failed to connect";
+                status.innerText = "Error";
+                dot.className = "dot inactive";
+                inbox.innerHTML = `<div class="empty-state"><span>Connection failed. Try Refresh.</span></div>`;
+            }
+        }
+
+        // ===================================================
+        //  CHECK INBOX
+        // ===================================================
+        async function checkInbox() {
+            if (!currentEmail || !authToken) return;
+
+            try {
+                const res = await fetch("https://api.mail.tm/messages", {
+                    headers: { "Authorization": `Bearer ${authToken}` }
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const messages = data["hydra:member"];
+
+                if (!messages || messages.length === 0) return;
+
+                for (const msg of messages) {
+                    if (knownMessageIds.has(msg.id)) continue;
+                    knownMessageIds.add(msg.id);
+
+                    // Get full message to read the body
+                    const fullRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
+                        headers: { "Authorization": `Bearer ${authToken}` }
+                    });
+
+                    if (!fullRes.ok) continue;
+                    const fullMsg = await fullRes.json();
+
+                    // Try to extract code from subject first, then body
+                    const searchText = (fullMsg.subject || "") + " " + (fullMsg.text || "") + " " + (fullMsg.html || "");
+                    const code = extractCodeNumber(searchText);
+                    const senderName = fullMsg.from?.address || "Unknown";
+
+                    // Remove empty state if present
+                    const inbox = document.getElementById('inboxContainer');
+                    if (inbox.querySelector('.empty-state')) {
+                        inbox.innerHTML = '';
+                    }
+
+                    if (code) {
+                        renderMessage(code, senderName);
+                    } else {
+                        // Show raw subject if no code found
+                        renderMessage(fullMsg.subject || "(no subject)", senderName, true);
                     }
                 }
-            } catch (e) { console.error("Error:", e); }
+
+            } catch (e) {
+                console.error("Inbox check error:", e);
+            }
+        }
+
+        // ===================================================
+        //  EXTRACT VERIFICATION CODE
+        //  Finds 4-8 digit codes in text
+        // ===================================================
+        function extractCodeNumber(text) {
+            if (!text) return null;
+
+            // Strip HTML tags for cleaner matching
+            const clean = text.replace(/<[^>]*>/g, ' ');
+
+            // Priority 1: Explicit OTP/verification code patterns
+            const patterns = [
+                /(?:verification|verify|otp|code|کد|رمز|pin)[^\d]{0,20}(\d{4,8})/i,
+                /(\d{4,8})(?:[^\d]{0,20})(?:is your|verification|code|کد)/i,
+                /\b([A-Z0-9]{6,8})\b(?=[^\w]|$)/,  // Alphanumeric codes like "AB12CD"
+                /\b(\d{6})\b/,   // 6-digit code (most common)
+                /\b(\d{4})\b/,   // 4-digit code
+                /\b(\d{5})\b/,   // 5-digit code
+                /\b(\d{7,8})\b/, // 7-8 digit code
+            ];
+
+            for (const pattern of patterns) {
+                const match = clean.match(pattern);
+                if (match) {
+                    const candidate = match[1];
+                    // Avoid matching years (1900-2099) and phone-looking numbers
+                    if (/^(19|20)\d{2}$/.test(candidate)) continue;
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+        // ===================================================
+        //  RENDER MESSAGE CARD
+        // ===================================================
+        function renderMessage(code, sender, isSubject = false) {
+            const inbox = document.getElementById('inboxContainer');
+
+            const card = document.createElement('div');
+            card.className = 'message';
+
+            const senderEl = document.createElement('div');
+            senderEl.className = 'msg-sender';
+            senderEl.innerText = sender;
+
+            const codeEl = document.createElement('div');
+            codeEl.className = 'extracted-code';
+            codeEl.innerText = code;
+            codeEl.title = "Click to copy";
+            codeEl.onclick = () => copyToClipboard(code);
+
+            card.appendChild(senderEl);
+            card.appendChild(codeEl);
+
+            // Prepend so newest is on top
+            inbox.insertBefore(card, inbox.firstChild);
+        }
+
+        // ===================================================
+        //  FORCE REFRESH  (manual check)
+        // ===================================================
+        async function forceRefresh() {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('spin');
+            btn.disabled = true;
+            await checkInbox();
+            setTimeout(() => {
+                btn.classList.remove('spin');
+                btn.disabled = false;
+            }, 800);
+        }
+
+        // ===================================================
+        //  COPY EMAIL TO CLIPBOARD
+        // ===================================================
+        function copyEmail() {
+            if (!currentEmail || currentEmail === "Connecting..." || currentEmail === "Failed to connect") return;
+            copyToClipboard(currentEmail);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Copied!");
+            }).catch(() => {
+                // Fallback for older browsers
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                showToast("Copied!");
+            });
+        }
+
+        // ===================================================
+        //  TOAST NOTIFICATION
+        // ===================================================
+        let toastTimer;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // ===================================================
+        //  THEME TOGGLE
+        // ===================================================
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fa-regular fa-moon';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fa-regular fa-sun';
+            }
         }
     </script>
 </body>
