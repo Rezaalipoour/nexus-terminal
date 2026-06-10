@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus | Temp Mail</title>
-    
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'></rect><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'></path></svg>" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --bg-body: #09090b;
@@ -76,6 +76,32 @@
             cursor: pointer; transition: color 0.2s ease;
         }
         .theme-btn:hover { color: var(--accent); }
+
+        /* Domain selector */
+        .domain-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .domain-chip {
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 10px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .domain-chip:hover { border-color: var(--accent); color: var(--text-primary); }
+        .domain-chip.active {
+            border-color: var(--accent);
+            background: rgba(99,102,241,0.12);
+            color: var(--accent);
+            font-weight: 600;
+        }
 
         .email-display-group {
             background: var(--box-bg);
@@ -151,7 +177,7 @@
         .inbox-list {
             display: flex; flex-direction: column; gap: 12px;
             min-height: 80px;
-            max-height: 250px;
+            max-height: 300px;
             overflow-y: auto; padding-right: 4px;
         }
 
@@ -187,6 +213,14 @@
             padding-left: 2px;
         }
 
+        .msg-subject {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            padding-left: 2px;
+        }
+
         .extracted-code {
             background: var(--code-bg);
             color: var(--accent);
@@ -215,6 +249,44 @@
             box-shadow: none;
         }
 
+        /* Raw message view (no code found) */
+        .raw-message {
+            background: var(--code-bg);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        /* Timer bar */
+        .timer-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .timer-bar-bg {
+            flex: 1;
+            height: 3px;
+            background: var(--btn-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .timer-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 1s linear;
+        }
+        .timer-bar-fill.warning { background: #f59e0b; }
+        .timer-bar-fill.critical { background: #ef4444; }
+
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
             background: var(--text-primary); color: var(--bg-body);
@@ -241,11 +313,24 @@
                 </button>
             </div>
 
+            <!-- Domain Chips -->
+            <div class="domain-row" id="domainRow">
+                <!-- filled by JS -->
+            </div>
+
             <div class="email-display-group" onclick="copyEmail()">
                 <div class="email-text loading" id="emailDisplay">Connecting...</div>
                 <button class="action-icon-btn" id="copyBtn">
-                    <i class="fa-regular fa-copy" id="copyIcon"></i>
+                    <i class="fa-regular fa-copy"></i>
                 </button>
+            </div>
+
+            <!-- Expiry timer -->
+            <div class="timer-row" id="timerRow" style="display:none">
+                <span id="timerLabel">60:00</span>
+                <div class="timer-bar-bg">
+                    <div class="timer-bar-fill" id="timerFill" style="width:100%"></div>
+                </div>
             </div>
 
             <div class="controls">
@@ -262,7 +347,7 @@
             <div class="inbox-header">
                 <span>Verification Codes</span>
                 <div class="radar">
-                    <div class="dot" id="radarDot"></div>
+                    <div class="dot inactive" id="radarDot"></div>
                     <span id="scanStatus" style="font-size: 9px;">Starting...</span>
                 </div>
             </div>
@@ -277,225 +362,315 @@
     </div>
 
     <script>
-        // ===================================================
-        //  STATE
-        // ===================================================
-        let currentEmail = "";
-        let authToken = "";
-        let checkInterval = null;
-        let knownMessageIds = new Set();
-        let availableDomains = [];
+        // =========================================================
+        //  GuerrillaMailAPI — public, no-key, stable since 2006
+        //  API base: https://api.guerrillamail.com/ajax.php
+        //  All available domains returned dynamically by the API
+        // =========================================================
 
-        // ===================================================
+        const GM_API = "https://api.guerrillamail.com/ajax.php";
+
+        // All known GuerrillaMail domains (the API also returns them)
+        const FALLBACK_DOMAINS = [
+            "guerrillamailblock.com",
+            "grr.la",
+            "guerrillamail.info",
+            "guerrillamail.biz",
+            "guerrillamail.de",
+            "guerrillamail.net",
+            "guerrillamail.org",
+            "spam4.me",
+            "sharklasers.com",
+            "guerrillamail.com"
+        ];
+
+        let sessionId   = "";   // PHPSESSID cookie value
+        let sidToken    = "";   // sid_token from API
+        let currentEmail = "";
+        let currentDomain = "";
+        let emailTimestamp = 0;
+        let knownIds    = new Set();
+        let checkInterval = null;
+        let timerInterval = null;
+        let availableDomains = [...FALLBACK_DOMAINS];
+        let selectedDomainIdx = 0;
+
+        // =========================================================
         //  INIT
-        // ===================================================
+        // =========================================================
         window.addEventListener('DOMContentLoaded', () => {
             createNewEmail();
         });
 
-        // ===================================================
-        //  FETCH NEWEST DOMAIN FROM mail.tm
-        //  Pages through all available domains and picks
-        //  the one added most recently (least abused)
-        // ===================================================
-        async function fetchNewestDomain() {
-            let allDomains = [];
-            let page = 1;
-
-            // Collect all pages of domains
-            while (true) {
-                const res = await fetch(`https://api.mail.tm/domains?page=${page}`);
-                if (!res.ok) break;
-                const data = await res.json();
-                const batch = data["hydra:member"] || [];
-                if (batch.length === 0) break;
-                allDomains = allDomains.concat(batch);
-                // If we got fewer than 30 items, no more pages
-                if (batch.length < 30) break;
-                page++;
+        // =========================================================
+        //  GM API HELPER — maintains PHPSESSID cookie in header
+        // =========================================================
+        async function gmFetch(params) {
+            const url = new URL(GM_API);
+            url.searchParams.set("ip", "127.0.0.1");
+            url.searchParams.set("agent", "Mozilla_Firefox");
+            for (const [k, v] of Object.entries(params)) {
+                url.searchParams.set(k, v);
             }
 
-            if (allDomains.length === 0) throw new Error("No domains available");
+            const headers = { "Accept": "application/json" };
+            if (sessionId) headers["Cookie"] = `PHPSESSID=${sessionId}`;
 
-            // Sort by createdAt descending → pick the newest domain
-            allDomains.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            return allDomains[0].domain;
+            const res = await fetch(url.toString(), {
+                method: "GET",
+                credentials: "omit",
+                headers
+            });
+
+            // Grab updated PHPSESSID from response if present
+            const setCookie = res.headers.get("set-cookie") || "";
+            const match = setCookie.match(/PHPSESSID=([^;]+)/);
+            if (match) sessionId = match[1];
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
         }
 
-        // ===================================================
-        //  CREATE NEW EMAIL  (mail.tm API)
-        // ===================================================
-        async function createNewEmail() {
-            const display = document.getElementById('emailDisplay');
-            const status = document.getElementById('scanStatus');
-            const dot = document.getElementById('radarDot');
-            const inbox = document.getElementById('inboxContainer');
+        // =========================================================
+        //  BUILD DOMAIN CHIPS
+        // =========================================================
+        function buildDomainChips() {
+            const row = document.getElementById('domainRow');
+            row.innerHTML = '';
+            availableDomains.slice(0, 6).forEach((d, i) => {
+                const chip = document.createElement('button');
+                chip.className = 'domain-chip' + (i === selectedDomainIdx ? ' active' : '');
+                chip.textContent = '@' + d.split('.')[0];
+                chip.title = '@' + d;
+                chip.onclick = () => {
+                    selectedDomainIdx = i;
+                    document.querySelectorAll('.domain-chip').forEach((c, j) => {
+                        c.className = 'domain-chip' + (j === i ? ' active' : '');
+                    });
+                    createNewEmail(availableDomains[i]);
+                };
+                row.appendChild(chip);
+            });
+        }
 
-            // Reset state
-            if (checkInterval) clearInterval(checkInterval);
-            knownMessageIds.clear();
+        // =========================================================
+        //  CREATE NEW EMAIL  — uses GuerrillaMailAPI
+        // =========================================================
+        async function createNewEmail(forceDomain) {
+            const display  = document.getElementById('emailDisplay');
+            const status   = document.getElementById('scanStatus');
+            const dot      = document.getElementById('radarDot');
+            const inbox    = document.getElementById('inboxContainer');
+            const timerRow = document.getElementById('timerRow');
+
+            // Reset
+            if (checkInterval)  clearInterval(checkInterval);
+            if (timerInterval)  clearInterval(timerInterval);
+            knownIds.clear();
             currentEmail = "";
-            authToken = "";
+            sidToken = "";
+            sessionId = "";
 
-            display.className = "email-text loading";
-            display.innerText = "Connecting...";
-            status.innerText = "Loading...";
-            dot.className = "dot inactive";
-            inbox.innerHTML = `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
+            display.className  = "email-text loading";
+            display.innerText  = "Connecting...";
+            status.innerText   = "Loading...";
+            dot.className      = "dot inactive";
+            timerRow.style.display = "none";
+            inbox.innerHTML    = `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
 
             try {
-                // 1. Get the newest (least-blocked) domain
-                const domain = await fetchNewestDomain();
+                // Step 1: get a new email address from GuerrillaMailAPI
+                const data = await gmFetch({ f: "get_email_address", lang: "en" });
 
-                const randomStr = Math.random().toString(36).substring(2, 12);
-                const email = `${randomStr}@${domain}`;
-                const password = Math.random().toString(36).substring(2, 18);
+                // data.email_addr, data.sid_token, data.email_timestamp
+                // data.domain_list — array of available domains
+                sidToken       = data.sid_token || "";
+                currentEmail   = data.email_addr || "";
+                emailTimestamp = data.email_timestamp || Math.floor(Date.now() / 1000);
 
-                // 2. Create account
-                const createRes = await fetch("https://api.mail.tm/accounts", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ address: email, password: password })
-                });
-
-                if (!createRes.ok) {
-                    const err = await createRes.json();
-                    throw new Error(err["hydra:description"] || "Account creation failed");
+                // Populate domains from API
+                if (data.domain_list && data.domain_list.length > 0) {
+                    availableDomains = data.domain_list;
                 }
 
-                // 3. Get auth token
-                const tokenRes = await fetch("https://api.mail.tm/token", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ address: email, password: password })
-                });
+                // If a specific domain was requested, switch to it
+                if (forceDomain && forceDomain !== currentEmail.split('@')[1]) {
+                    const randomUser = Math.random().toString(36).substring(2, 10);
+                    const switchData = await gmFetch({
+                        f: "set_email_user",
+                        email_user: randomUser,
+                        lang: "en",
+                        sid_token: sidToken
+                    });
+                    if (switchData.email_addr) {
+                        currentEmail   = switchData.email_addr;
+                        emailTimestamp = switchData.email_timestamp || emailTimestamp;
+                    }
+                }
 
-                if (!tokenRes.ok) throw new Error("Authentication failed");
-
-                const tokenData = await tokenRes.json();
-                authToken = tokenData.token;
-                currentEmail = email;
+                // Build chips
+                buildDomainChips();
 
                 // Update UI
                 display.className = "email-text";
                 display.innerText = currentEmail;
-                status.innerText = "Scanning";
-                dot.className = "dot";
-                inbox.innerHTML = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
+                status.innerText  = "Scanning";
+                dot.className     = "dot";
+                inbox.innerHTML   = `<div class="empty-state"><span>Waiting for codes...</span></div>`;
+                timerRow.style.display = "flex";
 
-                // Start polling every 4 seconds
-                checkInterval = setInterval(checkInbox, 4000);
+                // Start expiry countdown (60 min from emailTimestamp)
+                startTimer();
+
+                // Poll every 5 seconds
+                checkInterval = setInterval(checkInbox, 5000);
 
             } catch (e) {
                 console.error("Setup error:", e);
                 display.className = "email-text loading";
                 display.innerText = "Failed to connect";
-                status.innerText = "Error";
-                dot.className = "dot inactive";
-                inbox.innerHTML = `<div class="empty-state"><span>Connection failed. Try Refresh.</span></div>`;
+                status.innerText  = "Error";
+                dot.className     = "dot inactive";
+                inbox.innerHTML   = `<div class="empty-state"><span>Connection failed. Try Refresh or New Email.</span></div>`;
             }
         }
 
-        // ===================================================
-        //  CHECK INBOX
-        // ===================================================
+        // =========================================================
+        //  COUNTDOWN TIMER
+        // =========================================================
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        function updateTimer() {
+            const fill  = document.getElementById('timerFill');
+            const label = document.getElementById('timerLabel');
+            const now   = Math.floor(Date.now() / 1000);
+            const elapsed = now - emailTimestamp;
+            const remaining = Math.max(0, 3600 - elapsed);
+
+            const pct = (remaining / 3600) * 100;
+            fill.style.width = pct + "%";
+            fill.className = "timer-bar-fill" +
+                (pct < 15 ? " critical" : pct < 30 ? " warning" : "");
+
+            const m = Math.floor(remaining / 60);
+            const s = remaining % 60;
+            label.textContent = `${m}:${String(s).padStart(2, '0')}`;
+
+            if (remaining === 0) {
+                clearInterval(timerInterval);
+                clearInterval(checkInterval);
+                document.getElementById('scanStatus').innerText = "Expired";
+                document.getElementById('radarDot').className = "dot inactive";
+            }
+        }
+
+        // =========================================================
+        //  CHECK INBOX  — uses check_email then fetch_email
+        // =========================================================
         async function checkInbox() {
-            if (!currentEmail || !authToken) return;
+            if (!sidToken) return;
 
             try {
-                const res = await fetch("https://api.mail.tm/messages", {
-                    headers: { "Authorization": `Bearer ${authToken}` }
-                });
+                // seq=0 always fetches latest 20
+                const data = await gmFetch({ f: "check_email", seq: 0, sid_token: sidToken });
 
-                if (!res.ok) return;
+                const list = data.list || [];
+                if (list.length === 0) return;
 
-                const data = await res.json();
-                const messages = data["hydra:member"];
+                for (const msg of list) {
+                    const id = String(msg.mail_id);
+                    if (knownIds.has(id)) continue;
+                    knownIds.add(id);
 
-                if (!messages || messages.length === 0) return;
+                    // Fetch full email body
+                    const full = await gmFetch({ f: "fetch_email", email_id: id, sid_token: sidToken });
 
-                for (const msg of messages) {
-                    if (knownMessageIds.has(msg.id)) continue;
-                    knownMessageIds.add(msg.id);
+                    const from    = full.mail_from  || msg.mail_from  || "Unknown";
+                    const subject = full.mail_subject || msg.mail_subject || "";
+                    const body    = full.mail_body   || full.mail_text || "";
 
-                    // Get full message to read the body
-                    const fullRes = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
-                        headers: { "Authorization": `Bearer ${authToken}` }
-                    });
+                    // Decode HTML entities in subject/body
+                    const rawText = decodeEntities(subject + " " + stripHtml(body));
+                    const code    = extractCodeNumber(rawText);
 
-                    if (!fullRes.ok) continue;
-                    const fullMsg = await fullRes.json();
-
-                    // Try to extract code from subject first, then body
-                    const searchText = (fullMsg.subject || "") + " " + (fullMsg.text || "") + " " + (fullMsg.html || "");
-                    const code = extractCodeNumber(searchText);
-                    const senderName = fullMsg.from?.address || "Unknown";
-
-                    // Remove empty state if present
-                    const inbox = document.getElementById('inboxContainer');
-                    if (inbox.querySelector('.empty-state')) {
-                        inbox.innerHTML = '';
-                    }
+                    const inboxEl = document.getElementById('inboxContainer');
+                    if (inboxEl.querySelector('.empty-state')) inboxEl.innerHTML = '';
 
                     if (code) {
-                        renderMessage(code, senderName);
+                        renderCode(code, from, subject);
                     } else {
-                        // Show raw subject if no code found
-                        renderMessage(fullMsg.subject || "(no subject)", senderName, true);
+                        renderRaw(subject || "(no subject)", from, stripHtml(body).substring(0, 120));
                     }
                 }
 
             } catch (e) {
-                console.error("Inbox check error:", e);
+                console.error("Inbox error:", e);
             }
         }
 
-        // ===================================================
+        // =========================================================
+        //  HELPERS
+        // =========================================================
+        function stripHtml(html) {
+            if (!html) return "";
+            return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+
+        function decodeEntities(str) {
+            const el = document.createElement('textarea');
+            el.innerHTML = str;
+            return el.value;
+        }
+
+        // =========================================================
         //  EXTRACT VERIFICATION CODE
-        //  Finds 4-8 digit codes in text
-        // ===================================================
+        //  Matches 4-8 digit codes, avoids years
+        // =========================================================
         function extractCodeNumber(text) {
             if (!text) return null;
 
-            // Strip HTML tags for cleaner matching
-            const clean = text.replace(/<[^>]*>/g, ' ');
-
-            // Priority 1: Explicit OTP/verification code patterns
             const patterns = [
-                /(?:verification|verify|otp|code|کد|رمز|pin)[^\d]{0,20}(\d{4,8})/i,
-                /(\d{4,8})(?:[^\d]{0,20})(?:is your|verification|code|کد)/i,
-                /\b([A-Z0-9]{6,8})\b(?=[^\w]|$)/,  // Alphanumeric codes like "AB12CD"
-                /\b(\d{6})\b/,   // 6-digit code (most common)
-                /\b(\d{4})\b/,   // 4-digit code
-                /\b(\d{5})\b/,   // 5-digit code
-                /\b(\d{7,8})\b/, // 7-8 digit code
+                /(?:verification|verify|otp|code|کد|رمز|pin|token|passcode|activate)[^\d]{0,30}(\d{4,8})/i,
+                /(\d{4,8})(?:[^\d]{0,20})(?:is your|verification|code|کد|token)/i,
+                /\b([A-Z]{2,4}[0-9]{4,6}|[0-9]{4,6}[A-Z]{2,4})\b/,  // Alphanumeric like AB1234
+                /\b([A-Z0-9]{6,8})\b(?=[^\w]|$)/,                      // Generic alphanum
+                /\b(\d{6})\b/,
+                /\b(\d{4})\b/,
+                /\b(\d{5})\b/,
+                /\b(\d{7,8})\b/,
             ];
 
             for (const pattern of patterns) {
-                const match = clean.match(pattern);
+                const match = text.match(pattern);
                 if (match) {
-                    const candidate = match[1];
-                    // Avoid matching years (1900-2099) and phone-looking numbers
-                    if (/^(19|20)\d{2}$/.test(candidate)) continue;
-                    return candidate;
+                    const c = match[1];
+                    if (/^(19|20)\d{2}$/.test(c)) continue;  // Skip years
+                    if (/^0+$/.test(c)) continue;             // Skip all-zeros
+                    return c;
                 }
             }
-
             return null;
         }
 
-        // ===================================================
-        //  RENDER MESSAGE CARD
-        // ===================================================
-        function renderMessage(code, sender, isSubject = false) {
+        // =========================================================
+        //  RENDER — code card (highlighted, clickable)
+        // =========================================================
+        function renderCode(code, sender, subject) {
             const inbox = document.getElementById('inboxContainer');
-
-            const card = document.createElement('div');
+            const card  = document.createElement('div');
             card.className = 'message';
 
-            const senderEl = document.createElement('div');
-            senderEl.className = 'msg-sender';
-            senderEl.innerText = sender;
+            const fromEl = document.createElement('div');
+            fromEl.className = 'msg-sender';
+            fromEl.innerText = sender;
+
+            const subEl = document.createElement('div');
+            subEl.className = 'msg-subject';
+            subEl.innerText = subject;
 
             const codeEl = document.createElement('div');
             codeEl.className = 'extracted-code';
@@ -503,16 +678,36 @@
             codeEl.title = "Click to copy";
             codeEl.onclick = () => copyToClipboard(code);
 
-            card.appendChild(senderEl);
+            card.appendChild(fromEl);
+            if (subject) card.appendChild(subEl);
             card.appendChild(codeEl);
-
-            // Prepend so newest is on top
             inbox.insertBefore(card, inbox.firstChild);
         }
 
-        // ===================================================
-        //  FORCE REFRESH  (manual check)
-        // ===================================================
+        // =========================================================
+        //  RENDER — raw card (no code detected)
+        // =========================================================
+        function renderRaw(subject, sender, excerpt) {
+            const inbox = document.getElementById('inboxContainer');
+            const card  = document.createElement('div');
+            card.className = 'message';
+
+            const fromEl = document.createElement('div');
+            fromEl.className = 'msg-sender';
+            fromEl.innerText = sender;
+
+            const rawEl = document.createElement('div');
+            rawEl.className = 'raw-message';
+            rawEl.innerText = subject + (excerpt ? '\n' + excerpt : '');
+
+            card.appendChild(fromEl);
+            card.appendChild(rawEl);
+            inbox.insertBefore(card, inbox.firstChild);
+        }
+
+        // =========================================================
+        //  FORCE REFRESH
+        // =========================================================
         async function forceRefresh() {
             const btn = document.getElementById('refreshBtn');
             btn.classList.add('spin');
@@ -524,9 +719,9 @@
             }, 800);
         }
 
-        // ===================================================
-        //  COPY EMAIL TO CLIPBOARD
-        // ===================================================
+        // =========================================================
+        //  COPY EMAIL
+        // =========================================================
         function copyEmail() {
             if (!currentEmail || currentEmail === "Connecting..." || currentEmail === "Failed to connect") return;
             copyToClipboard(currentEmail);
@@ -536,7 +731,6 @@
             navigator.clipboard.writeText(text).then(() => {
                 showToast("Copied!");
             }).catch(() => {
-                // Fallback for older browsers
                 const el = document.createElement('textarea');
                 el.value = text;
                 document.body.appendChild(el);
@@ -547,9 +741,9 @@
             });
         }
 
-        // ===================================================
-        //  TOAST NOTIFICATION
-        // ===================================================
+        // =========================================================
+        //  TOAST
+        // =========================================================
         let toastTimer;
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -559,9 +753,9 @@
             toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // ===================================================
+        // =========================================================
         //  THEME TOGGLE
-        // ===================================================
+        // =========================================================
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('themeIcon');
