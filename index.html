@@ -4,996 +4,280 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus | Temp Mail</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'></rect><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'></path></svg>" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --bg-body: #09090b;
-            --card-bg: rgba(24, 24, 27, 0.65);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #6366f1;
-            --box-bg: rgba(0, 0, 0, 0.4);
-            --btn-border: rgba(255, 255, 255, 0.08);
-            --code-bg: rgba(99, 102, 241, 0.12);
-            --shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        [data-theme="light"] {
-            --bg-body: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(0, 0, 0, 0.06);
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --accent: #4f46e5;
-            --box-bg: rgba(241, 245, 249, 0.8);
-            --btn-border: rgba(0, 0, 0, 0.08);
-            --code-bg: rgba(79, 70, 229, 0.08);
-            --shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            display: flex; justify-content: center; align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px 0;
-            transition: background-color 0.4s ease, color 0.4s ease;
-        }
-        .container { width: 100%; max-width: 460px; padding: 20px; }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 28px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            display: flex; flex-direction: column; gap: 18px;
-        }
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
-        .header h1 span { color: var(--accent); font-weight: 600; }
-        .api-badge {
-            font-size: 9px; font-weight: 600;
-            color: var(--text-secondary);
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 6px;
-            padding: 2px 7px;
-            text-transform: uppercase; letter-spacing: 0.8px;
-        }
-        .api-badge.ok { border-color: rgba(34,197,94,0.3); color: #22c55e; background: rgba(34,197,94,0.08); }
-        .api-badge.fail { border-color: rgba(239,68,68,0.3); color: #ef4444; background: rgba(239,68,68,0.08); }
-        .api-badge.warn { border-color: rgba(245,158,11,0.3); color: #f59e0b; background: rgba(245,158,11,0.08); }
-        .header-right { display: flex; align-items: center; gap: 8px; }
-        .theme-btn {
-            background: transparent; border: none;
-            color: var(--text-secondary); font-size: 18px;
-            cursor: pointer; transition: color 0.2s ease;
-        }
-        .theme-btn:hover { color: var(--accent); }
-
-        /* Provider selector tabs */
-        .provider-row {
-            display: flex; gap: 6px; flex-wrap: wrap;
-        }
-        .provider-chip {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 10px;
-            padding: 5px 11px;
-            font-size: 11px; font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            font-family: inherit;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .provider-chip:hover { border-color: var(--accent); color: var(--text-primary); }
-        .provider-chip.active {
-            border-color: var(--accent);
-            background: rgba(99,102,241,0.12);
-            color: var(--accent); font-weight: 600;
-        }
-        .provider-chip .status-dot {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: var(--text-secondary); flex-shrink: 0;
-        }
-        .provider-chip .status-dot.green { background: #22c55e; }
-        .provider-chip .status-dot.red   { background: #ef4444; }
-        .provider-chip .status-dot.yellow{ background: #f59e0b; }
-
-        /* Domain chips for current provider */
-        .domain-section { display: flex; flex-direction: column; gap: 8px; }
-        .domain-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .domain-row { display: flex; gap: 6px; flex-wrap: wrap; }
-        .domain-chip {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 8px;
-            padding: 3px 10px;
-            font-size: 11px; font-weight: 400;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            font-family: inherit;
-        }
-        .domain-chip:hover { border-color: var(--accent); color: var(--text-primary); }
-        .domain-chip.active {
-            border-color: var(--accent);
-            background: rgba(99,102,241,0.12);
-            color: var(--accent); font-weight: 600;
-        }
-
-        .email-display-group {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 16px;
-            padding: 8px 8px 8px 18px;
-            display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s, transform 0.1s;
-        }
-        .email-display-group:hover { border-color: var(--accent); background: rgba(99,102,241,0.05); }
-        .email-display-group:active { transform: scale(0.98); }
-        .email-text {
-            font-size: 14px; font-weight: 500; letter-spacing: 0.2px;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            color: var(--text-primary); flex: 1; margin-right: 8px;
-        }
-        .email-text.loading { color: var(--text-secondary); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
-
-        .action-icon-btn {
-            background: var(--btn-border); border: none;
-            width: 42px; height: 42px; border-radius: 12px;
-            color: var(--text-primary); cursor: pointer;
-            display: flex; justify-content: center; align-items: center; font-size: 16px;
-            flex-shrink: 0; pointer-events: none;
-            transition: background 0.2s, color 0.2s;
-        }
-        .email-display-group:hover .action-icon-btn { background: var(--accent); color: #fff; }
-
-        .controls { display: flex; gap: 10px; }
-        .btn {
-            flex: 1; background: transparent; border: 1px solid var(--btn-border);
-            color: var(--text-primary); padding: 12px; border-radius: 12px;
-            font-family: inherit; font-size: 13px; font-weight: 400; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 6px;
-            transition: background-color 0.15s, transform 0.1s;
-        }
-        .btn:hover { background: var(--btn-border); }
-        .btn:active { transform: scale(0.96); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .spin i { animation: spin 0.8s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        .divider { height: 1px; background: var(--btn-border); width: 100%; margin: 2px 0; }
-        .inbox-header {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 11px; font-weight: 600; color: var(--text-secondary);
-            text-transform: uppercase; letter-spacing: 1.5px;
-        }
-        .radar { display: flex; align-items: center; gap: 6px; }
-        .dot {
-            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
-            animation: blink 2s infinite;
-        }
-        .dot.inactive { background: var(--text-secondary); animation: none; opacity: 0.5; }
-        @keyframes blink { 0%,100%{opacity:0.3;} 50%{opacity:1;box-shadow:0 0 8px var(--accent);} }
-
-        .inbox-list {
-            display: flex; flex-direction: column; gap: 12px;
-            min-height: 80px; max-height: 320px;
-            overflow-y: auto; padding-right: 4px;
-        }
-        .inbox-list::-webkit-scrollbar { width: 4px; }
-        .inbox-list::-webkit-scrollbar-thumb { background: var(--btn-border); border-radius: 4px; }
-
-        .empty-state {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; height: 80px; gap: 8px;
-            color: var(--text-secondary); font-size: 13px; font-weight: 300;
-        }
-        .message {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 16px; padding: 12px 14px;
-            display: flex; flex-direction: column; gap: 6px;
-            animation: fadeUp 0.3s ease forwards;
-        }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
-        .msg-sender {
-            font-size: 10px; font-weight: 600; color: var(--text-secondary);
-            text-transform: uppercase; letter-spacing: 1.5px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .msg-subject {
-            font-size: 11px; color: var(--text-secondary); font-weight: 400;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .extracted-code {
-            background: var(--code-bg);
-            color: var(--accent);
-            border: 1px solid rgba(99,102,241,0.25);
-            border-radius: 12px; padding: 10px 20px;
-            font-size: 30px; font-weight: 700; letter-spacing: 10px;
-            cursor: pointer; width: 100%; text-align: center;
-            transition: all 0.2s ease;
-        }
-        .extracted-code:hover {
-            background: var(--accent); color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
-        }
-        .extracted-code:active { transform: scale(0.97); box-shadow: none; }
-        .copy-hint {
-            font-size: 10px; color: var(--text-secondary);
-            text-align: center; letter-spacing: 0.5px; margin-top: -2px;
-        }
-        .raw-message {
-            background: var(--code-bg);
-            border: 1px solid rgba(99,102,241,0.15);
-            border-radius: 12px; padding: 10px 14px;
-            font-size: 12px; font-weight: 400;
-            color: var(--text-secondary); line-height: 1.6;
-            max-height: 80px; overflow-y: auto;
-        }
-        .timer-row {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 11px; color: var(--text-secondary);
-        }
-        .timer-bar-bg {
-            flex: 1; height: 3px; background: var(--btn-border);
-            border-radius: 4px; overflow: hidden;
-        }
-        .timer-bar-fill {
-            height: 100%; background: var(--accent); border-radius: 4px;
-            transition: width 1s linear;
-        }
-        .timer-bar-fill.warning { background: #f59e0b; }
-        .timer-bar-fill.critical { background: #ef4444; }
-
-        /* Retry banner */
-        .retry-banner {
-            background: rgba(245,158,11,0.08);
-            border: 1px solid rgba(245,158,11,0.25);
-            border-radius: 10px; padding: 8px 14px;
-            font-size: 12px; color: #f59e0b;
-            display: none; align-items: center; gap: 8px;
-        }
-        .retry-banner.show { display: flex; }
-
-        #toast {
-            position: fixed; top: 20px; left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: var(--text-primary); color: var(--bg-body);
-            font-size: 13px; font-weight: 600;
-            padding: 10px 20px; border-radius: 20px;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            box-shadow: var(--shadow); z-index: 100;
-        }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        :root{--bg:#09090b;--card:rgba(24,24,27,.7);--border:rgba(255,255,255,.08);--text:#f8fafc;--muted:#94a3b8;--accent:#6366f1;--box:rgba(0,0,0,.35);--code-bg:rgba(99,102,241,.12);--shadow:0 24px 48px rgba(0,0,0,.6)}
+        [data-theme="light"]{--bg:#f1f5f9;--card:rgba(255,255,255,.9);--border:rgba(0,0,0,.07);--text:#0f172a;--muted:#64748b;--accent:#4f46e5;--box:rgba(241,245,249,.8);--code-bg:rgba(79,70,229,.08);--shadow:0 10px 30px rgba(0,0,0,.07)}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:24px 16px 60px;transition:background .3s,color .3s}
+        .wrap{width:100%;max-width:450px}
+        .card,.setup-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:26px;box-shadow:var(--shadow);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:16px}
+        .hdr{display:flex;justify-content:space-between;align-items:center}
+        .hdr h1{font-size:20px;font-weight:500}
+        .hdr h1 span{color:var(--accent);font-weight:700}
+        .hdr-r{display:flex;align-items:center;gap:8px}
+        .badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:6px;border:1px solid var(--border);color:var(--muted);background:var(--box)}
+        .badge.ok{color:#22c55e;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+        .badge.err{color:#ef4444;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+        .theme-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+        .theme-btn:hover{color:var(--accent)}
+        .email-row{background:var(--box);border:1px solid var(--border);border-radius:14px;padding:8px 8px 8px 16px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:border-color .2s,background .2s}
+        .email-row:hover{border-color:var(--accent);background:rgba(99,102,241,.06)}
+        .email-txt{flex:1;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .email-txt.loading{color:var(--muted);animation:pulse 1.4s infinite}
+        @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+        .copy-icon{width:40px;height:40px;border-radius:10px;background:var(--border);border:none;color:var(--text);font-size:15px;display:flex;align-items:center;justify-content:center;pointer-events:none;flex-shrink:0;transition:background .2s,color .2s}
+        .email-row:hover .copy-icon{background:var(--accent);color:#fff}
+        .timer-row{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}
+        .tbar{flex:1;height:3px;background:var(--border);border-radius:4px;overflow:hidden}
+        .tfill{height:100%;background:var(--accent);border-radius:4px;transition:width 1s linear}
+        .tfill.warn{background:#f59e0b}.tfill.crit{background:#ef4444}
+        .btns{display:flex;gap:10px}
+        .btn{flex:1;background:transparent;border:1px solid var(--border);color:var(--text);padding:11px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,transform .1s}
+        .btn:hover{background:var(--border)}.btn:active{transform:scale(.96)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+        .spin i{animation:spin .7s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .div{height:1px;background:var(--border)}
+        .inbox-hdr{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
+        .radar{display:flex;align-items:center;gap:5px}
+        .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 2s infinite}
+        .dot.off{background:var(--muted);animation:none;opacity:.4}
+        @keyframes blink{0%,100%{opacity:.3}50%{opacity:1;box-shadow:0 0 7px var(--accent)}}
+        .inbox{display:flex;flex-direction:column;gap:10px;min-height:90px;max-height:360px;overflow-y:auto;padding-right:2px}
+        .inbox::-webkit-scrollbar{width:3px}.inbox::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+        .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:90px;color:var(--muted);font-size:13px;font-weight:300;gap:6px}
+        .msg{background:var(--box);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:5px;animation:up .3s ease}
+        @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+        .msg-from{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .msg-sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .code-box{background:var(--code-bg);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:12px 16px;font-size:34px;font-weight:700;letter-spacing:12px;color:var(--accent);text-align:center;cursor:pointer;width:100%;transition:all .2s;user-select:none}
+        .code-box:hover{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 6px 24px rgba(99,102,241,.35)}
+        .code-box:active{transform:scale(.97)}
+        .code-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:-2px}
+        .raw{font-size:12px;color:var(--muted);line-height:1.6;background:var(--code-bg);border-radius:10px;padding:9px 12px;max-height:72px;overflow-y:auto;white-space:pre-wrap}
+        .setup-card h2{font-size:18px;font-weight:600}
+        .setup-card p{font-size:13px;color:var(--muted);line-height:1.7}
+        .setup-card a{color:var(--accent);text-decoration:none}
+        .input-row{display:flex;gap:8px}
+        .api-input{flex:1;background:var(--box);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+        .api-input:focus{border-color:var(--accent)}.api-input::placeholder{color:var(--muted)}
+        .go-btn{background:var(--accent);border:none;color:#fff;padding:11px 20px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap}
+        .go-btn:hover{opacity:.88}.go-btn:active{transform:scale(.96)}
+        .err-msg{font-size:12px;color:#ef4444;display:none}
+        #toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--text);color:var(--bg);font-size:13px;font-weight:700;padding:9px 22px;border-radius:20px;opacity:0;pointer-events:none;z-index:999;transition:opacity .2s,transform .2s}
+        #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     </style>
 </head>
 <body data-theme="dark">
-<div id="toast">Copied!</div>
-<div class="container">
-  <div class="card">
+<div id="toast"></div>
+<div class="wrap">
 
-    <div class="header">
-      <h1>Nexus<span>Mail</span></h1>
-      <div class="header-right">
-        <span class="api-badge" id="apiBadge">connecting</span>
-        <button class="theme-btn" onclick="toggleTheme()" title="Switch Theme">
-          <i class="fa-regular fa-sun" id="themeIcon"></i>
-        </button>
-      </div>
+<div class="setup-card" id="setupScreen" style="display:none">
+    <div class="hdr">
+        <h1>Nexus<span>Mail</span></h1>
+        <button class="theme-btn" onclick="toggleTheme()"><i class="fa-regular fa-sun" id="ti1"></i></button>
     </div>
-
-    <!-- Provider selector -->
-    <div class="provider-row" id="providerRow">
-      <!-- filled by JS -->
+    <h2>اتصال به addy.io</h2>
+    <p>برو به <a href="https://app.addy.io/settings" target="_blank">app.addy.io/settings</a> ← قسمت <strong>API Keys</strong> ← یه key جدید بساز و اینجا وارد کن.</p>
+    <div class="input-row">
+        <input class="api-input" id="keyInput" type="password" placeholder="addy_io_...">
+        <button class="go-btn" onclick="saveKey()">ذخیره</button>
     </div>
-
-    <!-- Domain chips -->
-    <div class="domain-section" id="domainSection" style="display:none">
-      <div class="domain-label">Domain</div>
-      <div class="domain-row" id="domainRow"></div>
-    </div>
-
-    <!-- Email display -->
-    <div class="email-display-group" onclick="copyEmail()">
-      <div class="email-text loading" id="emailDisplay">Connecting...</div>
-      <button class="action-icon-btn" id="copyBtn">
-        <i class="fa-regular fa-copy"></i>
-      </button>
-    </div>
-
-    <!-- Retry banner -->
-    <div class="retry-banner" id="retryBanner">
-      <i class="fa-solid fa-rotate"></i>
-      <span id="retryMsg">Trying next provider...</span>
-    </div>
-
-    <!-- Timer -->
-    <div class="timer-row" id="timerRow" style="display:none">
-      <span id="timerLabel">—</span>
-      <div class="timer-bar-bg">
-        <div class="timer-bar-fill" id="timerFill" style="width:100%"></div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button class="btn" id="refreshBtn" onclick="forceRefresh()">
-        <i class="fa-solid fa-rotate-right"></i> Refresh
-      </button>
-      <button class="btn" id="newEmailBtn" onclick="createNewEmail()">
-        <i class="fa-solid fa-plus"></i> New Email
-      </button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="inbox-header">
-      <span>Verification Codes</span>
-      <div class="radar">
-        <div class="dot inactive" id="radarDot"></div>
-        <span id="scanStatus" style="font-size:9px;">Starting...</span>
-      </div>
-    </div>
-
-    <div class="inbox-list" id="inboxContainer">
-      <div class="empty-state"><span>Awaiting incoming codes...</span></div>
-    </div>
-
-  </div>
+    <div class="err-msg" id="keyErr">Key معتبر نیست. دوباره چک کن.</div>
+    <p style="font-size:11px">Key فقط روی مرورگر خودت ذخیره می‌شه.</p>
 </div>
 
+<div class="card" id="mainApp" style="display:none">
+    <div class="hdr">
+        <h1>Nexus<span>Mail</span></h1>
+        <div class="hdr-r">
+            <span class="badge" id="badge">connecting</span>
+            <button class="theme-btn" onclick="toggleTheme()"><i class="fa-regular fa-sun" id="ti2"></i></button>
+        </div>
+    </div>
+    <div class="email-row" onclick="copyEmail()">
+        <div class="email-txt loading" id="emailTxt">در حال اتصال...</div>
+        <button class="copy-icon"><i class="fa-regular fa-copy"></i></button>
+    </div>
+    <div class="timer-row" id="timerRow" style="display:none">
+        <span id="timerLbl">—</span>
+        <div class="tbar"><div class="tfill" id="tfill" style="width:100%"></div></div>
+    </div>
+    <div class="btns">
+        <button class="btn" id="refreshBtn" onclick="forceRefresh()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+        <button class="btn" id="newBtn" onclick="newEmail()"><i class="fa-solid fa-plus"></i> New Email</button>
+        <button class="btn" onclick="changeKey()" style="flex:0;padding:11px 14px" title="تغییر API Key"><i class="fa-solid fa-key"></i></button>
+    </div>
+    <div class="div"></div>
+    <div class="inbox-hdr">
+        <span>Verification Codes</span>
+        <div class="radar"><div class="dot off" id="dot"></div><span id="scanLbl" style="font-size:9px">Starting...</span></div>
+    </div>
+    <div class="inbox" id="inbox"><div class="empty"><span>Waiting for codes...</span></div></div>
+</div>
+
+</div>
 <script>
-// =====================================================================
-//  MULTI-PROVIDER TEMP MAIL — with automatic failover
-//  Providers tried in order: Guerrilla → Mailnesia → 1secmail → DisposaMail
-// =====================================================================
+const ADDY='https://app.addy.io/api/v1';
+const POLL=5000,TTL=3600;
+let key='',alias='',aliasId='',createdAt=0,known=new Set(),pT=null,cT=null;
 
-// -----------------------------------------------------------------------
-//  Provider definitions
-//  Each provider has:
-//    name        — display name (short)
-//    key         — unique key
-//    domains     — available email domains
-//    status      — 'unknown'|'ok'|'fail'
-//    getAddress  — async() → { email, login, domain, meta }
-//    checkInbox  — async(state) → array of { from, subject, bodyText, bodyHtml }
-// -----------------------------------------------------------------------
-
-const PROVIDERS = [
-
-  // ── 1. Guerrilla Mail ─────────────────────────────────────────────
-  //  Uses lesser-known domains; grabs session token automatically
-  {
-    name: 'Guerrilla',
-    key:  'guerrilla',
-    domains: ['sharklasers.com','guerrillamailblock.com','grr.la','guerrillamail.info',
-               'spam4.me','guerrillamail.biz','guerrillamail.de','guerrillamail.net',
-               'guerrillamail.org','guerrillamail.com'],
-    status: 'unknown',
-    _session: null,
-
-    async getAddress(forceDomain) {
-      const dom = forceDomain || this.domains[Math.floor(Math.random() * 4)]; // prefer first 4
-      const user = randomWord() + randomNum();
-      const url = `https://api.guerrillamail.com/ajax.php?f=get_email_address&email_user=${encodeURIComponent(user)}&domain=${encodeURIComponent(dom)}`;
-      const r = await fetchWithTimeout(url, {}, 8000);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const d = await r.json();
-      this._session = d.sid_token;
-      const email = `${d.email_user}@${d.email_addr.split('@')[1]}`;
-      return { email, login: d.email_user, domain: d.email_addr.split('@')[1], meta: { sid: d.sid_token } };
-    },
-
-    async checkInbox(state) {
-      const sid = state.meta && state.meta.sid ? state.meta.sid : '';
-      const url = `https://api.guerrillamail.com/ajax.php?f=get_email_list&offset=0&sid_token=${encodeURIComponent(sid)}`;
-      const r = await fetchWithTimeout(url, {}, 8000);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const d = await r.json();
-      const list = d.list || [];
-      const msgs = [];
-      for (const msg of list) {
-        // fetch full body
-        try {
-          const fr = await fetchWithTimeout(
-            `https://api.guerrillamail.com/ajax.php?f=fetch_email&email_id=${msg.mail_id}&sid_token=${encodeURIComponent(sid)}`,
-            {}, 8000
-          );
-          if (!fr.ok) { msgs.push({ id: msg.mail_id, from: msg.mail_from, subject: msg.mail_subject, bodyText: '', bodyHtml: msg.mail_excerpt || '' }); continue; }
-          const fd = await fr.json();
-          msgs.push({ id: msg.mail_id, from: fd.mail_from || msg.mail_from, subject: fd.mail_subject || msg.mail_subject, bodyText: fd.mail_body || '', bodyHtml: fd.mail_body || '' });
-        } catch(e) {
-          msgs.push({ id: msg.mail_id, from: msg.mail_from, subject: msg.mail_subject, bodyText: '', bodyHtml: msg.mail_excerpt || '' });
-        }
-      }
-      return msgs;
-    }
-  },
-
-  // ── 2. Mailnesia ──────────────────────────────────────────────────
-  //  mailnesia.com — open access, no key needed
-  //  Note: uses its own single domain @mailnesia.com
-  {
-    name: 'Mailnesia',
-    key:  'mailnesia',
-    domains: ['mailnesia.com'],
-    status: 'unknown',
-
-    async getAddress() {
-      const user = randomWord() + randomNum();
-      // Just construct the address — mailnesia accepts any username
-      return { email: `${user}@mailnesia.com`, login: user, domain: 'mailnesia.com', meta: {} };
-    },
-
-    async checkInbox(state) {
-      const url = `https://mailnesia.com/mailbox/${encodeURIComponent(state.login)}?rss=1`;
-      const r = await fetchWithTimeout(url, {}, 8000);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const text = await r.text();
-      // Parse RSS XML
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(text, 'application/xml');
-      const items = xml.querySelectorAll('item');
-      const msgs = [];
-      items.forEach((item, i) => {
-        const title = item.querySelector('title')?.textContent || '';
-        const desc  = item.querySelector('description')?.textContent || '';
-        const link  = item.querySelector('link')?.textContent || '';
-        // Extract sender from title "Subject - from@example.com" pattern
-        const parts = title.split(' - ');
-        const subject = parts[0] || title;
-        const from  = parts[1] || 'unknown';
-        msgs.push({ id: link || String(i), from, subject, bodyText: stripHtml(desc), bodyHtml: desc });
-      });
-      return msgs;
-    }
-  },
-
-  // ── 3. 1secmail ───────────────────────────────────────────────────
-  //  Fallback — sometimes slow but works
-  {
-    name: '1secmail',
-    key:  'onesec',
-    domains: ['esiix.com','wwjmp.com','xojxe.com','yoggm.com','dpptd.com',
-               'rteet.com','vjuum.com','laafd.com','txcct.com',
-               '1secmail.com','1secmail.net','1secmail.org'],
-    status: 'unknown',
-
-    async getAddress(forceDomain) {
-      const API = 'https://www.1secmail.com/api/v1/';
-      if (forceDomain) {
-        const user = randomWord() + randomNum();
-        return { email: `${user}@${forceDomain}`, login: user, domain: forceDomain, meta: {} };
-      }
-      const r = await fetchWithTimeout(`${API}?action=genRandomMailbox&count=1`, {}, 8000);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data = await r.json();
-      if (!data || !data[0]) throw new Error('No address');
-      const [login, domain] = data[0].split('@');
-      return { email: data[0], login, domain, meta: {} };
-    },
-
-    async checkInbox(state) {
-      const API = 'https://www.1secmail.com/api/v1/';
-      const r = await fetchWithTimeout(
-        `${API}?action=getMessages&login=${encodeURIComponent(state.login)}&domain=${encodeURIComponent(state.domain)}`,
-        {}, 8000
-      );
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const list = await r.json();
-      if (!Array.isArray(list)) return [];
-      const msgs = [];
-      for (const msg of list) {
-        try {
-          const fr = await fetchWithTimeout(
-            `${API}?action=readMessage&login=${encodeURIComponent(state.login)}&domain=${encodeURIComponent(state.domain)}&id=${msg.id}`,
-            {}, 8000
-          );
-          if (!fr.ok) { msgs.push({ id: String(msg.id), from: msg.from, subject: msg.subject, bodyText: '', bodyHtml: '' }); continue; }
-          const fd = await fr.json();
-          msgs.push({ id: String(msg.id), from: fd.from || msg.from, subject: fd.subject || msg.subject, bodyText: fd.textBody || fd.body || '', bodyHtml: fd.htmlBody || '' });
-        } catch(e) {
-          msgs.push({ id: String(msg.id), from: msg.from, subject: msg.subject, bodyText: '', bodyHtml: '' });
-        }
-      }
-      return msgs;
-    }
-  },
-
-  // ── 4. DisposaMail ────────────────────────────────────────────────
-  //  disposablemail.com / dispostable.com  (public API)
-  {
-    name: 'DisposaMail',
-    key:  'disposa',
-    domains: ['dispostable.com'],
-    status: 'unknown',
-
-    async getAddress() {
-      const user = randomWord() + randomNum();
-      // dispostable creates mailbox on first email received — just use a random name
-      return { email: `${user}@dispostable.com`, login: user, domain: 'dispostable.com', meta: {} };
-    },
-
-    async checkInbox(state) {
-      const url = `https://www.dispostable.com/inbox/${encodeURIComponent(state.login)}/`;
-      const r = await fetchWithTimeout(url, {}, 8000);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const html = await r.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const rows = doc.querySelectorAll('table.inbox-table tr[data-id]');
-      const msgs = [];
-      rows.forEach(row => {
-        const id      = row.getAttribute('data-id') || '';
-        const from    = row.querySelector('.from')?.textContent?.trim() || '';
-        const subject = row.querySelector('.subject')?.textContent?.trim() || '';
-        msgs.push({ id, from, subject, bodyText: '', bodyHtml: '' });
-      });
-      return msgs;
-    }
-  }
-
-];
-
-// =====================================================================
-//  STATE
-// =====================================================================
-let currentProviderIdx  = 0;   // which provider is active
-let currentProviderKey  = '';
-let currentEmail        = '';
-let currentState        = {};   // { login, domain, meta }
-let emailCreatedAt      = 0;
-let knownIds            = new Set();
-let checkInterval       = null;
-let timerInterval       = null;
-let isConnected         = false;
-
-// =====================================================================
-//  INIT
-// =====================================================================
-window.addEventListener('DOMContentLoaded', () => {
-  buildProviderChips();
-  tryConnectInOrder(0);
+window.addEventListener('DOMContentLoaded',()=>{
+    const s=localStorage.getItem('nx_key');
+    if(s){key=s;show('mainApp');init();}
+    else show('setupScreen');
 });
 
-// =====================================================================
-//  BUILD UI
-// =====================================================================
-function buildProviderChips() {
-  const row = document.getElementById('providerRow');
-  row.innerHTML = '';
-  PROVIDERS.forEach((p, i) => {
-    const chip = document.createElement('button');
-    chip.className = 'provider-chip' + (i === currentProviderIdx ? ' active' : '');
-    chip.id = `pchip-${p.key}`;
-    chip.innerHTML = `<span class="status-dot" id="pdot-${p.key}"></span>${p.name}`;
-    chip.onclick = () => switchToProvider(i);
-    row.appendChild(chip);
-  });
+function show(id){
+    document.getElementById('setupScreen').style.display='none';
+    document.getElementById('mainApp').style.display='none';
+    document.getElementById(id).style.display='flex';
+    document.getElementById(id).style.flexDirection='column';
 }
 
-function updateProviderChip(key, status) {
-  const dot = document.getElementById(`pdot-${key}`);
-  if (!dot) return;
-  dot.className = 'status-dot ' + (status === 'ok' ? 'green' : status === 'fail' ? 'red' : 'yellow');
+async function saveKey(){
+    const k=document.getElementById('keyInput').value.trim();
+    const err=document.getElementById('keyErr');
+    err.style.display='none';
+    if(!k)return;
+    try{
+        const r=await af('/account-details',k);
+        if(!r.ok)throw 0;
+        key=k;localStorage.setItem('nx_key',k);
+        show('mainApp');init();
+    }catch(e){err.style.display='block';}
 }
 
-function setActiveProviderChip(idx) {
-  document.querySelectorAll('.provider-chip').forEach((c, j) => {
-    c.className = 'provider-chip' + (j === idx ? ' active' : '');
-  });
-}
+function changeKey(){stopAll();show('setupScreen');document.getElementById('keyInput').value='';}
 
-function buildDomainChips(domains, activeDomain) {
-  const section = document.getElementById('domainSection');
-  const row = document.getElementById('domainRow');
-  if (!domains || domains.length <= 1) {
-    section.style.display = 'none';
-    return;
-  }
-  section.style.display = 'flex';
-  row.innerHTML = '';
-  domains.slice(0, 8).forEach((d, i) => {
-    const chip = document.createElement('button');
-    chip.className = 'domain-chip' + (d === activeDomain ? ' active' : '');
-    chip.textContent = '@' + d.split('.')[0];
-    chip.title = '@' + d;
-    chip.onclick = () => {
-      document.querySelectorAll('.domain-chip').forEach(c => c.className = 'domain-chip');
-      chip.className = 'domain-chip active';
-      createNewEmailOnProvider(currentProviderIdx, d);
-    };
-    row.appendChild(chip);
-  });
-}
+async function init(){await newEmail();}
 
-// =====================================================================
-//  PROVIDER SWITCHING
-// =====================================================================
-async function switchToProvider(idx) {
-  if (idx === currentProviderIdx && isConnected) return;
-  stopPolling();
-  currentProviderIdx = idx;
-  setActiveProviderChip(idx);
-  await createNewEmailOnProvider(idx);
-}
-
-// =====================================================================
-//  TRY PROVIDERS IN ORDER (auto-fallback)
-// =====================================================================
-async function tryConnectInOrder(startIdx) {
-  for (let i = startIdx; i < PROVIDERS.length; i++) {
-    showRetryBanner(i > startIdx, PROVIDERS[i].name);
-    const success = await createNewEmailOnProvider(i);
-    if (success) {
-      hideRetryBanner();
-      return;
+async function newEmail(){
+    stopAll();known.clear();alias='';aliasId='';setLoad();
+    const domains=['anonaddy.me','addy.io','addymail.com'];
+    let ok=false;
+    for(const d of domains){
+        try{
+            const r=await af('/aliases',key,'POST',{domain:d,description:'nexusmail',format:'random_words'});
+            if(!r.ok)continue;
+            const data=(await r.json()).data;
+            alias=data.email;aliasId=data.id;ok=true;break;
+        }catch(e){}
     }
-  }
-  // All failed
-  hideRetryBanner();
-  setError('All providers failed. Try refreshing or wait a moment.');
-}
-
-// =====================================================================
-//  CREATE NEW EMAIL
-// =====================================================================
-async function createNewEmail(forceDomain) {
-  await createNewEmailOnProvider(currentProviderIdx, forceDomain);
-}
-
-async function createNewEmailOnProvider(idx, forceDomain) {
-  const p = PROVIDERS[idx];
-  if (!p) return false;
-
-  stopPolling();
-  knownIds.clear();
-  currentEmail  = '';
-  currentState  = {};
-  isConnected   = false;
-
-  setUiLoading();
-
-  try {
-    const result = await p.getAddress(forceDomain);
-    currentProviderIdx = idx;
-    currentProviderKey = p.key;
-    currentEmail  = result.email;
-    currentState  = { login: result.login, domain: result.domain, meta: result.meta || {} };
-    emailCreatedAt = Date.now();
-    isConnected = true;
-
-    p.status = 'ok';
-    updateProviderChip(p.key, 'ok');
-    setActiveProviderChip(idx);
-
-    // Update UI
-    const display = document.getElementById('emailDisplay');
-    display.className = 'email-text';
-    display.innerText = currentEmail;
-
-    document.getElementById('scanStatus').innerText = 'Scanning';
-    document.getElementById('radarDot').className   = 'dot';
-    document.getElementById('apiBadge').className   = 'api-badge ok';
-    document.getElementById('apiBadge').textContent = p.name;
-    document.getElementById('inboxContainer').innerHTML =
-      `<div class="empty-state"><span>Waiting for codes...</span></div>`;
-    document.getElementById('timerRow').style.display = 'flex';
-
-    buildDomainChips(p.domains, result.domain);
-
-    startTimer(48 * 3600);
-    checkInterval = setInterval(checkInbox, 5000);
-
-    return true;
-
-  } catch(e) {
-    console.warn(`Provider ${p.name} failed:`, e.message);
-    p.status = 'fail';
-    updateProviderChip(p.key, 'fail');
-    return false;
-  }
-}
-
-// =====================================================================
-//  POLLING
-// =====================================================================
-function stopPolling() {
-  if (checkInterval) clearInterval(checkInterval);
-  if (timerInterval) clearInterval(timerInterval);
-  checkInterval = null;
-  timerInterval = null;
-}
-
-async function checkInbox() {
-  if (!isConnected || !currentState.login) return;
-  const p = PROVIDERS.find(x => x.key === currentProviderKey);
-  if (!p) return;
-
-  try {
-    const msgs = await p.checkInbox(currentState);
-
-    for (const msg of msgs) {
-      const id = String(msg.id);
-      if (knownIds.has(id)) continue;
-      knownIds.add(id);
-
-      const inboxEl = document.getElementById('inboxContainer');
-      if (inboxEl.querySelector('.empty-state')) inboxEl.innerHTML = '';
-
-      const combined = (msg.subject || '') + ' ' + ((msg.bodyText || stripHtml(msg.bodyHtml || '')));
-      const rawText  = decodeEntities(combined);
-      const code     = extractCode(rawText);
-
-      if (code) {
-        renderCode(code, msg.from || '', msg.subject || '');
-      } else if (msg.subject || msg.bodyText || msg.bodyHtml) {
-        const preview = (msg.bodyText || stripHtml(msg.bodyHtml || '')).substring(0, 160);
-        renderRaw(msg.subject || '(no subject)', msg.from || '', preview);
-      }
+    if(!ok){
+        setBadge('err','error');setTxt('خطا در اتصال',true);
+        document.getElementById('scanLbl').textContent='Error';
+        document.getElementById('dot').className='dot off';
+        document.getElementById('inbox').innerHTML='<div class="empty"><span>خطا — دکمه New Email رو بزن یا API Key رو چک کن</span></div>';
+        return;
     }
-  } catch(e) {
-    console.warn('Inbox check error:', e.message);
-  }
+    createdAt=Date.now();
+    setTxt(alias,false);setBadge('ok','addy.io');
+    document.getElementById('dot').className='dot';
+    document.getElementById('scanLbl').textContent='Scanning';
+    document.getElementById('timerRow').style.display='flex';
+    document.getElementById('inbox').innerHTML='<div class="empty"><span>Waiting for codes...</span></div>';
+    startTimer(TTL);
+    pT=setInterval(poll,POLL);poll();
 }
 
-// =====================================================================
-//  FORCE REFRESH
-// =====================================================================
-async function forceRefresh() {
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('spin');
-  btn.disabled = true;
-  await checkInbox();
-  setTimeout(() => { btn.classList.remove('spin'); btn.disabled = false; }, 800);
+async function poll(){
+    if(!aliasId)return;
+    try{
+        const r=await af('/aliases/'+aliasId+'/emails',key);
+        if(!r.ok)return;
+        const emails=(await r.json()).data||[];
+        for(const e of emails){
+            const id=String(e.id);
+            if(known.has(id))continue;
+            known.add(id);
+            const inboxEl=document.getElementById('inbox');
+            if(inboxEl.querySelector('.empty'))inboxEl.innerHTML='';
+            try{
+                const fr=await af('/emails/'+id,key);
+                if(fr.ok){const fd=(await fr.json()).data||{};proc(id,fd.from_email||e.from_email||'',fd.subject||e.subject||'',fd.text||'',fd.html||'');}
+                else proc(id,e.from_email||'',e.subject||'','','');
+            }catch(ex){proc(id,e.from_email||'',e.subject||'','','');}
+        }
+    }catch(ex){console.warn(ex);}
 }
 
-// =====================================================================
-//  TIMER
-// =====================================================================
-function startTimer(totalSeconds) {
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => updateTimer(totalSeconds), 1000);
-  updateTimer(totalSeconds);
-}
-
-function updateTimer(totalSeconds) {
-  const fill    = document.getElementById('timerFill');
-  const label   = document.getElementById('timerLabel');
-  const elapsed = Math.floor((Date.now() - emailCreatedAt) / 1000);
-  const rem     = Math.max(0, totalSeconds - elapsed);
-  const pct     = (rem / totalSeconds) * 100;
-
-  fill.style.width = pct + '%';
-  fill.className   = 'timer-bar-fill' + (pct < 5 ? ' critical' : pct < 15 ? ' warning' : '');
-
-  const h = Math.floor(rem / 3600);
-  const m = Math.floor((rem % 3600) / 60);
-  const s = rem % 60;
-  label.textContent = h > 0
-    ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
-    : `${m}:${String(s).padStart(2,'0')}`;
-
-  if (rem === 0) {
-    stopPolling();
-    document.getElementById('scanStatus').innerText = 'Expired';
-    document.getElementById('radarDot').className   = 'dot inactive';
-  }
-}
-
-// =====================================================================
-//  UI HELPERS
-// =====================================================================
-function setUiLoading() {
-  const display = document.getElementById('emailDisplay');
-  display.className = 'email-text loading';
-  display.innerText = 'Connecting...';
-  document.getElementById('scanStatus').innerText = 'Loading...';
-  document.getElementById('radarDot').className   = 'dot inactive';
-  document.getElementById('apiBadge').className   = 'api-badge';
-  document.getElementById('apiBadge').textContent = 'connecting';
-  document.getElementById('timerRow').style.display = 'none';
-  document.getElementById('inboxContainer').innerHTML =
-    `<div class="empty-state"><span>Setting up mailbox...</span></div>`;
-}
-
-function setError(msg) {
-  const display = document.getElementById('emailDisplay');
-  display.className = 'email-text loading';
-  display.innerText = 'Connection failed';
-  document.getElementById('scanStatus').innerText = 'Error';
-  document.getElementById('radarDot').className   = 'dot inactive';
-  document.getElementById('apiBadge').className   = 'api-badge fail';
-  document.getElementById('apiBadge').textContent = 'error';
-  document.getElementById('inboxContainer').innerHTML =
-    `<div class="empty-state"><span>${msg}</span></div>`;
-}
-
-function showRetryBanner(visible, name) {
-  const b = document.getElementById('retryBanner');
-  const m = document.getElementById('retryMsg');
-  if (visible) {
-    b.classList.add('show');
-    m.textContent = `Switching to ${name}...`;
-  } else {
-    b.classList.remove('show');
-    m.textContent = `Trying ${name}...`;
-  }
-}
-function hideRetryBanner() {
-  document.getElementById('retryBanner').classList.remove('show');
-}
-
-// =====================================================================
-//  EXTRACT VERIFICATION CODE
-// =====================================================================
-function extractCode(text) {
-  if (!text) return null;
-  const patterns = [
-    /(?:verification|verify|otp|code|کد|رمز|pin|token|passcode|activate|confirm|کد تأیید|کدتایید)[^\d]{0,40}(\d{4,8})/i,
-    /(\d{4,8})(?:[^\d]{0,20})(?:is your|verification|code|کد|token|confirmation)/i,
-    /\b([A-Z]{2,4}[0-9]{4,6}|[0-9]{4,6}[A-Z]{2,4})\b/,
-    /\b([A-Z0-9]{6,8})\b(?=[^\w]|$)/,
-    /\b(\d{6})\b/,
-    /\b(\d{4})\b/,
-    /\b(\d{5})\b/,
-    /\b(\d{7,8})\b/,
-  ];
-  for (const p of patterns) {
-    const m = text.match(p);
-    if (m) {
-      const c = m[1];
-      if (/^(19|20)\d{2}$/.test(c)) continue;
-      if (/^0+$/.test(c)) continue;
-      if (/^\d{10,}$/.test(c)) continue;
-      return c;
+function proc(id,from,subj,txt,html){
+    const raw=decode(subj+' '+(txt||strip(html)));
+    const code=extract(raw);
+    if(code){
+        renderCode(code,from,subj);
+        if(known.size===1){copy(code);toast('✓ کد کپی شد: '+code);}
+    } else if(subj||txt||html){
+        renderRaw(subj||'(no subject)',from,(txt||strip(html)).substring(0,180));
     }
-  }
-  return null;
 }
 
-// =====================================================================
-//  RENDER
-// =====================================================================
-function renderCode(code, sender, subject) {
-  const inbox = document.getElementById('inboxContainer');
-  const card  = document.createElement('div');
-  card.className = 'message';
-
-  const fromEl = document.createElement('div');
-  fromEl.className = 'msg-sender';
-  fromEl.innerText = sender;
-
-  const subEl = document.createElement('div');
-  subEl.className = 'msg-subject';
-  subEl.innerText = subject;
-
-  const codeEl = document.createElement('div');
-  codeEl.className = 'extracted-code';
-  codeEl.innerText = code;
-  codeEl.title = 'Click to copy';
-  codeEl.onclick = () => copyToClipboard(code);
-
-  const hint = document.createElement('div');
-  hint.className = 'copy-hint';
-  hint.innerText = '↑ tap to copy';
-
-  card.appendChild(fromEl);
-  if (subject) card.appendChild(subEl);
-  card.appendChild(codeEl);
-  card.appendChild(hint);
-  inbox.insertBefore(card, inbox.firstChild);
-
-  // Auto-copy first new code
-  if (knownIds.size === 1) copyToClipboard(code);
+function extract(t){
+    if(!t)return null;
+    const pp=[
+        /(?:verification|verify|otp|code|کد|رمز|pin|token|passcode|activate|confirm|your code)[^\d]{0,50}(\d{4,8})/i,
+        /(\d{4,8})[^\d]{0,25}(?:is your|verification|code|کد|token|confirmation)/i,
+        /\b([A-Z]{1,3}\d{4,6}|\d{4,6}[A-Z]{1,3})\b/,
+        /\b(\d{6})\b/,/\b(\d{4})\b/,/\b(\d{5})\b/,/\b(\d{7,8})\b/
+    ];
+    for(const p of pp){const m=t.match(p);if(m){const c=m[1];if(/^(19|20)\d{2}$/.test(c)||/^0+$/.test(c)||/^\d{10,}$/.test(c))continue;return c;}}
+    return null;
 }
 
-function renderRaw(subject, sender, excerpt) {
-  const inbox = document.getElementById('inboxContainer');
-  const card  = document.createElement('div');
-  card.className = 'message';
-
-  const fromEl = document.createElement('div');
-  fromEl.className = 'msg-sender';
-  fromEl.innerText = sender;
-
-  const rawEl = document.createElement('div');
-  rawEl.className = 'raw-message';
-  rawEl.innerText = subject + (excerpt ? '\n' + excerpt : '');
-
-  card.appendChild(fromEl);
-  card.appendChild(rawEl);
-  inbox.insertBefore(card, inbox.firstChild);
+function renderCode(code,from,subj){
+    const inbox=document.getElementById('inbox');
+    const d=document.createElement('div');d.className='msg';
+    d.innerHTML=`<div class="msg-from">${esc(from)}</div>${subj?`<div class="msg-sub">${esc(subj)}</div>`:''}<div class="code-box" onclick="copy('${esc(code)}');toast('✓ کپی شد')">${esc(code)}</div><div class="code-hint">↑ کلیک برای کپی</div>`;
+    inbox.insertBefore(d,inbox.firstChild);
 }
 
-// =====================================================================
-//  COPY
-// =====================================================================
-function copyEmail() {
-  if (!currentEmail || currentEmail === 'Connecting...' || currentEmail === 'Connection failed') return;
-  copyToClipboard(currentEmail);
+function renderRaw(subj,from,excerpt){
+    const inbox=document.getElementById('inbox');
+    const d=document.createElement('div');d.className='msg';
+    d.innerHTML=`<div class="msg-from">${esc(from)}</div><div class="raw">${esc(subj+'\n'+excerpt)}</div>`;
+    inbox.insertBefore(d,inbox.firstChild);
 }
 
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => showToast('Copied! ✓')).catch(() => {
-    const el = document.createElement('textarea');
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    showToast('Copied! ✓');
-  });
+async function forceRefresh(){
+    const b=document.getElementById('refreshBtn');
+    b.classList.add('spin');b.disabled=true;
+    await poll();
+    setTimeout(()=>{b.classList.remove('spin');b.disabled=false;},700);
 }
 
-let toastTimer;
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.innerText = msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+function startTimer(total){
+    if(cT)clearInterval(cT);
+    cT=setInterval(()=>tick(total),1000);tick(total);
+}
+function tick(total){
+    const el=document.getElementById('tfill'),lbl=document.getElementById('timerLbl');
+    const rem=Math.max(0,total-Math.floor((Date.now()-createdAt)/1000));
+    const pct=(rem/total)*100;
+    el.style.width=pct+'%';
+    el.className='tfill'+(pct<5?' crit':pct<15?' warn':'');
+    const m=Math.floor(rem/60),s=rem%60;
+    lbl.textContent=m+':'+String(s).padStart(2,'0');
+    if(rem===0){stopAll();document.getElementById('scanLbl').textContent='Expired';document.getElementById('dot').className='dot off';}
 }
 
-// =====================================================================
-//  UTILS
-// =====================================================================
-function fetchWithTimeout(url, opts, ms) {
-  return Promise.race([
-    fetch(url, opts),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
-  ]);
+function stopAll(){if(pT)clearInterval(pT);if(cT)clearInterval(cT);pT=cT=null;}
+function af(path,k,method='GET',body=null){
+    const o={method,headers:{'Authorization':'Bearer '+k,'Content-Type':'application/json','Accept':'application/json','X-Requested-With':'XMLHttpRequest'}};
+    if(body)o.body=JSON.stringify(body);
+    return fetch(ADDY+path,o);
 }
-
-function randomWord() {
-  const w = ['fox','byte','pine','mist','echo','glow','snap','wave','bolt','haze','reef','dusk','fern','wick'];
-  return w[Math.floor(Math.random() * w.length)];
-}
-
-function randomNum() {
-  return String(Math.floor(Math.random() * 9000) + 1000);
-}
-
-function stripHtml(html) {
-  if (!html) return '';
-  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function decodeEntities(str) {
-  const el = document.createElement('textarea');
-  el.innerHTML = str;
-  return el.value;
-}
-
-// =====================================================================
-//  THEME TOGGLE
-// =====================================================================
-function toggleTheme() {
-  const body = document.body;
-  const icon = document.getElementById('themeIcon');
-  if (body.getAttribute('data-theme') === 'dark') {
-    body.setAttribute('data-theme', 'light');
-    icon.className = 'fa-regular fa-moon';
-  } else {
-    body.setAttribute('data-theme', 'dark');
-    icon.className = 'fa-regular fa-sun';
-  }
-}
+function setLoad(){setTxt('در حال ساخت آدرس...',true);setBadge('','connecting');document.getElementById('dot').className='dot off';document.getElementById('scanLbl').textContent='Loading...';document.getElementById('timerRow').style.display='none';document.getElementById('inbox').innerHTML='<div class="empty"><span>Setting up...</span></div>';}
+function setTxt(t,l){const e=document.getElementById('emailTxt');e.textContent=t;e.className='email-txt'+(l?' loading':'');}
+function setBadge(type,label){const b=document.getElementById('badge');b.className='badge'+(type?' '+type:'');b.textContent=label;}
+function copyEmail(){if(!alias)return;copy(alias);toast('✓ ایمیل کپی شد');}
+function copy(t){navigator.clipboard.writeText(t).catch(()=>{const e=document.createElement('textarea');e.value=t;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);});}
+let tT;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2200);}
+function strip(h){return(h||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();}
+function decode(s){const e=document.createElement('textarea');e.innerHTML=s;return e.value;}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toggleTheme(){const b=document.body,d=b.getAttribute('data-theme')==='dark';b.setAttribute('data-theme',d?'light':'dark');const c=d?'fa-regular fa-moon':'fa-regular fa-sun';['ti1','ti2'].forEach(i=>{const el=document.getElementById(i);if(el)el.className=c;});}
 </script>
 </body>
 </html>
