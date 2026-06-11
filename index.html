@@ -3,234 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusMail</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
+<title>NexusMail — Premium Cyber Client</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='3'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ─── DARK TOKENS ─── */
+/* ─────────────────────────────────────────
+   DYNAMIC NEON THEME TOKENS
+───────────────────────────────────────── */
 :root {
-  --bg:       #0f1117;
-  --surface:  #181c27;
-  --raised:   #1e2336;
-  --hover:    #242840;
-
-  --accent:        #6366f1;
-  --accent-dim:    rgba(99,102,241,0.10);
-  --accent-mid:    rgba(99,102,241,0.20);
-  --accent-glow:   rgba(99,102,241,0.30);
-
-  --border:        rgba(99,102,241,0.14);
-  --border-hover:  rgba(99,102,241,0.36);
-
-  --text:    #e8eaf6;
-  --text-2:  #6b7280;
-  --text-3:  #374151;
-
-  --green:   #10b981;
-  --red:     #f43f5e;
-
-  --r:  12px;
-  --rs: 8px;
+  --bg-main: #050508;
+  --bg-panel: #0d0e15;
+  --bg-surface: #141622;
+  --bg-surface-hover: #1c1f30;
+  
+  --neon-cyan: #00f0ff;
+  --neon-cyan-glow: rgba(0, 240, 255, 0.4);
+  --neon-purple: #9d4edd;
+  --neon-purple-glow: rgba(157, 78, 221, 0.35);
+  
+  --panel-glow: rgba(0, 240, 255, 0.06);
+  --border: rgba(0, 240, 255, 0.15);
+  --border-hover: rgba(0, 240, 255, 0.4);
+  
+  --text-primary: #f0f3ff;
+  --text-secondary: #7e89a9;
+  --text-muted: #464f6e;
+  
+  --success: #00ff66;
+  --success-glow: rgba(0, 255, 102, 0.4);
+  --error: #ff0055;
+  --error-glow: rgba(255, 0, 85, 0.4);
+  
+  --panel-radius: 24px;
+  --card-radius: 14px;
 }
 
-/* ─── LIGHT TOKENS ─── */
 [data-theme="light"] {
-  --bg:       #f8f9ff;
-  --surface:  #ffffff;
-  --raised:   #f1f3fb;
-  --hover:    #e9ecf8;
-
-  --accent:        #4f46e5;
-  --accent-dim:    rgba(79,70,229,0.08);
-  --accent-mid:    rgba(79,70,229,0.16);
-  --accent-glow:   rgba(79,70,229,0.22);
-
-  --border:        rgba(79,70,229,0.12);
-  --border-hover:  rgba(79,70,229,0.32);
-
-  --text:    #0f172a;
-  --text-2:  #64748b;
-  --text-3:  #94a3b8;
-
-  --green:   #059669;
-  --red:     #e11d48;
+  --bg-main: #0f111a; /* Custom dark-fused light mode for eye protection while retaining neon */
+  --bg-panel: #161926;
+  --bg-surface: #1f2336;
+  --bg-surface-hover: #292e47;
+  
+  --neon-cyan: #00e5ff;
+  --neon-cyan-glow: rgba(0, 229, 255, 0.5);
+  --neon-purple: #b5179e;
+  --neon-purple-glow: rgba(181, 23, 158, 0.45);
+  
+  --panel-glow: rgba(181, 23, 158, 0.08);
+  --border: rgba(181, 23, 158, 0.25);
+  --border-hover: rgba(0, 229, 255, 0.5);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #9aa5ce;
+  --text-muted: #566185;
 }
 
-/* ─── BASE ─── */
 body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(157, 78, 221, 0.04) 0%, transparent 40%);
+  color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
-  transition: background 0.35s, color 0.25s;
-}
-
-/* ─── SHELL ─── */
-.shell {
-  width: 100%;
-  max-width: 420px;
-}
-
-/* ─── CARD — single outer container ─── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  padding: 20px;
   overflow: hidden;
-  box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.04) inset,
-    0 24px 64px rgba(0,0,0,0.40);
 }
 
-[data-theme="light"] .card {
-  box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.8) inset,
-    0 8px 40px rgba(15,23,42,0.08);
+/* ─────────────────────────────────────────
+   APP CONTAINER (All elements strictly locked inside)
+───────────────────────────────────────── */
+.app {
+  width: 100%;
+  max-width: 430px;
+  position: relative;
 }
 
-/* ─── TOPBAR ─── */
-.topbar {
+/* ─────────────────────────────────────────
+   MAIN PANEL LAYER & BORDERS
+───────────────────────────────────────── */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--panel-radius);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px var(--panel-glow),
+    inset 0 0 20px rgba(0, 240, 255, 0.03);
+  transition: border-color 0.4s, box-shadow 0.4s;
+  padding: 24px;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+}
+
+/* ─────────────────────────────────────────
+   INTERNAL HEADER LAYER
+───────────────────────────────────────── */
+.header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px 16px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
 }
 
-.logo-icon {
-  width: 30px; height: 30px;
-  background: var(--accent-dim);
-  border: 1px solid var(--border-hover);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 8px var(--neon-cyan-glow));
 }
-.logo-icon i { font-size: 13px; color: var(--accent); }
 
 .logo-name {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--text);
-}
-.logo-name em {
-  font-style: normal;
-  color: var(--accent);
-}
-
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-
-.icon-btn {
-  width: 32px; height: 32px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: var(--rs);
-  color: var(--text-2);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-  transition: all 0.18s;
-}
-.icon-btn:hover {
-  border-color: var(--border-hover);
-  color: var(--accent);
-  background: var(--accent-dim);
-}
-
-/* ─── STATUS STRIP (when logged in) ─── */
-.status-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 20px;
-  background: var(--raised);
-  border-bottom: 1px solid var(--border);
-  font-size: 11.5px;
-  color: var(--text-2);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.live-row { display: flex; align-items: center; gap: 6px; }
-
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-  animation: pulse 2.8s infinite;
-}
-.dot.off { background: var(--red); animation: none; }
-
-@keyframes pulse {
-  0%,100%{ opacity:.5; box-shadow: none; }
-  50%{ opacity:1; box-shadow: 0 0 0 3px rgba(16,185,129,0.18); }
-}
-
-#statusEmail {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.signout {
-  background: none;
-  border: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 11.5px;
-  color: var(--text-3);
-  cursor: pointer;
-  transition: color 0.15s;
-  padding: 0;
-}
-.signout:hover { color: var(--red); }
-
-/* ─── LOGIN VIEW ─── */
-.login-view {
-  padding: 48px 28px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
-  text-align: center;
-}
-
-.login-icon-wrap {
-  width: 64px; height: 64px;
-  border-radius: 16px;
-  background: var(--accent-dim);
-  border: 1px solid var(--border-hover);
-  display: flex; align-items: center; justify-content: center;
-}
-.login-icon-wrap i {
-  font-size: 24px;
-  color: var(--accent);
-}
-
-.login-title {
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  margin-bottom: 6px;
-  color: var(--text);
+  background: linear-gradient(120deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
+.logo-name span {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 6px var(--neon-cyan-glow));
+  -webkit-text-fill-color: initial;
+}
+
+.theme-btn {
+  width: 38px;
+  height: 38px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.theme-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 12px var(--neon-cyan-glow);
+  transform: translateY(-1px);
+}
+
+/* ─────────────────────────────────────────
+   LOGIN INTERFACE
+───────────────────────────────────────── */
+.login-view {
+  padding: 32px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.login-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--neon-purple);
+  margin-bottom: 24px;
+  filter: drop-shadow(0 0 10px var(--neon-purple-glow));
+}
+
+.login-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
 .login-sub {
-  font-size: 13px;
-  color: var(--text-2);
-  line-height: 1.7;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
 }
 
 .g-btn {
@@ -238,440 +223,530 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 13px 20px;
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: -0.2px;
-}
-.g-btn:hover {
-  border-color: var(--border-hover);
-  background: var(--hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.20);
-}
-.g-btn:active { transform: scale(0.98); }
-
-.g-icon { width: 18px; height: 18px; flex-shrink: 0; }
-
-/* ─── MAIN BODY ─── */
-.main-body {
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
   gap: 12px;
+  padding: 15px 24px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border: none;
+  border-radius: var(--card-radius);
+  color: #000000;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 240, 255, 0.2);
 }
 
-/* ─── EMAIL BAR ─── */
-.email-bar {
+.g-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 240, 255, 0.4);
+}
+
+/* ─────────────────────────────────────────
+   CYBER STATUS PANEL
+───────────────────────────────────────── */
+.status-container {
+  background: linear-gradient(145deg, var(--bg-surface), rgba(20,22,34,0.4));
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 14px 18px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px 10px 14px;
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  cursor: pointer;
-  transition: all 0.18s;
+  justify-content: space-between;
   position: relative;
   overflow: hidden;
 }
-.email-bar::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 25%; bottom: 25%;
-  width: 2.5px;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: opacity 0.18s;
-  opacity: 0.6;
-}
-.email-bar:hover { border-color: var(--border-hover); background: var(--hover); }
-.email-bar:hover::before { opacity: 1; }
-.email-bar:active { transform: scale(0.995); }
 
-.email-val {
-  flex: 1;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  font-weight: 400;
+.status-glow-bg {
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--success);
+  box-shadow: 0 0 12px var(--success-glow);
+}
+.status-container.disconnected .status-glow-bg {
+  background: var(--error);
+  box-shadow: 0 0 12px var(--error-glow);
+}
+
+.s-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+#statusEmail {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--text);
-}
-.email-val.loading {
-  color: var(--text-3);
-  animation: blink 1.4s infinite;
-}
-@keyframes blink { 0%,100%{opacity:.3} 50%{opacity:.9} }
-
-.copy-pill {
-  width: 32px; height: 32px;
-  border-radius: var(--rs);
-  background: var(--accent-dim);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  color: var(--accent);
-  flex-shrink: 0;
-  transition: all 0.18s;
-}
-.email-bar:hover .copy-pill {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-  box-shadow: 0 0 12px var(--accent-glow);
+  margin-top: 2px;
 }
 
-/* ─── ACTION ROW ─── */
-.actions { display: flex; gap: 8px; }
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 255, 102, 0.08);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 255, 102, 0.2);
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--success);
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.05);
+}
+
+.live-indicator.off {
+  background: rgba(255, 0, 85, 0.08);
+  border-color: rgba(255, 0, 85, 0.2);
+  color: var(--error);
+}
+
+.signout-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.signout-btn:hover { color: var(--error); }
+
+/* ─────────────────────────────────────────
+   EMAIL VIEWPORT ENGINE (MODAL COPY TRIGGER)
+───────────────────────────────────────── */
+.email-display {
+  background: linear-gradient(90deg, var(--bg-surface), var(--bg-panel));
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.email-display:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 18px var(--neon-cyan-glow);
+  transform: translateY(-1px);
+}
+
+.email-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-shadow: 0 0 1px rgba(255,255,255,0.1);
+  letter-spacing: -0.2px;
+}
+.email-text.loading { color: var(--text-muted); }
+
+.copy-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+}
+
+/* Massive Flash Copy Screen Inside Component Frame */
+.copy-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--neon-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 1px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+}
+.email-display.copied .copy-overlay {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────
+   ACTION MATRIX CONTROL 
+───────────────────────────────────────── */
+.actions { display: flex; gap: 10px; margin-top: 14px; margin-bottom: 24px; }
 
 .act-btn {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px;
-  background: var(--raised);
+  gap: 8px;
+  padding: 14px;
+  background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text-2);
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  border-radius: var(--card-radius);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s;
-  letter-spacing: -0.2px;
+  transition: all 0.25s ease;
 }
-.act-btn:hover {
-  border-color: var(--border-hover);
-  color: var(--text);
-  background: var(--hover);
-  transform: translateY(-1px);
-}
-.act-btn:active { transform: scale(0.97); }
-.act-btn i { font-size: 12px; color: var(--accent); }
-.act-btn.spinning i { animation: spin 0.65s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── INBOX SECTION ─── */
+.act-btn:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 14px var(--neon-purple-glow);
+  background: var(--bg-surface-hover);
+}
+.act-btn i { font-size: 12px; color: var(--neon-cyan); }
+.act-btn.spinning i { animation: spin 0.6s linear infinite; }
+
+/* ─────────────────────────────────────────
+   INBOX MODULE / HIGH GRAPHICS GRID
+───────────────────────────────────────── */
 .inbox-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2px;
+  margin-bottom: 12px;
+  padding: 0 4px;
 }
+
 .inbox-label {
-  font-size: 10px;
-  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.6px;
-  color: var(--text-3);
+  letter-spacing: 1px;
+  color: var(--text-secondary);
 }
-.scan-badge {
+
+.scan-status {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--accent);
-  opacity: 0.8;
-}
-.scan-pip {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pip 2.2s infinite;
-}
-@keyframes pip {
-  0%,100%{ opacity:0.35; }
-  50%{ opacity:1; box-shadow: 0 0 5px var(--accent); }
-}
-
-/* ─── TABLE ─── */
-.inbox-table-wrap {
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  overflow: hidden;
-  min-height: 80px;
-}
-
-.inbox-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12.5px;
-  table-layout: fixed;
-}
-
-.inbox-table thead th {
-  padding: 8px 12px;
-  text-align: left;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--text-3);
-  background: var(--raised);
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-
-.inbox-table thead th:nth-child(1) { width: 42%; }
-.inbox-table thead th:nth-child(2) { width: 58%; }
-
-.inbox-table tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.14s;
-  animation: row-in 0.28s cubic-bezier(0.16,1,0.3,1);
-}
-.inbox-table tbody tr:last-child { border-bottom: none; }
-.inbox-table tbody tr:hover { background: var(--accent-dim); }
-
-@keyframes row-in {
-  from { opacity:0; transform: translateY(-4px); }
-  to   { opacity:1; transform: translateY(0); }
-}
-
-.inbox-table td {
-  padding: 10px 12px;
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.td-sender {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-2);
-}
-
-.td-code-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.code-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--accent-mid);
-  border: 1px solid var(--border-hover);
-  border-radius: 8px;
-  padding: 5px 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 17px;
-  font-weight: 500;
-  color: var(--accent);
-  letter-spacing: 3px;
-  cursor: pointer;
-  transition: all 0.18s;
-  white-space: nowrap;
-}
-.code-chip:hover {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-  box-shadow: 0 0 18px var(--accent-glow);
-  letter-spacing: 4px;
-}
-.code-chip:active { transform: scale(0.96); }
-.code-chip .copy-hint {
-  font-size: 9px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  opacity: 0.6;
-  text-transform: uppercase;
-}
-
-.no-code-tag {
-  font-size: 11px;
-  color: var(--text-3);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.empty-row td {
-  padding: 28px 12px;
-  text-align: center;
-  color: var(--text-3);
-  font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* ─── TOKEN WARNING ─── */
-.warn-bar {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  background: rgba(244,63,94,0.06);
-  border: 1px solid rgba(244,63,94,0.18);
-  border-radius: var(--r);
-  font-size: 12px;
-  color: var(--red);
-}
-.warn-bar.show { display: flex; }
-.warn-bar i { flex-shrink: 0; font-size: 11px; }
-.reauth-btn {
-  margin-left: auto;
-  background: rgba(244,63,94,0.12);
-  border: none;
-  color: var(--red);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
+  gap: 6px;
   font-size: 11px;
   font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
 }
-.reauth-btn:hover { background: rgba(244,63,94,0.24); }
 
-/* ─── TOAST ─── */
+.scan-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+  animation: radar-pulse 1.5s infinite;
+}
+
+@keyframes radar-pulse {
+  0% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 12px var(--neon-cyan); }
+  100% { opacity: 0.3; transform: scale(0.9); }
+}
+
+.inbox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 90px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.inbox::-webkit-scrollbar { width: 4px; }
+.inbox::-webkit-scrollbar-track { background: transparent; }
+.inbox::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+.empty {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  gap: 10px;
+  border: 1px dashed rgba(255,255,255,0.04);
+  border-radius: var(--card-radius);
+}
+
+/* ── Glowing Message Structural Cards ── */
+.msg {
+  background: linear-gradient(145deg, var(--bg-surface), rgba(20,22,34,0.6));
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: all 0.25s ease;
+  animation: cardEntry 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.msg:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 5px 15px rgba(157, 78, 221, 0.15);
+  transform: translateY(-1px);
+}
+
+@keyframes cardEntry {
+  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.msg-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.msg-sender {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--neon-cyan);
+}
+
+.msg-time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.code-wrapper {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.code-block {
+  background: #06070a;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.code-wrapper:hover .code-block {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.02);
+}
+
+.inner-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--neon-purple);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.code-wrapper.copied .inner-overlay { opacity: 1; }
+
+.no-code {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  border-left: 2px solid var(--neon-purple);
+  padding-left: 10px;
+}
+
+/* ─────────────────────────────────────────
+   RESTRICTED ALERTS & INTERNAL NOTIFICATIONS
+───────────────────────────────────────── */
+.token-warn {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 0, 85, 0.05);
+  border: 1px solid var(--error);
+  border-radius: var(--card-radius);
+  font-size: 13px;
+  color: var(--error);
+  box-shadow: 0 0 12px var(--error-glow);
+  margin-bottom: 14px;
+}
+.token-warn.visible { display: flex; }
+.reauth {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--error);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 #toast {
-  position: fixed;
-  top: 20px;
+  position: absolute;
+  bottom: 24px;
   left: 50%;
-  transform: translateX(-50%) translateY(-12px);
-  background: var(--surface);
-  border: 1px solid var(--border-hover);
-  color: var(--accent);
+  transform: translateX(-50%) translateY(10px);
+  background: #ffffff;
+  color: #000000;
   font-size: 12px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  padding: 9px 20px;
-  border-radius: 100px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 30px;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
-  white-space: nowrap;
-  z-index: 999;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px var(--border);
-  letter-spacing: -0.1px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
-<body data-theme="dark">
+<body>
 
-<div id="toast"></div>
+<div class="app">
 
-<div class="shell">
-  <div class="card">
-
-    <!-- TOPBAR -->
-    <div class="topbar">
+  <div class="panel">
+    
+    <div class="header">
       <div class="logo">
-        <div class="logo-icon"><i class="fa-regular fa-envelope"></i></div>
-        <span class="logo-name">Nexus<em>Mail</em></span>
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="2" y="4" width="20" height="16" rx="3"/>
+            <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+        <span class="logo-name">Nexus<span>Mail</span></span>
       </div>
-      <div class="topbar-right">
-        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">
-          <i class="fa-regular fa-moon" id="themeIcon"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- STATUS STRIP (hidden until login) -->
-    <div class="status-strip" id="statusStrip" style="display:none;">
-      <div class="live-row">
-        <div class="dot" id="statusDot"></div>
-        <span id="statusEmail">—</span>
-      </div>
-      <button class="signout" onclick="logout()">Sign out</button>
-    </div>
-
-    <!-- LOGIN VIEW -->
-    <div class="login-view" id="loginView">
-      <div class="login-icon-wrap"><i class="fa-regular fa-envelope"></i></div>
-      <div>
-        <div class="login-title">Connect your inbox</div>
-        <div class="login-sub">Link Gmail to receive and extract<br>verification codes automatically.</div>
-      </div>
-      <button class="g-btn" onclick="startLogin()">
-        <svg class="g-icon" viewBox="0 0 24 24">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
-        Continue with Google
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        <i class="fa-regular fa-moon" id="themeIcon"></i>
       </button>
     </div>
 
-    <!-- MAIN VIEW -->
-    <div id="mainView" style="display:none;">
-      <div class="main-body">
+    <div id="toast"></div>
 
-        <div class="warn-bar" id="tokenWarning">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          Session expired
-          <button class="reauth-btn" onclick="silentRefresh()">Refresh</button>
-        </div>
-
-        <!-- Email alias bar -->
-        <div class="email-bar" onclick="copyEmail()" title="Copy alias">
-          <div class="email-val loading" id="emailDisplay">Generating alias…</div>
-          <div class="copy-pill"><i class="fa-regular fa-copy" id="copyIcon"></i></div>
-        </div>
-
-        <!-- Actions -->
-        <div class="actions">
-          <button class="act-btn" id="refreshBtn" onclick="doRefresh()">
-            <i class="fa-solid fa-rotate-right"></i> Refresh
-          </button>
-          <button class="act-btn" onclick="newEmail()">
-            <i class="fa-solid fa-plus"></i> New Alias
-          </button>
-        </div>
-
-        <!-- Inbox label -->
-        <div class="inbox-header">
-          <span class="inbox-label">Verification Codes</span>
-          <div class="scan-badge">
-            <div class="scan-pip" id="scanDot"></div>
-            <span id="scanText">Scanning</span>
-          </div>
-        </div>
-
-        <!-- Table -->
-        <div class="inbox-table-wrap">
-          <table class="inbox-table">
-            <thead>
-              <tr>
-                <th>Sender</th>
-                <th>Code</th>
-              </tr>
-            </thead>
-            <tbody id="inboxBody">
-              <tr class="empty-row">
-                <td colspan="2"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>Awaiting emails…</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
+    <div class="login-view" id="loginView">
+      <div class="login-icon">
+        <i class="fa-regular fa-envelope"></i>
       </div>
+      <h2 class="login-title">Connect Inbox Engine</h2>
+      <p class="login-sub">Link your primary Gmail module to pull temporary verification data fields instantly.</p>
+      <button class="g-btn" onclick="startLogin()">
+        <svg class="g-icon" viewBox="0 0 24 24">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#000000"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#000000"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#000000"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#000000"/>
+        </svg>
+        <span>Initialize Google Tunnel</span>
+      </button>
     </div>
 
-  </div><!-- /card -->
-</div><!-- /shell -->
+    <div id="mainView" style="display:none;">
 
-<script>
+      <div class="status-container" id="statusBox">
+        <div class="status-glow-bg"></div>
+        <div class="s-left">
+          <div class="status-details">
+            <span class="status-label">Engine Node</span>
+            <span id="statusEmail">—</span>
+          </div>
+        </div>
+        <div class="live-indicator" id="liveLabel">
+          <i class="fa-solid fa-circle-nodes"></i>&nbsp;<span id="liveText">Active</span>
+        </div>
+        <button class="signout-btn" onclick="logout()" title="Terminate Connection">
+          <i class="fa-solid fa-power-off"></i>
+        </button>
+      </div>
+
+      <div class="token-warn" id="tokenWarning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>Handshake Terminated</span>
+        <button class="reauth" onclick="silentRefresh()">Re-auth</button>
+      </div>
+
+      <div class="email-display" id="emailDisplayContainer" onclick="copyEmail()" title="Click to Capture">
+        <div class="email-text loading" id="emailDisplay">Mapping Virtual Routing...</div>
+        <div class="copy-badge">
+          <span>Copy</span>
+          <i class="fa-regular fa-copy" id="copyIcon"></i>
+        </div>
+        <div class="copy-overlay">// ADDR_CAPTURED</div>
+      </div>
+
+      <div class="actions">
+        <button class="act-btn" id="refreshBtn" onclick="doRefresh()">
+          <i class="fa-solid fa-sync"></i>
+          <span>Sync Pipeline</span>
+        </button>
+        <button class="act-btn" onclick="newEmail()">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>Mutate Identity</span>
+        </button>
+      </div>
+
+      <div class="inbox-header">
+        <span class="inbox-label">Data Packets Detected</span>
+        <div class="scan-status">
+          <div class="scan-pip"></div>
+          <span>LISTENING</span>
+        </div>
+      </div>
+
+      <div class="inbox" id="inbox">
+        <div class="empty">
+          <i class="fa-regular fa-folder-open"></i>
+          <span>No operational data vectors captured yet.</span>
+        </div>
+      </div>
+
+    </div>
+  </div></div><script>
 const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
 const SCOPES    = 'https://www.googleapis.com/auth/gmail.readonly';
 
@@ -679,13 +754,46 @@ let accessToken   = null;
 let tokenExpiry   = 0;
 let baseGmail     = null;
 let currentAlias  = null;
+let currentSuffix = null;
 let pollTimer     = null;
 let refreshTimer  = null;
 let knownIds      = new Set();
 let firstCopied   = false;
 let tokenClient   = null;
 
-/* ── theme ── */
+/* ── Cyber Tone Generator (Amplified High-Gain Production) ── */
+function playNotification() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Multi-oscillator cluster for highly audible sound stage
+    const configurations = [
+      { freq: 880, start: 0, dur: 0.08, vol: 0.45 },
+      { freq: 1200, start: 0.03, dur: 0.12, vol: 0.35 },
+      { freq: 1760, start: 0.06, dur: 0.15, vol: 0.25 }
+    ];
+
+    configurations.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'triangle'; // Richer structural harmonics than basic sine
+      osc.frequency.setValueAtTime(n.freq, ctx.currentTime);
+      
+      gain.gain.setValueAtTime(0, ctx.currentTime + n.start);
+      gain.gain.linearRampToValueAtTime(n.vol, ctx.currentTime + n.start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.start + n.dur);
+      
+      osc.start(ctx.currentTime + n.start);
+      osc.stop(ctx.currentTime + n.start + n.dur + 0.02);
+    });
+  } catch(e) {}
+}
+
+/* ── UI Framework Engine Drivers ── */
 function toggleTheme() {
   const isDark = document.body.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
@@ -699,45 +807,6 @@ function toggleTheme() {
   document.getElementById('themeIcon').className = t === 'dark' ? 'fa-regular fa-moon' : 'fa-regular fa-sun';
 })();
 
-/* ── modern notification sound ── */
-function playNotification() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const now = ctx.currentTime;
-
-    // soft high chime: two quick notes with gentle envelope
-    const notes = [
-      { freq: 880,  start: 0,    dur: 0.12, vol: 0.08 },
-      { freq: 1108, start: 0.09, dur: 0.18, vol: 0.06 },
-    ];
-
-    notes.forEach(n => {
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const lpf  = ctx.createBiquadFilter();
-
-      lpf.type = 'lowpass';
-      lpf.frequency.value = 3200;
-
-      osc.connect(lpf);
-      lpf.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(n.freq, now + n.start);
-      osc.frequency.exponentialRampToValueAtTime(n.freq * 0.98, now + n.start + n.dur);
-
-      gain.gain.setValueAtTime(0, now + n.start);
-      gain.gain.linearRampToValueAtTime(n.vol, now + n.start + 0.018);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + n.start + n.dur + 0.08);
-
-      osc.start(now + n.start);
-      osc.stop(now + n.start + n.dur + 0.12);
-    });
-  } catch(e) {}
-}
-
-/* ── auth ── */
 function initTokenClient() {
   if (tokenClient) return;
   tokenClient = google.accounts.oauth2.initTokenClient({
@@ -748,14 +817,14 @@ function initTokenClient() {
 
 function handleTokenResponse(resp) {
   if (resp.error) {
-    document.getElementById('tokenWarning').classList.add('show');
+    document.getElementById('tokenWarning').classList.add('visible');
     setStatus(false); return;
   }
   accessToken = resp.access_token;
   tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
   localStorage.setItem('gToken', accessToken);
   localStorage.setItem('gExpiry', tokenExpiry);
-  document.getElementById('tokenWarning').classList.remove('show');
+  document.getElementById('tokenWarning').classList.remove('visible');
   scheduleTokenRefresh();
 }
 
@@ -763,7 +832,7 @@ function startLogin() {
   const tc = google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID, scope: SCOPES, prompt: 'select_account',
     callback: async (resp) => {
-      if (resp.error) { showToast('Login cancelled'); return; }
+      if (resp.error) { showToast('Auth Aborted'); return; }
       accessToken = resp.access_token;
       tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
       localStorage.setItem('gToken', accessToken);
@@ -797,19 +866,17 @@ async function fetchProfile() {
     document.getElementById('statusEmail').innerText = baseGmail;
     document.getElementById('loginView').style.display = 'none';
     document.getElementById('mainView').style.display  = 'block';
-    document.getElementById('statusStrip').style.display = 'flex';
     setStatus(true); newEmail();
-  } catch(e) { showToast('Profile error'); }
+  } catch(e) { showToast('Handshake Failed'); }
 }
 
 function logout() {
   clearInterval(pollTimer); clearTimeout(refreshTimer);
   accessToken = tokenClient = null;
   ['gToken','gExpiry','gEmail'].forEach(k => localStorage.removeItem(k));
-  document.getElementById('mainView').style.display   = 'none';
-  document.getElementById('loginView').style.display  = 'flex';
-  document.getElementById('statusStrip').style.display = 'none';
-  resetTable();
+  document.getElementById('mainView').style.display  = 'none';
+  document.getElementById('loginView').style.display = 'flex';
+  document.getElementById('inbox').innerHTML = emptyState();
 }
 
 window.addEventListener('load', () => {
@@ -819,33 +886,29 @@ window.addEventListener('load', () => {
   if (tok && em && Date.now() < exp) {
     accessToken = tok; tokenExpiry = exp; baseGmail = em;
     document.getElementById('statusEmail').innerText = em;
-    document.getElementById('loginView').style.display  = 'none';
-    document.getElementById('mainView').style.display   = 'block';
-    document.getElementById('statusStrip').style.display = 'flex';
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('mainView').style.display  = 'block';
     setStatus(true); initTokenClient(); scheduleTokenRefresh(); newEmail();
   }
 });
 
-/* ── alias ── */
 function randStr(n=6) {
-  const c = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from({length:n}, () => c[Math.random()*c.length|0]).join('');
+  const c='abcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({length:n},()=>c[Math.random()*c.length|0]).join('');
 }
 
 function newEmail() {
   if (!baseGmail) return;
   clearInterval(pollTimer); knownIds.clear(); firstCopied = false;
-  const sfx = randStr(6);
+  currentSuffix = randStr(6);
   const [local,domain] = baseGmail.split('@');
-  currentAlias = `${local}+${sfx}@${domain}`;
+  currentAlias = `${local}+${currentSuffix}@${domain}`;
   const el = document.getElementById('emailDisplay');
   el.innerText = currentAlias; el.classList.remove('loading');
-  resetTable();
-  document.getElementById('scanText').innerText = 'Scanning';
+  document.getElementById('inbox').innerHTML = emptyState();
   pollTimer = setInterval(poll, 5000);
 }
 
-/* ── polling ── */
 async function poll() {
   if (!accessToken || !currentAlias) return;
   if (Date.now() > tokenExpiry) { silentRefresh(); return; }
@@ -860,9 +923,7 @@ async function poll() {
     for (const m of (data.messages || [])) {
       if (!knownIds.has(m.id)) {
         knownIds.add(m.id);
-        // clear empty row on first real message
-        const tbody = document.getElementById('inboxBody');
-        if (tbody.querySelector('.empty-row')) tbody.innerHTML = '';
+        if (document.querySelector('.empty')) document.getElementById('inbox').innerHTML = '';
         fetchMsg(m.id);
       }
     }
@@ -892,11 +953,12 @@ async function fetchMsg(id) {
       body=atob(msg.payload.body.data.replace(/-/g,'+').replace(/_/g,'/'));
     const code   = extractCode(subj+' '+body);
     const sender = from.replace(/<.*>/,'').trim()||from.split('@')[0];
-    renderRow(sender, code);
+    renderMsg(sender,code);
     if (code && !firstCopied) {
-      firstCopied = true;
+      firstCopied=true;
       navigator.clipboard.writeText(code).catch(()=>{});
-      showToast('Code copied'); playNotification();
+      showToast('Payload Captured'); 
+      playNotification();
     }
   } catch(e) {}
 }
@@ -910,59 +972,87 @@ function extractCode(text) {
   for (const p of pats) {
     const m = text.match(p);
     if (m) {
-      const code = m[1]||m[0]; const n = parseInt(code);
+      const code=m[1]||m[0]; const n=parseInt(code);
       if (n>=1000&&n<=99999999&&!(n>=2020&&n<=2030)) return code;
     }
   }
   return null;
 }
 
-function renderRow(sender, code) {
-  const tbody = document.getElementById('inboxBody');
-  const tr = document.createElement('tr');
-  let codeCell = '';
+function renderMsg(sender, code) {
+  const inbox = document.getElementById('inbox');
+  const card  = document.createElement('div');
+  card.className = 'msg';
+  
+  let html = `
+    <div class="msg-top">
+      <div class="msg-sender">${esc(sender)}</div>
+      <div class="msg-time">Just Now</div>
+    </div>
+  `;
   if (code) {
-    codeCell = `<div class="td-code-cell"><div class="code-chip" onclick="copyCode('${code}')">${code}<span class="copy-hint">copy</span></div></div>`;
+    html += `
+      <div class="code-wrapper" onclick="copyCode(event, this, '${code}')">
+        <div class="code-block">${code}</div>
+        <div class="inner-overlay">// CODE COPIED</div>
+      </div>
+    `;
   } else {
-    codeCell = `<span class="no-code-tag">no code</span>`;
+    html += `<div class="no-code">Decryption complete. No standard numeric validation string identified inside block array.</div>`;
   }
-  tr.innerHTML = `<td class="td-sender">${esc(sender)}</td><td>${codeCell}</td>`;
-  tbody.prepend(tr);
+  card.innerHTML = html;
+  inbox.prepend(card);
 }
 
-function resetTable() {
-  document.getElementById('inboxBody').innerHTML =
-    `<tr class="empty-row"><td colspan="2"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>Awaiting emails…</td></tr>`;
+function emptyState() {
+  return `<div class="empty"><i class="fa-regular fa-folder-open"></i> <span>No operational data vectors captured yet.</span></div>`;
 }
 
 async function doRefresh() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning'); await poll();
-  setTimeout(() => btn.classList.remove('spinning'), 600);
+  setTimeout(()=>btn.classList.remove('spinning'),600);
 }
 
 function copyEmail() {
   if (!currentAlias) return;
-  navigator.clipboard.writeText(currentAlias).then(() => {
-    showToast('Alias copied');
-    const icon = document.getElementById('copyIcon');
-    icon.className = 'fa-solid fa-check';
-    setTimeout(() => icon.className = 'fa-regular fa-copy', 1400);
+  const target = document.getElementById('emailDisplayContainer');
+  navigator.clipboard.writeText(currentAlias).then(()=>{
+    playNotification();
+    target.classList.add('copied');
+    setTimeout(()=>target.classList.remove('copied'), 900);
   });
 }
 
-function copyCode(code) {
-  navigator.clipboard.writeText(code).then(() => showToast('Code copied'));
+function copyCode(e, element, code) {
+  e.stopPropagation();
+  navigator.clipboard.writeText(code).then(()=>{
+    playNotification();
+    element.classList.add('copied');
+    setTimeout(()=>element.classList.remove('copied'), 900);
+  });
 }
 
 function setStatus(ok) {
-  document.getElementById('statusDot').className = ok ? 'dot' : 'dot off';
+  const box = document.getElementById('statusBox');
+  const lbl = document.getElementById('liveLabel');
+  const txt = document.getElementById('liveText');
+  
+  if(ok) {
+    box.classList.remove('disconnected');
+    lbl.classList.remove('off');
+    txt.innerText = "Active";
+  } else {
+    box.classList.add('disconnected');
+    lbl.classList.add('off');
+    txt.innerText = "Offline";
+  }
 }
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.innerText = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+  const t=document.getElementById('toast');
+  t.innerText=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
 }
 
 function esc(s) {
