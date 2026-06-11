@@ -102,8 +102,54 @@
             100% { transform: translateY(64px) translateX(0); }
         }
 
-        /* Glow/orb elements hidden — uniform background */
-        .bg-glow, .bg-glow-2, .bg-orb { display: none; }
+        /* Glow/orb elements — purple spread in dark mode */
+        .bg-glow, .bg-glow-2, .bg-orb { display: block; }
+
+        .bg-glow {
+            position: fixed;
+            top: -15%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            max-width: 700px;
+            max-height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.13) 0%, rgba(139, 92, 246, 0.07) 40%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
+            animation: orbDrift1 18s ease-in-out infinite alternate;
+        }
+
+        .bg-glow-2 {
+            position: fixed;
+            bottom: -15%;
+            right: -10%;
+            width: 55vw;
+            height: 55vw;
+            max-width: 650px;
+            max-height: 650px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.11) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(50px);
+            animation: orbDrift2 22s ease-in-out infinite alternate;
+        }
+
+        @keyframes orbDrift1 {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(4%, 6%) scale(1.08); }
+        }
+        @keyframes orbDrift2 {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-4%, -5%) scale(1.06); }
+        }
+
+        [data-theme="light"] .bg-glow,
+        [data-theme="light"] .bg-glow-2 {
+            display: none;
+        }
 
         .container {
             width: 100%;
@@ -217,17 +263,19 @@
         .logout-btn:active { transform: scale(0.96); }
 
         .email-display-group {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.18) 50%, rgba(99, 102, 241, 0.14) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.55);
             border-radius: 14px;
             padding: 6px 6px 6px 14px;
             display: flex; align-items: center; justify-content: space-between;
             cursor: pointer;
-            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 0 18px rgba(99, 102, 241, 0.12), inset 0 0 12px rgba(139, 92, 246, 0.06);
+            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
         }
         .email-display-group:hover {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.05);
+            border-color: rgba(167, 139, 250, 0.8);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.32) 0%, rgba(139, 92, 246, 0.26) 50%, rgba(99, 102, 241, 0.22) 100%);
+            box-shadow: 0 0 28px rgba(99, 102, 241, 0.22), inset 0 0 16px rgba(139, 92, 246, 0.1);
         }
         .email-display-group:active { transform: scale(0.98); }
 
@@ -240,16 +288,23 @@
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         .action-icon-btn {
-            background: var(--btn-border); border: none;
+            background: rgba(99, 102, 241, 0.18); border: none;
             width: 36px; height: 36px;
             border-radius: 10px;
-            color: var(--text-primary); cursor: pointer;
+            color: #a5b4fc; cursor: pointer;
             display: flex; justify-content: center; align-items: center; font-size: 14px;
             pointer-events: none;
-            transition: background 0.2s ease, color 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            animation: iconGlow 2.5s ease-in-out infinite;
+        }
+        @keyframes iconGlow {
+            0%, 100% { box-shadow: 0 0 6px rgba(99, 102, 241, 0.3); color: #a5b4fc; }
+            50% { box-shadow: 0 0 14px rgba(139, 92, 246, 0.55); color: #c4b5fd; }
         }
         .email-display-group:hover .action-icon-btn {
             background: var(--accent); color: #fff;
+            box-shadow: 0 0 18px rgba(99, 102, 241, 0.5);
+            animation: none;
         }
 
         .controls { display: flex; gap: 10px; }
@@ -618,7 +673,7 @@
 
         /* Enhanced all button/box borders to purple-ish */
         .email-display-group {
-            border-color: rgba(99, 102, 241, 0.2) !important;
+            border-color: rgba(139, 92, 246, 0.55) !important;
         }
         .controls .btn {
             border-color: rgba(99, 102, 241, 0.2) !important;
