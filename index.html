@@ -545,93 +545,76 @@
         .header h1 { font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
         .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-        /* --- RADIO PLAYER --- */
-        #radioPlayer {
+        /* === RADIO PLAYER === */
+        #radioWidget {
             position: fixed;
             bottom: 18px;
             right: 18px;
             z-index: 999;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 40px;
-            padding: 6px 10px 6px 8px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.08);
-            transition: all 0.25s ease;
-            user-select: none;
+            padding: 5px 9px 5px 6px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 0 0 1px rgba(99,102,241,0.07);
+            transition: border-color 0.25s;
         }
-        #radioPlayer:hover {
-            border-color: rgba(99,102,241,0.3);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 0 16px rgba(99,102,241,0.08);
-        }
-        .radio-play-btn {
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            background: rgba(99,102,241,0.15);
-            border: 1px solid rgba(99,102,241,0.3);
-            color: var(--accent);
-            font-size: 10px;
-            cursor: pointer;
+        #radioWidget:hover { border-color: rgba(99,102,241,0.3); }
+
+        .r-btn {
+            background: none; border: none; cursor: pointer;
+            color: var(--text-secondary); padding: 0;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-        .radio-play-btn:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-        }
-        .radio-play-btn:active { transform: scale(0.9); }
-        .radio-next-btn {
-            width: 22px; height: 22px;
-            border-radius: 50%;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 9px;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: color 0.2s ease;
-            flex-shrink: 0;
-            padding: 0;
-        }
-        .radio-next-btn:hover { color: var(--accent); }
-        .radio-label {
-            font-size: 9px;
-            color: var(--text-secondary);
-            letter-spacing: 0.4px;
-            white-space: nowrap;
-            max-width: 70px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            transition: color 0.18s, transform 0.12s;
             line-height: 1;
         }
-        .radio-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 12px;
-            opacity: 0;
-            transition: opacity 0.3s;
+        .r-btn:hover { color: var(--accent); }
+        .r-btn:active { transform: scale(0.88); }
+
+        #rPlayBtn {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.28) !important;
+            color: var(--accent);
+            font-size: 9px;
+            transition: background 0.18s, color 0.18s;
         }
-        .radio-bars.active { opacity: 1; }
-        .radio-bars span {
-            width: 2px;
-            background: var(--accent);
-            border-radius: 2px;
-            animation: radioBeat 0.8s ease-in-out infinite;
+        #rPlayBtn:hover { background: var(--accent); color: #fff; border-color: var(--accent) !important; }
+
+        #rNextBtn { font-size: 9px; }
+
+        #rLabel {
+            font-size: 9px;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            max-width: 68px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .radio-bars span:nth-child(1) { animation-delay: 0s; }
-        .radio-bars span:nth-child(2) { animation-delay: 0.15s; }
-        .radio-bars span:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes radioBeat {
-            0%, 100% { height: 3px; }
-            50% { height: 12px; }
+
+        #rBars {
+            display: flex; align-items: flex-end; gap: 1.5px;
+            height: 11px; opacity: 0; transition: opacity 0.3s;
         }
+        #rBars.on { opacity: 1; }
+        #rBars span {
+            display: block; width: 2px;
+            background: var(--accent); border-radius: 2px;
+            animation: rBeat 0.75s ease-in-out infinite;
+        }
+        #rBars span:nth-child(2) { animation-delay: 0.18s; }
+        #rBars span:nth-child(3) { animation-delay: 0.36s; }
+        @keyframes rBeat {
+            0%,100% { height: 2px; } 50% { height: 11px; }
+        }
+
+        /* hidden YT iframe */
+        #ytFrame { position:fixed; width:1px; height:1px; opacity:0; pointer-events:none; bottom:0; right:0; }
     </style>
 </head>
 <body data-theme="dark">
@@ -1181,62 +1164,102 @@
         function escapeHtml(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     </script>
 
-    <!-- RADIO PLAYER -->
-    <div id="radioPlayer">
-        <button class="radio-play-btn" id="radioPlayBtn" onclick="radioToggle()" title="Play / Pause">
-            <i class="fa-solid fa-play" id="radioPlayIcon"></i>
+    <!-- ===== RADIO WIDGET ===== -->
+    <div id="radioWidget">
+        <button class="r-btn" id="rPlayBtn" onclick="rToggle()" title="پخش / توقف">
+            <i class="fa-solid fa-play" id="rPlayIcon"></i>
         </button>
-        <div class="radio-bars" id="radioBars">
-            <span></span><span></span><span></span>
-        </div>
-        <span class="radio-label" id="radioLabel">Lo-fi Radio</span>
-        <button class="radio-next-btn" onclick="radioNext()" title="Next station">
+        <div id="rBars"><span></span><span></span><span></span></div>
+        <span id="rLabel">Lo‑fi Radio</span>
+        <button class="r-btn" id="rNextBtn" onclick="rNext()" title="بعدی">
             <i class="fa-solid fa-forward-step"></i>
         </button>
     </div>
 
-    <audio id="radioAudio" preload="none"></audio>
+    <!-- Invisible YouTube IFrame (loaded on first play) -->
+    <div id="ytFrame"></div>
 
     <script>
-        const RADIO_STATIONS = [
-            { name: 'Lo-fi Chill', url: 'https://streams.ilovemusic.de/iloveradio17.mp3' },
-            { name: 'Ambient', url: 'https://streams.ilovemusic.de/iloveradio3.mp3' },
-            { name: 'Chillout', url: 'https://streams.ilovemusic.de/iloveradio2.mp3' },
-        ];
-        let radioIndex = 0;
-        let radioPlaying = false;
-        const radioAudio = document.getElementById('radioAudio');
-        const radioPlayIcon = document.getElementById('radioPlayIcon');
-        const radioBars = document.getElementById('radioBars');
-        const radioLabel = document.getElementById('radioLabel');
+    // ── Playlist of known lofi / ambient / instrumental YouTube videos ──
+    // All are long livestreams or mixes with zero lyrics
+    const R_LIST = [
+        { name: 'Lofi Hip Hop',   id: 'jfKfPfyJRdk' },  // Lofi Girl – beats to relax
+        { name: 'Chillhop',       id: '5yx6BWlEVcY' },  // Chillhop Music live
+        { name: 'Ambient Space',  id: 'kPjfO6GAsrg' },  // dark ambient/space
+        { name: 'Jazz Lofi',      id: 'HuFYqnbVbzY' },  // lofi jazz
+        { name: 'Study Beats',    id: 'lTRiuFIWV54' },  // lofi study
+    ];
 
-        function radioToggle() {
-            if (radioPlaying) {
-                radioAudio.pause();
-                radioPlaying = false;
-                radioPlayIcon.className = 'fa-solid fa-play';
-                radioBars.classList.remove('active');
-            } else {
-                radioAudio.src = RADIO_STATIONS[radioIndex].url;
-                radioLabel.textContent = RADIO_STATIONS[radioIndex].name;
-                radioAudio.play().then(() => {
-                    radioPlaying = true;
-                    radioPlayIcon.className = 'fa-solid fa-pause';
-                    radioBars.classList.add('active');
-                }).catch(() => {});
+    let rIdx   = 0;
+    let rReady = false;
+    let rPlay  = false;
+    let ytPlayer = null;
+
+    const rPlayIcon = document.getElementById('rPlayIcon');
+    const rBars     = document.getElementById('rBars');
+    const rLabel    = document.getElementById('rLabel');
+
+    // Load YouTube IFrame API once, lazily
+    function rLoadAPI() {
+        if (window.YT) { rInitPlayer(); return; }
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+    }
+
+    window.onYouTubeIframeAPIReady = function() { rInitPlayer(); };
+
+    function rInitPlayer() {
+        ytPlayer = new YT.Player('ytFrame', {
+            height: '1', width: '1',
+            videoId: R_LIST[rIdx].id,
+            playerVars: { autoplay: 1, controls: 0, loop: 1, playsinline: 1 },
+            events: {
+                onReady: function(e) {
+                    rReady = true;
+                    e.target.playVideo();
+                    rSetPlaying(true);
+                },
+                onStateChange: function(e) {
+                    // If ended, go next
+                    if (e.data === YT.PlayerState.ENDED) rNext();
+                },
+                onError: function() { rNext(); }
             }
-        }
+        });
+    }
 
-        function radioNext() {
-            radioIndex = (radioIndex + 1) % RADIO_STATIONS.length;
-            radioLabel.textContent = RADIO_STATIONS[radioIndex].name;
-            if (radioPlaying) {
-                radioAudio.src = RADIO_STATIONS[radioIndex].url;
-                radioAudio.play().catch(() => {});
-            }
+    function rToggle() {
+        if (!rReady) {
+            // First press — load API & play
+            rLabel.textContent = 'Loading…';
+            rLoadAPI();
+            return;
         }
+        if (rPlay) {
+            ytPlayer.pauseVideo();
+            rSetPlaying(false);
+        } else {
+            ytPlayer.playVideo();
+            rSetPlaying(true);
+        }
+    }
 
-        radioAudio.addEventListener('error', () => { radioNext(); });
+    function rNext() {
+        rIdx = (rIdx + 1) % R_LIST.length;
+        rLabel.textContent = R_LIST[rIdx].name;
+        if (rReady && ytPlayer) {
+            ytPlayer.loadVideoById(R_LIST[rIdx].id);
+            if (rPlay) ytPlayer.playVideo();
+        }
+    }
+
+    function rSetPlaying(on) {
+        rPlay = on;
+        rPlayIcon.className = on ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+        rBars.classList.toggle('on', on);
+        if (on) rLabel.textContent = R_LIST[rIdx].name;
+    }
     </script>
 
 </body>
