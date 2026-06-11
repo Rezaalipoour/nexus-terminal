@@ -562,6 +562,49 @@
         }
         .launch-btn.pulse-ready .launch-dot { opacity: 1; }
 
+        /* Pending copy banner — shown when code arrived while tab was hidden */
+        #pendingCopyBanner {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(234, 179, 8, 0.08);
+            border: 1px solid rgba(234, 179, 8, 0.35);
+            border-radius: 14px;
+            padding: 10px 14px;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            animation: fadeUp 0.35s ease forwards;
+        }
+        #pendingCopyBanner:hover {
+            background: rgba(234, 179, 8, 0.16);
+        }
+        #pendingCopyBanner:active { transform: scale(0.98); }
+        .pending-banner-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #fbbf24;
+        }
+        .pending-banner-code {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: #fcd34d;
+        }
+        .pending-banner-tap {
+            font-size: 10px;
+            font-weight: 600;
+            color: #fbbf24;
+            background: rgba(234, 179, 8, 0.18);
+            border: 1px solid rgba(234, 179, 8, 0.35);
+            border-radius: 8px;
+            padding: 4px 10px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
         /* Session restore indicator */
         .session-tag {
             display: inline-flex;
@@ -685,6 +728,18 @@
                 </div>
 
                 <div class="divider"></div>
+
+                <!-- Pending copy banner — appears when code arrived while tab was in background -->
+                <div id="pendingCopyBanner" onclick="commitPendingCopy()">
+                    <div class="pending-banner-left">
+                        <i class="fa-solid fa-bolt" style="font-size:13px;"></i>
+                        <div>
+                            <div style="font-size:10px; color:#fbbf24; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">کد آماده‌ست</div>
+                            <div class="pending-banner-code" id="pendingBannerCode">------</div>
+                        </div>
+                    </div>
+                    <div class="pending-banner-tap">⚡ Tap to Copy</div>
+                </div>
 
                 <div class="inbox-header">
                     <span>Verification Codes</span>
@@ -945,21 +1000,78 @@
         let pendingAutoCopyCode = null;
         let pendingAutoCopySite = null;
 
+        function tryPendingCopy() {
+            if (!pendingAutoCopyCode) return;
+            const code = pendingAutoCopyCode;
+            const site = pendingAutoCopySite;
+            pendingAutoCopyCode = null;
+            pendingAutoCopySite = null;
+            hidePendingBanner();
+            navigator.clipboard.writeText(code).then(() => {
+                playCopyCode();
+                showToast('Code Auto-Copied! ✓', '⚡');
+                if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+            }).catch(() => {
+                // Still failed — show banner as last resort
+                showPendingBanner(code, site);
+                pendingAutoCopyCode = code;
+                pendingAutoCopySite = site;
+            });
+        }
+
+        function showPendingBanner(code, site) {
+            const banner = document.getElementById('pendingCopyBanner');
+            const bannerCode = document.getElementById('pendingBannerCode');
+            if (banner && bannerCode) {
+                bannerCode.textContent = code;
+                banner.style.display = 'flex';
+            }
+        }
+
+        function hidePendingBanner() {
+            const banner = document.getElementById('pendingCopyBanner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        function commitPendingCopy() {
+            if (!pendingAutoCopyCode) return;
+            const code = pendingAutoCopyCode;
+            const site = pendingAutoCopySite;
+            pendingAutoCopyCode = null;
+            pendingAutoCopySite = null;
+            hidePendingBanner();
+            navigator.clipboard.writeText(code).then(() => {
+                playCopyCode();
+                showToast('Code Copied!', '⚡');
+                if (site === 'nana') { triggerSiteReady('nana'); }
+                else if (site === 'v03') { triggerSiteReady('v03'); }
+                else { triggerSiteReady('nana'); triggerSiteReady('v03'); }
+            }).catch(() => {});
+        }
+
+        // visibilitychange — اولین تلاش
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && pendingAutoCopyCode) {
-                const code = pendingAutoCopyCode;
-                const site = pendingAutoCopySite;
-                pendingAutoCopyCode = null;
-                pendingAutoCopySite = null;
-                navigator.clipboard.writeText(code).then(() => {
-                    playCopyCode();
-                    showToast('Code Auto-Copied!', '⚡');
-                    if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
-                    else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
-                    else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
-                }).catch(() => {});
+                tryPendingCopy();
             }
         });
+
+        // window focus — وقتی کاربر روی تب کلیک میکنه، این یه gesture واقعیه
+        // و مرورگر clipboard رو قبول میکنه
+        window.addEventListener('focus', () => {
+            if (pendingAutoCopyCode) {
+                tryPendingCopy();
+            }
+        });
+
+        // click روی هر جای صفحه — قطعی‌ترین روش
+        document.addEventListener('click', () => {
+            if (pendingAutoCopyCode) {
+                tryPendingCopy();
+            }
+        }, true);
 
         // =============================================
         // THEME
