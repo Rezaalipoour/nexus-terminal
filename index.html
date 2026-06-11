@@ -3,279 +3,202 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusMail</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
+<title>NexusMail — Premium Client</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230071e3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='3'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ─────────────────────────────────────────
-   TOKENS — DARK (default)
+   DESIGN TOKENS — SOPHISTICATED DARK
 ───────────────────────────────────────── */
 :root {
-  --c0: #000005;          /* true black bg */
-  --c1: #080810;          /* surface */
-  --c2: #0d0d18;          /* raised surface */
-  --c3: #12121f;          /* hover surface */
-
-  --cyan:       #00e5ff;
-  --cyan-dim:   rgba(0, 229, 255, 0.08);
-  --cyan-mid:   rgba(0, 229, 255, 0.18);
-  --cyan-glow:  rgba(0, 229, 255, 0.30);
-  --cyan-hard:  rgba(0, 229, 255, 0.55);
-
-  --violet:     #7c3aed;
-  --violet-dim: rgba(124, 58, 237, 0.12);
-
-  --border:       rgba(0, 229, 255, 0.10);
-  --border-hover: rgba(0, 229, 255, 0.38);
-  --border-lit:   rgba(0, 229, 255, 0.65);
-
-  --text:    #f0f4ff;
-  --text-2:  #7a8aaa;
-  --text-3:  #3a4460;
-
-  --green:  #00ff88;
-  --red:    #ff3366;
-
-  --r:  14px;
-  --rs: 9px;
+  --bg-main: #0a0a0c;
+  --bg-panel: #121215;
+  --bg-surface: #1a1a1e;
+  --bg-surface-hover: #222227;
+  
+  --accent: #0071e3;
+  --accent-dim: rgba(0, 113, 227, 0.08);
+  --accent-mid: rgba(0, 113, 227, 0.15);
+  
+  --border: rgba(255, 255, 255, 0.04);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  
+  --text-primary: #f5f5f7;
+  --text-secondary: #86868b;
+  --text-muted: #424245;
+  
+  --success: #30d158;
+  --error: #ff453a;
+  --radius-lg: 16px;
+  --radius-md: 10px;
 }
 
 /* ─────────────────────────────────────────
-   TOKENS — LIGHT
+   DESIGN TOKENS — MUTED LIGHT (Soft & Clean)
 ───────────────────────────────────────── */
 [data-theme="light"] {
-  --c0: #f5f7ff;
-  --c1: #ffffff;
-  --c2: #f0f2fc;
-  --c3: #e8ecf8;
-
-  --cyan:       #0066ff;
-  --cyan-dim:   rgba(0, 102, 255, 0.07);
-  --cyan-mid:   rgba(0, 102, 255, 0.14);
-  --cyan-glow:  rgba(0, 102, 255, 0.22);
-  --cyan-hard:  rgba(0, 102, 255, 0.50);
-
-  --violet:     #6d28d9;
-  --violet-dim: rgba(109, 40, 217, 0.08);
-
-  --border:       rgba(0, 102, 255, 0.12);
-  --border-hover: rgba(0, 102, 255, 0.35);
-  --border-lit:   rgba(0, 102, 255, 0.60);
-
-  --text:   #06080f;
-  --text-2: #5060a0;
-  --text-3: #a0b0d0;
-
-  --green:  #00b050;
-  --red:    #e0102a;
+  --bg-main: #f5f5f7;
+  --bg-panel: #ffffff;
+  --bg-surface: #fbfbfd;
+  --bg-surface-hover: #f2f2f7;
+  
+  --accent: #0071e3;
+  --accent-dim: rgba(0, 113, 227, 0.06);
+  --accent-mid: rgba(0, 113, 227, 0.12);
+  
+  --border: rgba(0, 0, 0, 0.05);
+  --border-hover: rgba(0, 0, 0, 0.12);
+  
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-muted: #86868b;
+  
+  --success: #34c759;
+  --error: #ff3b30;
 }
 
-/* ─────────────────────────────────────────
-   BODY
-───────────────────────────────────────── */
 body {
-  font-family: 'Space Grotesk', sans-serif;
-  background: var(--c0);
-  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  transition: background 0.4s, color 0.3s;
-  position: relative;
+  padding: 24px;
+  transition: background 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.3s;
   overflow: hidden;
 }
 
-/* ── background grid ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  z-index: 0;
-}
-
-[data-theme="light"] body::before {
-  background-image:
-    linear-gradient(rgba(0,102,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,102,255,0.04) 1px, transparent 1px);
-}
-
-/* ── glow orbs ── */
-.bg-orb {
-  position: fixed;
-  pointer-events: none;
-  border-radius: 50%;
-  filter: blur(80px);
-  z-index: 0;
-}
-.bg-orb-1 {
-  width: 500px; height: 500px;
-  top: -180px; left: 50%;
-  transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
-}
-.bg-orb-2 {
-  width: 350px; height: 350px;
-  bottom: -120px; right: -60px;
-  background: radial-gradient(circle, rgba(124,58,237,0.09) 0%, transparent 70%);
-}
-[data-theme="light"] .bg-orb-1 {
-  background: radial-gradient(circle, rgba(0,102,255,0.06) 0%, transparent 70%);
-}
-[data-theme="light"] .bg-orb-2 {
-  background: radial-gradient(circle, rgba(109,40,217,0.06) 0%, transparent 70%);
-}
-
 /* ─────────────────────────────────────────
-   APP SHELL
+   APP CONTAINER (All elements constrained inside)
 ───────────────────────────────────────── */
 .app {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   position: relative;
-  z-index: 1;
 }
 
 /* ─────────────────────────────────────────
-   HEADER
+   HEADER SECTION
 ───────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding: 0 2px;
+  padding: 0 4px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .logo-mark {
-  position: relative;
-  width: 32px; height: 32px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
 }
-.logo-mark svg {
-  position: absolute;
-  inset: 0;
-}
+
 .logo-name {
-  font-size: 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px;
   font-weight: 700;
-  letter-spacing: -0.6px;
-  color: var(--text);
+  letter-spacing: -0.4px;
 }
+
 .logo-name span {
-  color: var(--cyan);
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .theme-btn {
-  width: 36px; height: 36px;
-  background: var(--c1);
+  width: 36px;
+  height: 36px;
+  background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: var(--rs);
-  color: var(--text-2);
+  border-radius: 50%;
+  color: var(--text-secondary);
   cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
+
 .theme-btn:hover {
   border-color: var(--border-hover);
-  color: var(--cyan);
+  color: var(--text-primary);
+  transform: scale(1.04);
 }
 
 /* ─────────────────────────────────────────
-   PANEL — main container
+   MAIN PANEL
 ───────────────────────────────────────── */
 .panel {
-  background: var(--c1);
+  background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
-  /* top edge accent line */
-  box-shadow:
-    0 0 0 0.5px var(--border),
-    0 20px 60px rgba(0,0,0,0.5),
-    0 0 40px rgba(0,229,255,0.04) inset;
-}
-
-/* ── lit top border ── */
-.panel::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 10%; right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--cyan-hard), transparent);
-  z-index: 2;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  transition: background 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s;
 }
 
 [data-theme="light"] .panel {
-  box-shadow:
-    0 0 0 0.5px var(--border),
-    0 20px 60px rgba(0,50,150,0.08),
-    0 0 40px rgba(0,102,255,0.03) inset;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.04);
 }
 
 /* ─────────────────────────────────────────
    LOGIN VIEW
 ───────────────────────────────────────── */
 .login-view {
-  padding: 44px 28px 36px;
+  padding: 48px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
   text-align: center;
 }
 
 .login-icon {
-  position: relative;
-  width: 68px; height: 68px;
-  display: flex; align-items: center; justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--accent);
+  margin-bottom: 24px;
 }
 
-.login-icon::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  background: var(--cyan-dim);
-  border: 1px solid var(--border-hover);
-}
-
-.login-icon i {
-  font-size: 26px;
-  color: var(--cyan);
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 0 8px var(--cyan-glow));
-}
-
-.login-copy {}
 .login-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.4px;
   margin-bottom: 8px;
 }
+
 .login-sub {
-  font-size: 13px;
-  color: var(--text-2);
-  line-height: 1.65;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 32px;
 }
 
 .g-btn {
@@ -283,181 +206,122 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 13px 20px;
-  background: var(--c2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text);
-  font-family: 'Space Grotesk', sans-serif;
+  gap: 12px;
+  padding: 14px 24px;
+  background: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--bg-panel);
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: -0.2px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
-.g-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--cyan-dim), transparent 60%);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
+
 .g-btn:hover {
-  border-color: var(--border-hover);
+  opacity: 0.95;
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 16px var(--cyan-glow);
 }
-.g-btn:hover::after { opacity: 1; }
-.g-btn:active { transform: scale(0.98) translateY(0); }
-.g-icon { width: 18px; height: 18px; position: relative; z-index: 1; }
-.g-btn span { position: relative; z-index: 1; }
+
+.g-icon { width: 16px; height: 16px; }
 
 /* ─────────────────────────────────────────
-   STATUS BAR
+   STATUS SYSTEM
 ───────────────────────────────────────── */
 .status-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 18px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border);
-  background: var(--c2);
+  background: var(--bg-surface);
 }
 
 .s-left {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 11.5px;
-  color: var(--text-2);
-  min-width: 0;
-  font-family: 'JetBrains Mono', monospace;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
+
 #statusEmail {
+  max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 195px;
-  font-size: 11px;
 }
 
 .live-dot {
-  width: 6px; height: 6px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-  animation: live-pulse 2.5s infinite;
+  background: var(--success);
 }
-.live-dot.off { background: var(--red); animation: none; }
-
-@keyframes live-pulse {
-  0%, 100% { opacity: 0.5; box-shadow: none; }
-  50% { opacity: 1; box-shadow: 0 0 0 3px rgba(0,255,136,0.2); }
-}
+.live-dot.off { background: var(--error); }
 
 .signout-btn {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--text-3);
+  color: var(--text-secondary);
   background: none;
   border: none;
   cursor: pointer;
-  transition: color 0.15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-  letter-spacing: 0.2px;
+  transition: color 0.2s;
 }
-.signout-btn:hover { color: var(--red); }
+.signout-btn:hover { color: var(--error); }
 
 /* ─────────────────────────────────────────
-   MAIN BODY
+   MAIN BODY & WORKSPACE
 ───────────────────────────────────────── */
 .main-body {
-  padding: 18px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 16px;
 }
 
-/* ─────────────────────────────────────────
-   EMAIL DISPLAY
-───────────────────────────────────────── */
+/* ── Muted Email Component ── */
 .email-display {
-  background: var(--c2);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 4px 4px 4px 16px;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.email-display::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 20%; bottom: 20%;
-  width: 2px;
-  background: var(--cyan);
-  border-radius: 2px;
-  box-shadow: 0 0 6px var(--cyan-glow);
-  transition: opacity 0.2s;
-  opacity: 0.7;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .email-display:hover {
   border-color: var(--border-hover);
-  background: var(--c3);
+  background: var(--bg-surface-hover);
 }
-.email-display:hover::before { opacity: 1; }
-.email-display:active { transform: scale(0.995); }
 
 .email-text {
-  flex: 1;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12.5px;
-  font-weight: 400;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--text);
-  letter-spacing: -0.2px;
+  letter-spacing: -0.1px;
 }
-.email-text.loading {
-  color: var(--text-3);
-  animation: blink 1.4s infinite;
-}
-@keyframes blink { 0%,100%{opacity:.3} 50%{opacity:.8} }
+.email-text.loading { color: var(--text-muted); }
 
 .copy-btn {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: var(--cyan-dim);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  color: var(--cyan);
-  flex-shrink: 0;
-  transition: all 0.2s;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
 }
-.email-display:hover .copy-btn {
-  background: var(--cyan);
-  color: #000;
-  border-color: var(--cyan);
-  box-shadow: 0 0 14px var(--cyan-glow);
-}
+.email-display:hover .copy-btn { color: var(--accent); }
 
-/* ─────────────────────────────────────────
-   ACTION BUTTONS
-───────────────────────────────────────── */
+/* ── Actions Matrix ── */
 .actions { display: flex; gap: 8px; }
 
 .act-btn {
@@ -465,275 +329,199 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 11px;
-  background: var(--c2);
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text-2);
-  font-family: 'Space Grotesk', sans-serif;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: -0.2px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
-.act-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--cyan-dim);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
+
 .act-btn:hover {
+  background: var(--bg-surface-hover);
   border-color: var(--border-hover);
-  color: var(--text);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
-.act-btn:hover::after { opacity: 1; }
-.act-btn:active { transform: scale(0.97) translateY(0); }
-.act-btn i { font-size: 12px; color: var(--cyan); position: relative; z-index: 1; }
-.act-btn span { position: relative; z-index: 1; }
-.act-btn.spinning i { animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.act-btn i { font-size: 11px; color: var(--text-secondary); }
+.act-btn.spinning i { animation: spin 0.6s linear infinite; }
 
 /* ─────────────────────────────────────────
-   INBOX SECTION
+   THE INBOX TABLE RE-ENGINEERED
 ───────────────────────────────────────── */
 .inbox-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 4px;
 }
 
 .inbox-label {
-  font-size: 9.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.8px;
-  color: var(--text-3);
+  color: var(--text-secondary);
 }
 
 .scan-status {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 9.5px;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--cyan);
-  letter-spacing: 0.5px;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
 }
 
 .scan-pip {
-  width: 5px; height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background: var(--cyan);
-  animation: pip 2s infinite;
-}
-@keyframes pip {
-  0%,100%{ opacity:0.4; }
-  50%{ opacity:1; box-shadow: 0 0 6px var(--cyan); }
+  background: var(--accent);
+  animation: pulse-light 1.8s infinite;
 }
 
-/* ─────────────────────────────────────────
-   INBOX LIST
-───────────────────────────────────────── */
+@keyframes pulse-light {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
 .inbox {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 72px;
-  max-height: 240px;
+  min-height: 80px;
+  max-height: 260px;
   overflow-y: auto;
 }
-.inbox::-webkit-scrollbar { width: 2px; }
-.inbox::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.inbox::-webkit-scrollbar { width: 0px; }
 
 .empty {
-  height: 72px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  color: var(--text-3);
-  gap: 7px;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  gap: 8px;
 }
 
-/* ─────────────────────────────────────────
-   MESSAGE CARD
-───────────────────────────────────────── */
+/* ── Premium Message Rows ── */
 .msg {
-  background: var(--c2);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 13px 15px;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  animation: appear 0.3s cubic-bezier(0.16,1,0.3,1);
-  position: relative;
-  overflow: hidden;
-}
-.msg::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, var(--cyan), transparent);
-  opacity: 0.5;
+  gap: 12px;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-@keyframes appear {
-  from { opacity:0; transform: translateY(-6px); }
-  to   { opacity:1; transform: translateY(0); }
+.msg:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-surface-hover);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .msg-sender {
-  font-size: 9.5px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text-3);
-  padding-left: 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
 }
 
 .code-block {
-  background: var(--c0);
+  background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px;
+  border-radius: 8px;
+  padding: 12px;
   text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 32px;
-  font-weight: 500;
-  letter-spacing: 12px;
-  color: var(--cyan);
-  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: var(--accent);
   transition: all 0.2s;
   user-select: none;
-  text-shadow: 0 0 20px var(--cyan-glow);
-  position: relative;
-  overflow: hidden;
 }
-.code-block::before {
-  content: 'TAP TO COPY';
-  position: absolute;
-  inset: 0;
-  background: var(--cyan);
-  color: #000;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
+
+.msg:hover .code-block {
+  border-color: var(--accent-mid);
+  background: var(--accent-dim);
 }
-.code-block:hover::before { opacity: 1; }
-.code-block:hover {
-  border-color: var(--cyan);
-  box-shadow: 0 0 30px var(--cyan-glow), 0 0 60px rgba(0,229,255,0.1);
-}
-.code-block:active { transform: scale(0.98); }
 
 .no-code {
-  font-size: 11.5px;
-  color: var(--text-3);
-  text-align: center;
-  padding: 4px 0;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 /* ─────────────────────────────────────────
-   TOKEN WARNING
+   CONSTRAINED NOTIFICATIONS & UI TOKENS
 ───────────────────────────────────────── */
 .token-warn {
   display: none;
   align-items: center;
   gap: 8px;
-  padding: 10px 13px;
-  background: rgba(255,51,102,0.07);
-  border: 1px solid rgba(255,51,102,0.2);
-  border-radius: var(--r);
-  font-size: 12px;
-  color: #ff6680;
+  padding: 10px 14px;
+  background: rgba(255, 69, 58, 0.06);
+  border: 1px solid rgba(255, 69, 58, 0.15);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  color: var(--error);
 }
 .token-warn.visible { display: flex; }
 .reauth {
   margin-left: auto;
-  background: rgba(255,51,102,0.14);
+  background: none;
   border: none;
-  color: #ff6680;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
+  color: var(--error);
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  text-decoration: underline;
 }
-.reauth:hover { background: rgba(255,51,102,0.28); }
 
-/* ─────────────────────────────────────────
-   TOAST
-───────────────────────────────────────── */
+/* Constrained Internal Toast */
 #toast {
-  position: fixed;
-  top: 20px;
+  position: absolute;
+  bottom: 16px;
   left: 50%;
-  transform: translateX(-50%) translateY(-14px);
-  background: var(--c1);
-  border: 1px solid var(--cyan-hard);
-  color: var(--cyan);
+  transform: translateX(-50%) translateY(8px);
+  background: var(--text-primary);
+  color: var(--bg-panel);
   font-size: 12px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  padding: 9px 22px;
-  border-radius: 30px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
-  white-space: nowrap;
-  z-index: 999;
-  box-shadow: 0 0 20px var(--cyan-glow), 0 8px 24px rgba(0,0,0,0.4);
-  letter-spacing: 0.5px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
 }
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
-<body data-theme="dark">
-
-<!-- bg orbs -->
-<div class="bg-orb bg-orb-1"></div>
-<div class="bg-orb bg-orb-2"></div>
-
-<div id="toast"></div>
+<body>
 
 <div class="app">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="logo">
       <div class="logo-mark">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="1" y="1" width="30" height="30" rx="9" fill="#080810" stroke="rgba(0,229,255,0.25)" stroke-width="1"/>
-          <rect x="6" y="10" width="20" height="13" rx="2.5" stroke="#00e5ff" stroke-width="1.4"/>
-          <path d="M6 13.5L15.1 18.9a1.8 1.8 0 0 0 1.8 0L26 13.5" stroke="#00e5ff" stroke-width="1.4" stroke-linecap="round"/>
-          <!-- corner lights -->
-          <circle cx="1" cy="1" r="1" fill="rgba(0,229,255,0.5)"/>
-          <circle cx="31" cy="1" r="1" fill="rgba(0,229,255,0.5)"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="3"/>
+          <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
         </svg>
       </div>
       <span class="logo-name">Nexus<span>Mail</span></span>
@@ -743,18 +531,16 @@ body::before {
     </button>
   </div>
 
-  <!-- PANEL -->
   <div class="panel">
+    
+    <div id="toast"></div>
 
-    <!-- LOGIN VIEW -->
     <div class="login-view" id="loginView">
       <div class="login-icon">
         <i class="fa-regular fa-envelope"></i>
       </div>
-      <div class="login-copy">
-        <div class="login-title">Connect your inbox</div>
-        <div class="login-sub">Link Gmail to catch verification codes<br>the instant they arrive.</div>
-      </div>
+      <h2 class="login-title">Connect your inbox</h2>
+      <p class="login-sub">Link Gmail to catch verification codes the instant they arrive.</p>
       <button class="g-btn" onclick="startLogin()">
         <svg class="g-icon" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -766,7 +552,6 @@ body::before {
       </button>
     </div>
 
-    <!-- MAIN VIEW -->
     <div id="mainView" style="display:none;">
 
       <div class="status-bar">
@@ -780,20 +565,18 @@ body::before {
       <div class="main-body">
 
         <div class="token-warn" id="tokenWarning">
-          <i class="fa-solid fa-triangle-exclamation" style="font-size:11px;"></i>
-          Session expired
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Session expired</span>
           <button class="reauth" onclick="silentRefresh()">Refresh</button>
         </div>
 
-        <!-- email -->
         <div class="email-display" onclick="copyEmail()" title="Copy alias">
-          <div class="email-text loading" id="emailDisplay">Generating...</div>
-          <div class="copy-btn" id="copyInner">
+          <div class="email-text loading" id="emailDisplay">Generating inbox address...</div>
+          <div class="copy-btn">
             <i class="fa-regular fa-copy" id="copyIcon"></i>
           </div>
         </div>
 
-        <!-- actions -->
         <div class="actions">
           <button class="act-btn" id="refreshBtn" onclick="doRefresh()">
             <i class="fa-solid fa-rotate-right"></i>
@@ -801,34 +584,29 @@ body::before {
           </button>
           <button class="act-btn" onclick="newEmail()">
             <i class="fa-solid fa-plus"></i>
-            <span>New Email</span>
+            <span>New Address</span>
           </button>
         </div>
 
-        <!-- inbox -->
         <div class="inbox-header">
-          <span class="inbox-label">Verification Codes</span>
+          <span class="inbox-label">Incoming Messages</span>
           <div class="scan-status">
-            <div class="scan-pip" id="scanDot"></div>
-            <span id="scanText">SCANNING</span>
+            <div class="scan-pip"></div>
+            <span>MONITORING</span>
           </div>
         </div>
 
         <div class="inbox" id="inbox">
           <div class="empty">
             <i class="fa-regular fa-clock"></i>
-            awaiting_emails...
+            <span>Listening for incoming codes...</span>
           </div>
         </div>
 
       </div>
     </div>
 
-  </div><!-- /panel -->
-
-</div><!-- /app -->
-
-<script>
+  </div></div><script>
 const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
 const SCOPES    = 'https://www.googleapis.com/auth/gmail.readonly';
 
@@ -843,7 +621,7 @@ let knownIds      = new Set();
 let firstCopied   = false;
 let tokenClient   = null;
 
-/* ── theme ── */
+/* ── Theme Architecture ── */
 function toggleTheme() {
   const isDark = document.body.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
@@ -857,25 +635,26 @@ function toggleTheme() {
   document.getElementById('themeIcon').className = t === 'dark' ? 'fa-regular fa-moon' : 'fa-regular fa-sun';
 })();
 
-/* ── sound ── */
+/* ── Deep Minimal UI Sound Node ── */
 function playNotification() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [{ freq:1046, start:0, dur:0.1, vol:0.15 }, { freq:1318, start:0.1, dur:0.14, vol:0.1 }]
+    // A clean, organic double-tap tone instead of a harsh digital beep
+    [{ freq:440, start:0, dur:0.06, vol:0.12 }, { freq:554.37, start:0.04, dur:0.12, vol:0.08 }]
     .forEach(n => {
       const osc = ctx.createOscillator(), gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
       osc.type = 'sine'; osc.frequency.value = n.freq;
       gain.gain.setValueAtTime(0, ctx.currentTime + n.start);
-      gain.gain.linearRampToValueAtTime(n.vol, ctx.currentTime + n.start + 0.02);
+      gain.gain.linearRampToValueAtTime(n.vol, ctx.currentTime + n.start + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.start + n.dur);
       osc.start(ctx.currentTime + n.start);
-      osc.stop(ctx.currentTime + n.start + n.dur + 0.05);
+      osc.stop(ctx.currentTime + n.start + n.dur + 0.02);
     });
   } catch(e) {}
 }
 
-/* ── auth ── */
+/* ── Auth Layer ── */
 function initTokenClient() {
   if (tokenClient) return;
   tokenClient = google.accounts.oauth2.initTokenClient({
@@ -901,7 +680,7 @@ function startLogin() {
   const tc = google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID, scope: SCOPES, prompt: 'select_account',
     callback: async (resp) => {
-      if (resp.error) { showToast('Login cancelled'); return; }
+      if (resp.error) { showToast('Authentication cancelled'); return; }
       accessToken = resp.access_token;
       tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
       localStorage.setItem('gToken', accessToken);
@@ -936,7 +715,7 @@ async function fetchProfile() {
     document.getElementById('loginView').style.display = 'none';
     document.getElementById('mainView').style.display  = 'block';
     setStatus(true); newEmail();
-  } catch(e) { showToast('Profile error'); }
+  } catch(e) { showToast('Profile initialization failed'); }
 }
 
 function logout() {
@@ -961,7 +740,7 @@ window.addEventListener('load', () => {
   }
 });
 
-/* ── email ── */
+/* ── Engine Logic ── */
 function randStr(n=6) {
   const c='abcdefghijklmnopqrstuvwxyz0123456789';
   return Array.from({length:n},()=>c[Math.random()*c.length|0]).join('');
@@ -976,11 +755,9 @@ function newEmail() {
   const el = document.getElementById('emailDisplay');
   el.innerText = currentAlias; el.classList.remove('loading');
   document.getElementById('inbox').innerHTML = emptyState();
-  document.getElementById('scanText').innerText = 'SCANNING';
   pollTimer = setInterval(poll, 5000);
 }
 
-/* ── polling ── */
 async function poll() {
   if (!accessToken || !currentAlias) return;
   if (Date.now() > tokenExpiry) { silentRefresh(); return; }
@@ -1029,7 +806,8 @@ async function fetchMsg(id) {
     if (code && !firstCopied) {
       firstCopied=true;
       navigator.clipboard.writeText(code).catch(()=>{});
-      showToast('// CODE_COPIED'); playNotification();
+      showToast('Code copied automatically'); 
+      playNotification();
     }
   } catch(e) {}
 }
@@ -1054,18 +832,19 @@ function renderMsg(sender, code) {
   const inbox = document.getElementById('inbox');
   const card  = document.createElement('div');
   card.className = 'msg';
+  card.setAttribute('onclick', 'playNotification()'); // Sound trigger on row click
   let html = `<div class="msg-sender">${esc(sender)}</div>`;
   if (code) {
-    html += `<div class="code-block" onclick="copyCode('${code}')">${code}</div>`;
+    html += `<div class="code-block" onclick="copyCode(event, '${code}')">${code}</div>`;
   } else {
-    html += `<div class="no-code">// no_code_detected</div>`;
+    html += `<div class="no-code">// Secure content parsed — No explicit code found</div>`;
   }
   card.innerHTML = html;
   inbox.prepend(card);
 }
 
 function emptyState() {
-  return `<div class="empty"><i class="fa-regular fa-clock"></i> awaiting_emails...</div>`;
+  return `<div class="empty"><i class="fa-regular fa-clock"></i> <span>Awaiting messages...</span></div>`;
 }
 
 async function doRefresh() {
@@ -1077,15 +856,19 @@ async function doRefresh() {
 function copyEmail() {
   if (!currentAlias) return;
   navigator.clipboard.writeText(currentAlias).then(()=>{
-    showToast('// EMAIL_COPIED');
+    showToast('Email address copied');
     const icon=document.getElementById('copyIcon');
     icon.className='fa-solid fa-check';
     setTimeout(()=>icon.className='fa-regular fa-copy',1400);
   });
 }
 
-function copyCode(code) {
-  navigator.clipboard.writeText(code).then(()=>showToast('// CODE_COPIED'));
+function copyCode(e, code) {
+  e.stopPropagation(); // Prevents double sound execution
+  navigator.clipboard.writeText(code).then(()=>{
+    showToast('Code copied to clipboard');
+    playNotification();
+  });
 }
 
 function setStatus(ok) {
@@ -1095,7 +878,7 @@ function setStatus(ok) {
 function showToast(msg) {
   const t=document.getElementById('toast');
   t.innerText=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),1800);
+  setTimeout(()=>t.classList.remove('show'),2000);
 }
 
 function esc(s) {
