@@ -291,8 +291,8 @@
         .email-display-group {
             background: var(--box-bg);
             border: 1px solid var(--btn-border);
-            border-radius: 16px;
-            padding: 8px 8px 8px 18px;
+            border-radius: 14px;
+            padding: 6px 6px 6px 14px;
             display: flex; align-items: center; justify-content: space-between;
             cursor: pointer;
             transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
@@ -304,7 +304,7 @@
         .email-display-group:active { transform: scale(0.98); }
 
         .email-text {
-            font-size: 15px; font-weight: 500; letter-spacing: 0.2px;
+            font-size: 13px; font-weight: 500; letter-spacing: 0.2px;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             color: var(--text-primary);
         }
@@ -313,10 +313,10 @@
 
         .action-icon-btn {
             background: var(--btn-border); border: none;
-            width: 42px; height: 42px;
-            border-radius: 12px;
+            width: 36px; height: 36px;
+            border-radius: 10px;
             color: var(--text-primary); cursor: pointer;
-            display: flex; justify-content: center; align-items: center; font-size: 16px;
+            display: flex; justify-content: center; align-items: center; font-size: 14px;
             pointer-events: none;
             transition: background 0.2s ease, color 0.2s ease;
         }
@@ -327,8 +327,8 @@
         .controls { display: flex; gap: 10px; }
         .btn {
             flex: 1; background: transparent; border: 1px solid var(--btn-border);
-            color: var(--text-primary); padding: 12px; border-radius: 12px;
-            font-family: inherit; font-size: 13px; font-weight: 400; cursor: pointer;
+            color: var(--text-primary); padding: 9px; border-radius: 12px;
+            font-family: inherit; font-size: 12px; font-weight: 400; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 6px;
             transition: background-color 0.15s ease, transform 0.1s ease;
         }
@@ -938,8 +938,28 @@
         let currentAlias = null;
         let checkInterval = null;
         let knownMessageIds = new Set();
-        let firstCodeCopied = false;
         let tokenRefreshTimer = null;
+
+        // Pending auto-copy: if tab is hidden when code arrives, store it here
+        // and copy it the moment the user returns to this tab
+        let pendingAutoCopyCode = null;
+        let pendingAutoCopySite = null;
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && pendingAutoCopyCode) {
+                const code = pendingAutoCopyCode;
+                const site = pendingAutoCopySite;
+                pendingAutoCopyCode = null;
+                pendingAutoCopySite = null;
+                navigator.clipboard.writeText(code).then(() => {
+                    playCopyCode();
+                    showToast('Code Auto-Copied!', '⚡');
+                    if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                    else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                    else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                }).catch(() => {});
+            }
+        });
 
         // =============================================
         // THEME
@@ -1424,24 +1444,33 @@
                 if (extractedCode) {
                     html += `<div class="extracted-code" onclick="copyCode('${escapeHtml(extractedCode)}')">${escapeHtml(extractedCode)}</div>`;
 
-                    // Auto-copy every new code automatically
-                    navigator.clipboard.writeText(extractedCode).then(() => {
-                        playCopyCode();
-                        showToast('Code Auto-Copied!', '⚡');
-                        // Play site-specific sound & pulse correct button
-                        if (site === 'nana') {
-                            playNanaSound();
-                            triggerSiteReady('nana');
-                        } else if (site === 'v03') {
-                            playV03Sound();
-                            triggerSiteReady('v03');
-                        } else {
-                            // unknown sender — pulse both
-                            playNanaSound();
-                            triggerSiteReady('nana');
-                            triggerSiteReady('v03');
-                        }
-                    }).catch(() => {});
+                    // Helper: do the copy + feedback
+                    const doCopy = (code, siteId) => {
+                        navigator.clipboard.writeText(code).then(() => {
+                            playCopyCode();
+                            showToast('Code Auto-Copied!', '⚡');
+                            if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                            else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                            else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                        }).catch(() => {
+                            // Clipboard failed even though tab is visible — queue for next focus
+                            pendingAutoCopyCode = code;
+                            pendingAutoCopySite = siteId;
+                        });
+                    };
+
+                    if (document.visibilityState === 'visible') {
+                        // Tab is active — copy right now
+                        doCopy(extractedCode, site);
+                    } else {
+                        // Tab is in background — queue it; visibilitychange listener will fire on return
+                        pendingAutoCopyCode = extractedCode;
+                        pendingAutoCopySite = site;
+                        // Still play the site sound so user hears the notification
+                        if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                        else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                        else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                    }
                 } else if (extractedLink) {
                     html += `<div class="link-block">
                         <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
