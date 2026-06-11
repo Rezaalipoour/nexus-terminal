@@ -533,6 +533,17 @@
             <!-- MAIN SECTION (after login) -->
             <div class="main-section" id="mainSection">
 
+                <!-- Re-auth banner — shown when token silently expired -->
+                <div id="reauthBanner" style="display:none; align-items:center; justify-content:space-between; background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.25); border-radius:12px; padding:8px 14px; gap:10px;">
+                    <span style="font-size:12px; color:#fbbf24; display:flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-rotate" style="font-size:11px;"></i>
+                        Session expired — tap to continue
+                    </span>
+                    <button onclick="reauthClick()" style="background:rgba(234,179,8,0.18); border:1px solid rgba(234,179,8,0.35); color:#fbbf24; border-radius:8px; padding:4px 12px; font-size:12px; font-family:inherit; font-weight:600; cursor:pointer;">
+                        Refresh
+                    </button>
+                </div>
+
                 <div class="user-badge" id="userBadge">
                     <div class="user-badge-left">
                         <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
@@ -756,10 +767,49 @@
         // =============================================
         // GOOGLE LOGIN
         // =============================================
-        function startGoogleLogin() {
-            const tokenClient = google.accounts.oauth2.initTokenClient({
+
+        // Build a token client once, reuse for all refreshes
+        let _tokenClient = null;
+        function getTokenClient(loginHint, promptMode) {
+            return google.accounts.oauth2.initTokenClient({
                 client_id: CLIENT_ID,
                 scope: SCOPES,
+                prompt: promptMode || '',
+                login_hint: loginHint || undefined,
+                callback: handleTokenResponse
+            });
+        }
+
+        function handleTokenResponse(response) {
+            if (response.error) {
+                // If silent refresh fails, show a non-disruptive "re-auth" banner
+                // instead of throwing user back to the login screen
+                if (baseGmail) {
+                    showReauthBanner();
+                }
+                return;
+            }
+            accessToken = response.access_token;
+            const expiry = Date.now() + (response.expires_in * 1000);
+            localStorage.setItem('gAccessToken', accessToken);
+            localStorage.setItem('gTokenExpiry', expiry.toString());
+            // Schedule next silent refresh 5 min before expiry
+            scheduleTokenRefresh(response.expires_in - 300);
+            hideReauthBanner();
+        }
+
+        function startGoogleLogin() {
+            const savedEmail = localStorage.getItem('gBaseEmail');
+            const client = getTokenClient(savedEmail, 'select_account');
+            client.requestAccessToken();
+            // We don't have baseGmail yet — onLoginSuccess will fetch it
+            // Override callback just for first login to call onLoginSuccess
+            const origCallback = handleTokenResponse;
+            _tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                prompt: savedEmail ? '' : 'select_account',
+                login_hint: savedEmail || undefined,
                 callback: (response) => {
                     if (response.error) {
                         showToast('Login Failed!', '✕');
@@ -767,37 +817,39 @@
                     }
                     accessToken = response.access_token;
                     const expiry = Date.now() + (response.expires_in * 1000);
-                    // Store token + expiry — persists across page closes
                     localStorage.setItem('gAccessToken', accessToken);
                     localStorage.setItem('gTokenExpiry', expiry.toString());
-                    // Schedule silent refresh before expiry (5 min before)
                     scheduleTokenRefresh(response.expires_in - 300);
                     onLoginSuccess(false);
                 }
             });
-            tokenClient.requestAccessToken();
+            _tokenClient.requestAccessToken();
         }
 
-        // Silent token refresh — user stays logged in indefinitely
+        // =============================================
+        // SILENT TOKEN REFRESH — runs in background
+        // =============================================
         function scheduleTokenRefresh(secondsUntilRefresh) {
             if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
-            if (secondsUntilRefresh <= 0) {
-                silentTokenRefresh();
-                return;
-            }
-            tokenRefreshTimer = setTimeout(silentTokenRefresh, secondsUntilRefresh * 1000);
+            const delay = Math.max(secondsUntilRefresh, 10); // never schedule < 10s
+            tokenRefreshTimer = setTimeout(doSilentRefresh, delay * 1000);
         }
 
-        function silentTokenRefresh() {
+        function doSilentRefresh() {
             if (!baseGmail) return;
             try {
-                const tokenClient = google.accounts.oauth2.initTokenClient({
+                // prompt:'' = truly silent, no UI shown
+                // login_hint = tells Google which account, skips account picker
+                const client = google.accounts.oauth2.initTokenClient({
                     client_id: CLIENT_ID,
                     scope: SCOPES,
-                    prompt: '',  // no popup — silent refresh
+                    prompt: '',
+                    login_hint: baseGmail,
                     callback: (response) => {
                         if (response.error) {
-                            // Silent fail — token expired, will need re-login on next action
+                            // Silent refresh failed (consent expired).
+                            // Show a small banner asking user to click once — NOT a full logout.
+                            showReauthBanner();
                             return;
                         }
                         accessToken = response.access_token;
@@ -805,12 +857,60 @@
                         localStorage.setItem('gAccessToken', accessToken);
                         localStorage.setItem('gTokenExpiry', expiry.toString());
                         scheduleTokenRefresh(response.expires_in - 300);
+                        hideReauthBanner();
                     }
                 });
-                tokenClient.requestAccessToken();
-            } catch(e) {}
+                client.requestAccessToken();
+            } catch(e) {
+                showReauthBanner();
+            }
         }
 
+        // =============================================
+        // RE-AUTH BANNER — shown instead of full logout
+        // A small non-disruptive bar asking one click
+        // =============================================
+        function showReauthBanner() {
+            let banner = document.getElementById('reauthBanner');
+            if (!banner) return;
+            banner.style.display = 'flex';
+        }
+
+        function hideReauthBanner() {
+            let banner = document.getElementById('reauthBanner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        function reauthClick() {
+            // One-click reauth: Google already knows the account via login_hint
+            // so it refreshes the token with a minimal popup (often just a flicker)
+            const client = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                prompt: '',
+                login_hint: baseGmail,
+                callback: (response) => {
+                    if (response.error) {
+                        // If even this fails, fall back to full login
+                        showToast('Re-login required', '🔑');
+                        clearSessionUI();
+                        return;
+                    }
+                    accessToken = response.access_token;
+                    const expiry = Date.now() + (response.expires_in * 1000);
+                    localStorage.setItem('gAccessToken', accessToken);
+                    localStorage.setItem('gTokenExpiry', expiry.toString());
+                    scheduleTokenRefresh(response.expires_in - 300);
+                    hideReauthBanner();
+                    showToast('Session Restored!', '⚡');
+                }
+            });
+            client.requestAccessToken();
+        }
+
+        // =============================================
+        // ON LOGIN SUCCESS
+        // =============================================
         async function onLoginSuccess(isRestored) {
             try {
                 const res = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
@@ -818,8 +918,7 @@
                 });
 
                 if (res.status === 401) {
-                    // Token invalid — clear and show login
-                    clearSession();
+                    clearSessionUI();
                     return;
                 }
 
@@ -829,7 +928,6 @@
 
                 document.getElementById('userEmail').innerText = baseGmail;
 
-                // Show "restored" badge if session was restored from storage
                 if (isRestored) {
                     document.getElementById('sessionTag').style.display = 'inline-flex';
                 }
@@ -843,17 +941,18 @@
             }
         }
 
+        // =============================================
+        // LOGOUT
+        // =============================================
         function logout() {
-            clearSession();
-            // Also revoke Google token so browser forgets the grant
             if (accessToken) {
-                try {
-                    google.accounts.oauth2.revoke(accessToken);
-                } catch(e) {}
+                try { google.accounts.oauth2.revoke(accessToken); } catch(e) {}
             }
+            localStorage.removeItem('gBaseEmail');
+            clearSessionUI();
         }
 
-        function clearSession() {
+        function clearSessionUI() {
             accessToken = null;
             baseGmail = null;
             currentAlias = null;
@@ -861,86 +960,81 @@
             if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
             localStorage.removeItem('gAccessToken');
             localStorage.removeItem('gTokenExpiry');
-            localStorage.removeItem('gBaseEmail');
 
             document.getElementById('mainSection').classList.remove('visible');
             document.getElementById('loginSection').style.display = 'flex';
             document.getElementById('sessionTag').style.display = 'none';
+            hideReauthBanner();
             document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
         }
 
         // =============================================
-        // AUTO-RESTORE SESSION
-        // Persists login across browser closes
+        // AUTO-RESTORE SESSION ON PAGE LOAD
+        // Works even after browser restart
         // =============================================
         window.addEventListener('load', () => {
-            const savedToken = localStorage.getItem('gAccessToken');
-            const savedExpiry = localStorage.getItem('gTokenExpiry');
-            const savedEmail = localStorage.getItem('gBaseEmail');
+            const savedToken   = localStorage.getItem('gAccessToken');
+            const savedExpiry  = localStorage.getItem('gTokenExpiry');
+            const savedEmail   = localStorage.getItem('gBaseEmail');
 
-            if (savedToken && savedExpiry && savedEmail) {
-                const expiryMs = parseInt(savedExpiry);
-                const now = Date.now();
+            if (!savedEmail) return; // Never logged in
 
-                if (now < expiryMs) {
-                    // Token still valid — restore session
-                    accessToken = savedToken;
-                    baseGmail = savedEmail;
-                    document.getElementById('userEmail').innerText = baseGmail;
-                    document.getElementById('loginSection').style.display = 'none';
-                    document.getElementById('mainSection').classList.add('visible');
-                    document.getElementById('sessionTag').style.display = 'inline-flex';
+            baseGmail = savedEmail;
+            document.getElementById('userEmail').innerText = baseGmail;
 
-                    // Schedule refresh for remaining time
-                    const secondsLeft = Math.floor((expiryMs - now) / 1000);
-                    scheduleTokenRefresh(secondsLeft - 300);
+            const now      = Date.now();
+            const expiryMs = savedExpiry ? parseInt(savedExpiry) : 0;
+            const secondsLeft = Math.floor((expiryMs - now) / 1000);
 
+            if (savedToken && secondsLeft > 60) {
+                // Token still valid — restore immediately
+                accessToken = savedToken;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainSection').classList.add('visible');
+                document.getElementById('sessionTag').style.display = 'inline-flex';
+
+                // Schedule next refresh for when it expires (minus 5 min buffer)
+                scheduleTokenRefresh(secondsLeft - 300);
+                generateNewAlias();
+            } else {
+                // Token expired or missing — try silent reauth in background.
+                // Show the main UI immediately (optimistic), hide if reauth fails.
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainSection').classList.add('visible');
+                document.getElementById('sessionTag').style.display = 'inline-flex';
+
+                try {
+                    const client = google.accounts.oauth2.initTokenClient({
+                        client_id: CLIENT_ID,
+                        scope: SCOPES,
+                        prompt: '',          // silent — no popup if Google still has session
+                        login_hint: savedEmail,
+                        callback: (response) => {
+                            if (response.error) {
+                                // Google session also expired — need one manual click
+                                // But DON'T throw back to login — show reauth banner instead
+                                accessToken = null;
+                                showReauthBanner();
+                                generateNewAlias(); // alias still works, just can't poll yet
+                                return;
+                            }
+                            accessToken = response.access_token;
+                            const expiry = Date.now() + (response.expires_in * 1000);
+                            localStorage.setItem('gAccessToken', accessToken);
+                            localStorage.setItem('gTokenExpiry', expiry.toString());
+                            scheduleTokenRefresh(response.expires_in - 300);
+                            hideReauthBanner();
+                            generateNewAlias();
+                        }
+                    });
+                    client.requestAccessToken();
+                } catch(e) {
+                    accessToken = null;
+                    showReauthBanner();
                     generateNewAlias();
-                } else {
-                    // Token expired — try silent refresh, otherwise show login
-                    baseGmail = savedEmail;
-                    accessToken = savedToken; // temporarily set for refresh attempt
-                    silentTokenRefreshOnLoad(savedEmail);
                 }
             }
         });
-
-        function silentTokenRefreshOnLoad(email) {
-            // Attempt silent token refresh without user interaction
-            try {
-                const tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: CLIENT_ID,
-                    scope: SCOPES,
-                    prompt: '',
-                    login_hint: email,
-                    callback: (response) => {
-                        if (response.error) {
-                            // Could not refresh silently — show login
-                            accessToken = null;
-                            baseGmail = null;
-                            return;
-                        }
-                        accessToken = response.access_token;
-                        const expiry = Date.now() + (response.expires_in * 1000);
-                        localStorage.setItem('gAccessToken', accessToken);
-                        localStorage.setItem('gTokenExpiry', expiry.toString());
-                        baseGmail = email;
-                        scheduleTokenRefresh(response.expires_in - 300);
-
-                        document.getElementById('userEmail').innerText = baseGmail;
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('mainSection').classList.add('visible');
-                        document.getElementById('sessionTag').style.display = 'inline-flex';
-                        generateNewAlias();
-                    }
-                });
-                // requestAccessToken with no prompt — may still pop if Google requires it
-                tokenClient.requestAccessToken();
-            } catch(e) {
-                accessToken = null;
-                baseGmail = null;
-            }
-        }
 
         // =============================================
         // ALIAS GENERATION
