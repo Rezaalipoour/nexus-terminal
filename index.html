@@ -16,16 +16,16 @@
 
     <style>
         :root {
-            --bg-body: #09090f;
-            --card-bg: rgba(18, 18, 26, 0.75);
+            --bg-body: #020204;
+            --card-bg: rgba(8, 8, 14, 0.88);
             --card-border: rgba(99, 102, 241, 0.14);
             --text-primary: #f0f2ff;
             --text-secondary: #8892b0;
             --accent: #6366f1;
-            --box-bg: rgba(12, 12, 20, 0.6);
+            --box-bg: rgba(6, 6, 12, 0.85);
             --btn-border: rgba(255, 255, 255, 0.10);
             --code-bg: rgba(99, 102, 241, 0.14);
-            --shadow: 0 24px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.06);
+            --shadow: 0 24px 50px rgba(0,0,0,0.85), 0 0 0 1px rgba(99,102,241,0.06);
             --grid-color: rgba(99, 102, 241, 0.04);
             --grid-line: rgba(140, 145, 255, 0.055);
             --grid-dot: rgba(99, 102, 241, 0.42);
@@ -57,9 +57,9 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
             background-image:
-                radial-gradient(ellipse 120% 80% at 20% 20%, rgba(88, 28, 135, 0.22) 0%, transparent 55%),
-                radial-gradient(ellipse 100% 90% at 80% 80%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
-                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+                radial-gradient(ellipse 120% 80% at 20% 20%, rgba(55, 10, 100, 0.28) 0%, transparent 55%),
+                radial-gradient(ellipse 100% 90% at 80% 80%, rgba(60, 62, 180, 0.18) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(90, 50, 180, 0.12) 0%, transparent 60%);
             color: var(--text-primary);
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
@@ -120,16 +120,16 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 24px;
-            padding: 28px;
+            padding: 22px;
             box-shadow: var(--shadow);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            display: flex; flex-direction: column; gap: 18px;
+            display: flex; flex-direction: column; gap: 14px;
         }
 
         .header { display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 20px; font-weight: 400; letter-spacing: 0.5px; }
-        .header h1 span { color: var(--accent); font-weight: 500; }
+        .header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+        .header h1 span { color: var(--accent); font-weight: 700; }
 
         .theme-btn {
             background: transparent; border: none;
@@ -143,8 +143,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
-            padding: 24px 0 12px;
+            gap: 12px;
+            padding: 16px 0 8px;
         }
 
         .login-icon {
@@ -189,7 +189,7 @@
         .google-icon { width: 20px; height: 20px; }
 
         /* --- MAIN SECTION --- */
-        .main-section { display: none; flex-direction: column; gap: 18px; }
+        .main-section { display: none; flex-direction: column; gap: 14px; }
         .main-section.visible { display: flex; }
 
         .user-info-row {
@@ -233,11 +233,11 @@
         /* Logout btn - Icon Only */
         .logout-btn {
             flex-shrink: 0;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            color: #fca5a5;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
             cursor: pointer;
-            font-size: 15px;
+            font-size: 13px;
             width: 38px;
             height: 38px;
             border-radius: 12px;
@@ -249,9 +249,9 @@
         }
         .logout-btn i { margin: 0; }
         .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: #fecaca;
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.18);
+            color: var(--text-primary);
         }
         .logout-btn:active { transform: scale(0.95); }
 
@@ -292,8 +292,8 @@
 
         /* Generated Email Box - With Subtle Color */
         .email-display-group {
-            background: rgba(99, 102, 241, 0.12);
-            border: 1px solid rgba(99, 102, 241, 0.3) !important;
+            background: rgba(99, 102, 241, 0.22);
+            border: 1px solid rgba(99, 102, 241, 0.5) !important;
             border-radius: 14px;
             padding: 6px 6px 6px 14px;
             display: flex; align-items: center; justify-content: space-between;
@@ -307,7 +307,7 @@
         .email-display-group:active { transform: scale(0.98); }
 
         .email-text {
-            font-size: 13px; font-weight: 400; letter-spacing: 0.2px;
+            font-size: 13px; font-weight: 600; letter-spacing: 0.2px;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             color: var(--text-primary);
         }
@@ -330,7 +330,7 @@
         .controls { display: flex; gap: 10px; }
         .btn {
             flex: 1; background: transparent; border: 1px solid var(--btn-border);
-            color: var(--text-primary); padding: 9px; border-radius: 12px;
+            color: var(--text-primary); padding: 7px; border-radius: 12px;
             font-family: inherit; font-size: 12px; font-weight: 400; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 6px;
             border-color: rgba(99, 102, 241, 0.2) !important;
@@ -359,6 +359,38 @@
             animation: blink 2s infinite;
         }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
+
+        /* Timer bar */
+        .timer-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .timer-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            min-width: 38px;
+            text-align: right;
+        }
+        .timer-bar-track {
+            flex: 1;
+            height: 3px;
+            background: rgba(99, 102, 241, 0.12);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .timer-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            border-radius: 4px;
+            transition: width 1s linear, background 0.5s ease;
+        }
+        .timer-bar-fill.warning {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
 
         .inbox-list {
             display: flex; flex-direction: column; gap: 12px;
@@ -406,7 +438,7 @@
             border-radius: 12px;
             padding: 8px 20px;
             font-size: 26px;
-            font-weight: 400;
+            font-weight: 700;
             letter-spacing: 8px;
             cursor: pointer;
             width: 100%;
@@ -473,8 +505,8 @@
 
         .launchers { display: flex; gap: 10px; }
         .launch-btn {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-            padding: 9px 8px; border-radius: 14px; border: 1px solid var(--btn-border);
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+            padding: 7px 8px; border-radius: 14px; border: 1px solid var(--btn-border);
             background: var(--box-bg); color: var(--text-secondary); font-family: inherit;
             font-size: 10px; font-weight: 400; cursor: pointer; text-decoration: none;
             transition: all 0.2s ease; letter-spacing: 0.4px; text-transform: uppercase;
@@ -506,12 +538,12 @@
         #pendingCopyBanner:hover { background: rgba(234, 179, 8, 0.16); }
         #pendingCopyBanner:active { transform: scale(0.98); }
         .pending-banner-left { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #fbbf24; }
-        .pending-banner-code { font-size: 20px; font-weight: 400; letter-spacing: 5px; color: #fcd34d; }
+        .pending-banner-code { font-size: 20px; font-weight: 700; letter-spacing: 5px; color: #fcd34d; }
         .pending-banner-tap { font-size: 10px; font-weight: 400; color: #fbbf24; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 4px 10px; white-space: nowrap; letter-spacing: 0.5px; }
 
         .card { box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04); }
-        .header h1 { font-size: 21px; font-weight: 400; letter-spacing: 0.3px; }
-        .header h1 span { font-weight: 400; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header h1 { font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
+        .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     </style>
 </head>
 <body data-theme="dark">
@@ -592,6 +624,14 @@
                     <button class="btn" onclick="generateNewAlias()">
                         <i class="fa-solid fa-plus"></i> New Email
                     </button>
+                </div>
+
+                <!-- Auto-rotate timer -->
+                <div class="timer-row" id="timerRow" style="display:none;">
+                    <div class="timer-bar-track">
+                        <div class="timer-bar-fill" id="timerBarFill"></div>
+                    </div>
+                    <span class="timer-label" id="timerLabel">2:00</span>
                 </div>
 
                 <!-- Site Launchers -->
@@ -925,6 +965,7 @@
         function generateNewAlias() {
             if (!baseGmail) return;
             if (checkInterval) clearInterval(checkInterval); knownMessageIds.clear();
+            clearAliasTimer();
             currentSuffix = generateSuffix();
             const localPart = baseGmail.split('@')[0]; const domain = baseGmail.split('@')[1];
             currentAlias = `${localPart}+${currentSuffix}@${domain}`;
@@ -992,7 +1033,8 @@
                         if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); } else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); } else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
                     }
                     if (window._autoRotateTimer) clearTimeout(window._autoRotateTimer);
-                    window._autoRotateTimer = setTimeout(() => { showToast('New alias generated ↻', '🔄'); generateNewAlias(); }, 2 * 60 * 1000);
+                    if (window._autoRotateInterval) clearInterval(window._autoRotateInterval);
+                    startAliasTimer();
                 } else if (extractedLink) {
                     html += `<div class="link-block"><span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span><a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i> Open Login Link</a></div>`;
                 } else { html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`; }
@@ -1002,6 +1044,41 @@
         }
 
         function extractLoginLink(bodyText) { const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i; const match = bodyText.match(linkPattern); return match ? match[0] : null; }
+
+        const ALIAS_TIMER_SECONDS = 120;
+        function startAliasTimer() {
+            clearAliasTimer();
+            const row = document.getElementById('timerRow');
+            const fill = document.getElementById('timerBarFill');
+            const label = document.getElementById('timerLabel');
+            if (row) row.style.display = 'flex';
+            let remaining = ALIAS_TIMER_SECONDS;
+            function updateTimer() {
+                if (!fill || !label) return;
+                const pct = (remaining / ALIAS_TIMER_SECONDS) * 100;
+                fill.style.width = pct + '%';
+                fill.classList.toggle('warning', remaining <= 30);
+                const m = Math.floor(remaining / 60);
+                const s = remaining % 60;
+                label.textContent = m + ':' + String(s).padStart(2, '0');
+            }
+            updateTimer();
+            window._autoRotateInterval = setInterval(() => {
+                remaining--;
+                updateTimer();
+                if (remaining <= 0) {
+                    clearAliasTimer();
+                    showToast('New alias generated ↻', '🔄');
+                    generateNewAlias();
+                }
+            }, 1000);
+        }
+        function clearAliasTimer() {
+            if (window._autoRotateTimer) { clearTimeout(window._autoRotateTimer); window._autoRotateTimer = null; }
+            if (window._autoRotateInterval) { clearInterval(window._autoRotateInterval); window._autoRotateInterval = null; }
+            const row = document.getElementById('timerRow');
+            if (row) row.style.display = 'none';
+        }
         function extractCode(text) {
             const patterns = [ /(?:verification|confirm|code|OTP|PIN|passcode|secret)[^\d]*(\d{4,8})/i, /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code)/i, /(?:code|token|otp|key)[^\w]*([a-z0-9]{5,12})/i, /\b(\d{6})\b/, /\b(\d{4,8})\b/, ];
             for (const pattern of patterns) { const match = text.match(pattern); if (match) { const code = match[1] || match[0]; const num = parseInt(code); if (num >= 1000 && num <= 99999999 && !(num >= 2020 && num <= 2030)) { return code; } } } return null;
