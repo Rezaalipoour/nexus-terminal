@@ -11,12 +11,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         :root {
-            --bg-body: #0b0b10;
+            --bg-body: #09090f;
             --card-bg: rgba(18, 18, 26, 0.75);
             --card-border: rgba(99, 102, 241, 0.14);
             --text-primary: #f0f2ff;
@@ -46,12 +45,20 @@
             --grid-line: rgba(0, 0, 0, 0.04);
             --grid-dot: rgba(79, 70, 229, 0.12);
         }
+        [data-theme="light"] body,
+        body[data-theme="light"] {
+            background-image: none;
+        }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
+            background-image:
+                radial-gradient(ellipse 120% 80% at 20% 20%, rgba(88, 28, 135, 0.22) 0%, transparent 55%),
+                radial-gradient(ellipse 100% 90% at 80% 80%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
             color: var(--text-primary);
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
@@ -59,6 +66,7 @@
             position: relative;
             overflow: hidden;
         }
+        [data-theme="light"] body { background-image: none; }
 
         /* =========================================
            BACKGROUND — ultra-thin grid + dot nodes
@@ -71,7 +79,6 @@
             overflow: hidden;
         }
 
-        /* Main grid lines — hair-thin, barely visible */
         .bg-grid::before {
             content: '';
             position: absolute;
@@ -85,7 +92,6 @@
             animation: gridDrift 30s linear infinite;
         }
 
-        /* Dot intersections on top — tiny accent nodes */
         .bg-grid::after {
             content: '';
             position: absolute;
@@ -102,7 +108,6 @@
             100% { transform: translateY(64px) translateX(0); }
         }
 
-        /* Glow/orb elements hidden — uniform background */
         .bg-glow, .bg-glow-2, .bg-orb { display: none; }
 
         .container {
@@ -183,41 +188,113 @@
         }
         .google-login-btn:active { transform: scale(0.97); }
 
-        .google-icon {
-            width: 20px; height: 20px;
-        }
+        .google-icon { width: 20px; height: 20px; }
 
         /* --- MAIN SECTION --- */
         .main-section { display: none; flex-direction: column; gap: 18px; }
         .main-section.visible { display: flex; }
 
+        /* --- NEW USER INFO ROW --- */
+        .user-info-row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        /* Enhanced user badge — solid purple fill */
         .user-badge {
+            flex: 1;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 10px;
-            padding: 6px 12px;
+            background: var(--accent);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 8px 14px;
             justify-content: space-between;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+            min-width: 0;
         }
+        .user-badge:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+            transform: translateY(-1px);
+        }
+        .user-badge-left { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; }
 
-        .user-badge-left { display: flex; align-items: center; gap: 6px; }
+        #userEmail {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
         .logout-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
+            flex-shrink: 0;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
             cursor: pointer;
-            font-size: 12px;
-            padding: 2px 6px;
-            border-radius: 6px;
-            transition: color 0.2s;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 0 14px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
             font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
         }
-        .logout-btn:hover { color: #ef4444; }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fecaca;
+        }
+        .logout-btn:active { transform: scale(0.97); }
+
+        /* Session restore indicator on solid purple */
+        .session-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .session-tag i {
+            font-size: 8px;
+            color: #ffffff;
+            animation: sessionIconPulse 2s ease-in-out infinite;
+        }
+        .session-tag::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            animation: sessionRing 2s ease-in-out infinite;
+        }
+        @keyframes sessionIconPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+        @keyframes sessionRing {
+            0% { transform: scale(0.85); opacity: 0.6; }
+            50% { transform: scale(1.25); opacity: 0; }
+            100% { transform: scale(0.85); opacity: 0; }
+        }
 
         .email-display-group {
             background: var(--box-bg);
@@ -227,9 +304,10 @@
             display: flex; align-items: center; justify-content: space-between;
             cursor: pointer;
             transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+            border-color: rgba(99, 102, 241, 0.2) !important;
         }
         .email-display-group:hover {
-            border-color: var(--accent);
+            border-color: var(--accent) !important;
             background: rgba(99, 102, 241, 0.05);
         }
         .email-display-group:active { transform: scale(0.98); }
@@ -261,9 +339,14 @@
             color: var(--text-primary); padding: 9px; border-radius: 12px;
             font-family: inherit; font-size: 12px; font-weight: 400; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 6px;
-            transition: background-color 0.15s ease, transform 0.1s ease;
+            border-color: rgba(99, 102, 241, 0.2) !important;
+            transition: background-color 0.15s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
         }
-        .btn:hover { background: var(--btn-border); }
+        .btn:hover {
+            background: rgba(99, 102, 241, 0.08) !important;
+            border-color: rgba(99, 102, 241, 0.45) !important;
+            box-shadow: 0 0 14px rgba(99, 102, 241, 0.1);
+        }
         .btn:active { transform: scale(0.96); }
         .spin i { animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -295,7 +378,7 @@
 
         .empty-state {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 80px; gap: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 300;
+            height: 80px; gap: 8px; color: var(--text-secondary); font-size: 12px; font-weight: 300; letter-spacing: 0.3px;
         }
 
         .message {
@@ -394,168 +477,51 @@
 
         .toast-icon { font-size: 14px; }
 
-        .suffix-info {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-        .suffix-info span {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* Site launcher buttons */
-        .launchers {
-            display: flex;
-            gap: 10px;
-        }
-
+        .launchers { display: flex; gap: 10px; }
         .launch-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 9px 8px;
-            border-radius: 14px;
-            border: 1px solid var(--btn-border);
-            background: var(--box-bg);
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            padding: 9px 8px; border-radius: 14px; border: 1px solid var(--btn-border);
+            background: var(--box-bg); color: var(--text-secondary); font-family: inherit;
+            font-size: 10px; font-weight: 600; cursor: pointer; text-decoration: none;
+            transition: all 0.2s ease; letter-spacing: 0.4px; text-transform: uppercase;
+            position: relative; overflow: hidden;
         }
         .launch-btn svg { flex-shrink: 0; }
         .launch-btn:hover { transform: translateY(-2px); }
         .launch-btn:active { transform: scale(0.96); }
 
-        /* NanaImage — purple/indigo tint */
-        .launch-btn.nana {
-            border-color: rgba(99, 102, 241, 0.3);
-            color: #818cf8;
-        }
-        .launch-btn.nana:hover {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: rgba(99, 102, 241, 0.55);
-            box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-        }
+        .launch-btn.nana { border-color: rgba(99, 102, 241, 0.3); color: #818cf8; }
+        .launch-btn.nana:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.55); box-shadow: 0 0 16px rgba(99, 102, 241, 0.15); color: #a5b4fc; }
+        .launch-btn.v03 { border-color: rgba(99, 102, 241, 0.3); color: #818cf8; }
+        .launch-btn.v03:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.55); box-shadow: 0 0 16px rgba(99, 102, 241, 0.15); color: #a5b4fc; }
 
-        /* V03AI — purple/indigo tint (same as Nana) */
-        .launch-btn.v03 {
-            border-color: rgba(99, 102, 241, 0.3);
-            color: #818cf8;
-        }
-        .launch-btn.v03:hover {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: rgba(99, 102, 241, 0.55);
-            box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-        }
-
-        /* pulse when code is ready */
-        .launch-btn.pulse-ready {
-            animation: sitePulse 1.2s ease-in-out 4;
-        }
-        .launch-btn.nana.pulse-ready {
-            border-color: rgba(99, 102, 241, 0.8);
-            background: rgba(99, 102, 241, 0.12);
-            color: #a5b4fc;
-        }
-        .launch-btn.v03.pulse-ready {
-            border-color: rgba(99, 102, 241, 0.8);
-            background: rgba(99, 102, 241, 0.12);
-            color: #a5b4fc;
-        }
-        @keyframes sitePulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.25); }
-            50% { box-shadow: 0 0 0 7px rgba(99,102,241,0); }
-        }
+        .launch-btn.pulse-ready { animation: sitePulse 1.2s ease-in-out 4; }
+        .launch-btn.nana.pulse-ready, .launch-btn.v03.pulse-ready { border-color: rgba(99, 102, 241, 0.8); background: rgba(99, 102, 241, 0.12); color: #a5b4fc; }
+        @keyframes sitePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.25); } 50% { box-shadow: 0 0 0 7px rgba(99,102,241,0); } }
         .launch-btn.v03.pulse-ready { animation-name: sitePulse; }
 
-        /* ready dot */
-        .launch-dot {
-            position: absolute;
-            top: 7px; right: 8px;
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #22c55e;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
+        .launch-dot { position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; opacity: 0; transition: opacity 0.3s; }
         .launch-btn.pulse-ready .launch-dot { opacity: 1; }
 
-        /* Pending copy banner — shown when code arrived while tab was hidden */
         #pendingCopyBanner {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(234, 179, 8, 0.08);
-            border: 1px solid rgba(234, 179, 8, 0.35);
-            border-radius: 14px;
-            padding: 10px 14px;
-            gap: 10px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            animation: fadeUp 0.35s ease forwards;
+            display: none; align-items: center; justify-content: space-between;
+            background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.35);
+            border-radius: 14px; padding: 10px 14px; gap: 10px; cursor: pointer;
+            transition: background 0.2s ease; animation: fadeUp 0.35s ease forwards;
         }
-        #pendingCopyBanner:hover {
-            background: rgba(234, 179, 8, 0.16);
-        }
+        #pendingCopyBanner:hover { background: rgba(234, 179, 8, 0.16); }
         #pendingCopyBanner:active { transform: scale(0.98); }
-        .pending-banner-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #fbbf24;
-        }
-        .pending-banner-code {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 5px;
-            color: #fcd34d;
-        }
-        .pending-banner-tap {
-            font-size: 10px;
-            font-weight: 600;
-            color: #fbbf24;
-            background: rgba(234, 179, 8, 0.18);
-            border: 1px solid rgba(234, 179, 8, 0.35);
-            border-radius: 8px;
-            padding: 4px 10px;
-            white-space: nowrap;
-            letter-spacing: 0.5px;
-        }
+        .pending-banner-left { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #fbbf24; }
+        .pending-banner-code { font-size: 20px; font-weight: 700; letter-spacing: 5px; color: #fcd34d; }
+        .pending-banner-tap { font-size: 10px; font-weight: 600; color: #fbbf24; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 4px 10px; white-space: nowrap; letter-spacing: 0.5px; }
 
-        /* Session restore indicator */
-        .session-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            background: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            border-radius: 6px;
-            padding: 2px 6px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+        .card { box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04); }
+        .header h1 { font-size: 21px; font-weight: 400; letter-spacing: 0.3px; }
+        .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     </style>
 </head>
 <body data-theme="dark">
 
-    <!-- Background grid -->
     <div class="bg-grid"></div>
     <div class="bg-glow"></div>
     <div class="bg-glow-2"></div>
@@ -575,7 +541,6 @@
                 </button>
             </div>
 
-            <!-- LOGIN SECTION -->
             <div class="login-section" id="loginSection">
                 <div class="login-icon"><i class="fa-regular fa-envelope"></i></div>
                 <p class="login-desc">
@@ -593,10 +558,8 @@
                 </button>
             </div>
 
-            <!-- MAIN SECTION (after login) -->
             <div class="main-section" id="mainSection">
 
-                <!-- Re-auth banner — shown when token silently expired -->
                 <div id="reauthBanner" style="display:none; align-items:center; justify-content:space-between; background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.25); border-radius:12px; padding:8px 14px; gap:10px;">
                     <span style="font-size:12px; color:#fbbf24; display:flex; align-items:center; gap:6px;">
                         <i class="fa-solid fa-rotate" style="font-size:11px;"></i>
@@ -607,15 +570,19 @@
                     </button>
                 </div>
 
-                <div class="user-badge" id="userBadge">
-                    <div class="user-badge-left">
-                        <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
-                        <span id="userEmail">loading...</span>
-                        <span class="session-tag" id="sessionTag" style="display:none;">
-                            <i class="fa-solid fa-bolt" style="font-size:8px;"></i> restored
-                        </span>
+                <div class="user-info-row">
+                    <div class="user-badge" id="userBadge">
+                        <div class="user-badge-left">
+                            <span id="userEmail">loading...</span>
+                            <span class="session-tag" id="sessionTag" style="display:none;">
+                                <i class="fa-solid fa-bolt"></i>
+                            </span>
+                        </div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">Logout</button>
+                    <button class="logout-btn" onclick="logout()" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket" style="margin-right:5px;"></i>
+                        Logout
+                    </button>
                 </div>
 
                 <div class="email-display-group" onclick="copyEmail()">
@@ -634,9 +601,7 @@
                     </button>
                 </div>
 
-                <!-- Site Launchers -->
                 <div class="launchers">
-                    <!-- NanaImage -->
                     <a id="nanaBtn" href="https://nanaimage.ai/text-to-image" target="_blank" class="launch-btn nana" onclick="onLaunchClick('nana')">
                         <div class="launch-dot" id="nanaDot"></div>
                         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -646,7 +611,6 @@
                         </svg>
                         <span>NanaImage</span>
                     </a>
-                    <!-- V03AI -->
                     <a id="v03Btn" href="https://v03ai.com/image-to-image" target="_blank" class="launch-btn v03" onclick="onLaunchClick('v03')">
                         <div class="launch-dot" id="v03Dot"></div>
                         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -660,7 +624,6 @@
 
                 <div class="divider"></div>
 
-                <!-- Pending copy banner — appears when code arrived while tab was in background -->
                 <div id="pendingCopyBanner" onclick="commitPendingCopy()">
                     <div class="pending-banner-left">
                         <i class="fa-solid fa-bolt" style="font-size:13px;"></i>
@@ -692,16 +655,9 @@
     </div>
 
     <script>
-        // =============================================
-        // CONFIG
-        // =============================================
         const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
         const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 
-        // =============================================
-        // SOUND ENGINE  
-        // Web Audio API — no external files needed
-        // =============================================
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -709,939 +665,361 @@
             if (!audioCtx) {
                 audioCtx = new AudioCtx();
             }
-            // Resume if suspended (browser autoplay policy)
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
             return audioCtx;
         }
 
-        // Sound: email click / copy email — soft modern "tick"
         function playEmailClick() {
             try {
                 const ctx = getAudioCtx();
                 const now = ctx.currentTime;
-
                 const osc1 = ctx.createOscillator();
                 const osc2 = ctx.createOscillator();
                 const gain = ctx.createGain();
                 const filter = ctx.createBiquadFilter();
 
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(880, now);
-                osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
+                osc1.type = 'sine'; osc1.frequency.setValueAtTime(880, now); osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
+                osc2.type = 'sine'; osc2.frequency.setValueAtTime(1320, now); osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.05);
+                filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 1.5;
 
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(1320, now);
-                osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.05);
-
-                filter.type = 'bandpass';
-                filter.frequency.value = 1200;
-                filter.Q.value = 1.5;
-
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.12, now + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-                osc1.connect(filter);
-                osc2.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc1.start(now);
-                osc1.stop(now + 0.2);
-                osc2.start(now);
-                osc2.stop(now + 0.15);
+                gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.12, now + 0.01); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                osc1.connect(filter); osc2.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+                osc1.start(now); osc1.stop(now + 0.2); osc2.start(now); osc2.stop(now + 0.15);
             } catch(e) {}
         }
 
-        // Sound: new email arrives — gentle two-note chime (modern notification)
         function playIncomingEmail() {
             try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-
-                // Note 1: D5
-                playChimeNote(ctx, now, 587.33, 0.14);
-                // Note 2: A5 (a fifth up) after short gap
-                playChimeNote(ctx, now + 0.12, 880, 0.11);
+                const ctx = getAudioCtx(); const now = ctx.currentTime;
+                playChimeNote(ctx, now, 587.33, 0.14); playChimeNote(ctx, now + 0.12, 880, 0.11);
             } catch(e) {}
         }
 
         function playChimeNote(ctx, startTime, freq, vol) {
-            const osc = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            const reverb = ctx.createConvolver();
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-
-            gainNode.gain.setValueAtTime(0, startTime);
-            gainNode.gain.linearRampToValueAtTime(vol, startTime + 0.015);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.55);
-
-            // Harmonic overtone for richness
-            const osc2 = ctx.createOscillator();
-            const gain2 = ctx.createGain();
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(freq * 2, startTime);
-            gain2.gain.setValueAtTime(0, startTime);
-            gain2.gain.linearRampToValueAtTime(vol * 0.3, startTime + 0.01);
-            gain2.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
-
-            osc.connect(gainNode);
-            osc2.connect(gain2);
-            gainNode.connect(ctx.destination);
-            gain2.connect(ctx.destination);
-
-            osc.start(startTime);
-            osc.stop(startTime + 0.6);
-            osc2.start(startTime);
-            osc2.stop(startTime + 0.3);
+            const osc = ctx.createOscillator(); const gainNode = ctx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(freq, startTime);
+            gainNode.gain.setValueAtTime(0, startTime); gainNode.gain.linearRampToValueAtTime(vol, startTime + 0.015); gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.55);
+            
+            const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
+            osc2.type = 'sine'; osc2.frequency.setValueAtTime(freq * 2, startTime);
+            gain2.gain.setValueAtTime(0, startTime); gain2.gain.linearRampToValueAtTime(vol * 0.3, startTime + 0.01); gain2.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+            
+            osc.connect(gainNode); osc2.connect(gain2); gainNode.connect(ctx.destination); gain2.connect(ctx.destination);
+            osc.start(startTime); osc.stop(startTime + 0.6); osc2.start(startTime); osc2.stop(startTime + 0.3);
         }
 
-        // Sound: copy code — crisp satisfying "pop"
         function playCopyCode() {
             try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-
-                // Two-tone quick pop: C6 + E6
-                const freqs = [1046.5, 1318.5];
-                freqs.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    const t = now + i * 0.04;
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, t);
-                    osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t + 0.08);
-
-                    gain.gain.setValueAtTime(0, t);
-                    gain.gain.linearRampToValueAtTime(0.1, t + 0.008);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t);
-                    osc.stop(t + 0.15);
+                const ctx = getAudioCtx(); const now = ctx.currentTime;
+                [1046.5, 1318.5].forEach((freq, i) => {
+                    const osc = ctx.createOscillator(); const gain = ctx.createGain(); const t = now + i * 0.04;
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t); osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t + 0.08);
+                    gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.1, t + 0.008); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+                    osc.connect(gain); gain.connect(ctx.destination); osc.start(t); osc.stop(t + 0.15);
                 });
             } catch(e) {}
         }
 
-        // Sound: NanaImage code arrived — warm ascending arpeggio C-E-G (bright, friendly)
         function playNanaSound() {
             try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
+                const ctx = getAudioCtx(); const now = ctx.currentTime;
                 [523.25, 659.25, 783.99].forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    const t = now + i * 0.10;
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, t);
-                    gain.gain.setValueAtTime(0, t);
-                    gain.gain.linearRampToValueAtTime(0.13, t + 0.012);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t); osc.stop(t + 0.55);
+                    const osc = ctx.createOscillator(); const gain = ctx.createGain(); const t = now + i * 0.10;
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t);
+                    gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.13, t + 0.012); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                    osc.connect(gain); gain.connect(ctx.destination); osc.start(t); osc.stop(t + 0.55);
                 });
             } catch(e) {}
         }
 
-        // Sound: V03AI code arrived — modern smooth ascending three-note crystal bell (E5→G#5→B5)
         function playV03Sound() {
             try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-                // Crystal bell: pure sine + soft harmonic, gentle attack, long silk tail
+                const ctx = getAudioCtx(); const now = ctx.currentTime;
                 [[659.25, 0], [830.61, 0.13], [987.77, 0.26]].forEach(([freq, delay]) => {
                     const t = now + delay;
+                    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t);
+                    gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.11, t + 0.012); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
+                    osc.connect(gain); gain.connect(ctx.destination); osc.start(t); osc.stop(t + 0.7);
 
-                    // Main tone — sine
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, t);
-                    gain.gain.setValueAtTime(0, t);
-                    gain.gain.linearRampToValueAtTime(0.11, t + 0.012);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t); osc.stop(t + 0.7);
-
-                    // Shimmer overtone at 2x freq — very quiet, adds sparkle
-                    const osc2 = ctx.createOscillator();
-                    const gain2 = ctx.createGain();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(freq * 2, t);
-                    gain2.gain.setValueAtTime(0, t);
-                    gain2.gain.linearRampToValueAtTime(0.028, t + 0.008);
-                    gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
-                    osc2.connect(gain2);
-                    gain2.connect(ctx.destination);
-                    osc2.start(t); osc2.stop(t + 0.32);
+                    const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
+                    osc2.type = 'sine'; osc2.frequency.setValueAtTime(freq * 2, t);
+                    gain2.gain.setValueAtTime(0, t); gain2.gain.linearRampToValueAtTime(0.028, t + 0.008); gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+                    osc2.connect(gain2); gain2.connect(ctx.destination); osc2.start(t); osc2.stop(t + 0.32);
                 });
             } catch(e) {}
         }
 
-        // =============================================
-        // SITE LAUNCHERS
-        // =============================================
-
-        // Which site last got a code — 'nana' | 'v03' | null
         let lastCodeSite = null;
-
         function triggerSiteReady(site) {
             lastCodeSite = site;
             const btn = document.getElementById(site === 'nana' ? 'nanaBtn' : 'v03Btn');
             if (!btn) return;
             btn.classList.add('pulse-ready');
-            // auto-reset after 15s
             setTimeout(() => btn.classList.remove('pulse-ready'), 15000);
         }
-
         function onLaunchClick(site) {
             const btn = document.getElementById(site === 'nana' ? 'nanaBtn' : 'v03Btn');
             if (btn) btn.classList.remove('pulse-ready');
         }
-
-        // Detect which site sent the email based on sender domain
         function detectSite(fromRaw) {
             const from = fromRaw.toLowerCase();
             if (from.includes('nanaimage') || from.includes('nana') || from.includes('nanobanana')) return 'nana';
             if (from.includes('v03') || from.includes('v03ai')) return 'v03';
-            return null; // unknown — trigger both
+            return null; 
         }
 
-        // =============================================
-        // STATE
-        // =============================================
-        let accessToken = null;
-        let baseGmail = null;
-        let currentSuffix = null;
-        let currentAlias = null;
-        let checkInterval = null;
-        let knownMessageIds = new Set();
-        let tokenRefreshTimer = null;
-
-        // Pending auto-copy: if tab is hidden when code arrives, store it here
-        // and copy it the moment the user returns to this tab
-        let pendingAutoCopyCode = null;
-        let pendingAutoCopySite = null;
+        let accessToken = null; let baseGmail = null; let currentSuffix = null; let currentAlias = null;
+        let checkInterval = null; let knownMessageIds = new Set(); let tokenRefreshTimer = null;
+        let pendingAutoCopyCode = null; let pendingAutoCopySite = null;
 
         function tryPendingCopy() {
             if (!pendingAutoCopyCode) return;
-            const code = pendingAutoCopyCode;
-            const site = pendingAutoCopySite;
-            pendingAutoCopyCode = null;
-            pendingAutoCopySite = null;
+            const code = pendingAutoCopyCode; const site = pendingAutoCopySite;
+            pendingAutoCopyCode = null; pendingAutoCopySite = null;
             hidePendingBanner();
             navigator.clipboard.writeText(code).then(() => {
-                playCopyCode();
-                showToast('Code Auto-Copied! ✓', '⚡');
+                playCopyCode(); showToast('Code Auto-Copied! ✓', '⚡');
                 if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
                 else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
                 else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
             }).catch(() => {
-                // Still failed — show banner as last resort
                 showPendingBanner(code, site);
-                pendingAutoCopyCode = code;
-                pendingAutoCopySite = site;
+                pendingAutoCopyCode = code; pendingAutoCopySite = site;
             });
         }
-
         function showPendingBanner(code, site) {
-            const banner = document.getElementById('pendingCopyBanner');
-            const bannerCode = document.getElementById('pendingBannerCode');
-            if (banner && bannerCode) {
-                bannerCode.textContent = code;
-                banner.style.display = 'flex';
-            }
+            const banner = document.getElementById('pendingCopyBanner'); const bannerCode = document.getElementById('pendingBannerCode');
+            if (banner && bannerCode) { bannerCode.textContent = code; banner.style.display = 'flex'; }
         }
-
         function hidePendingBanner() {
-            const banner = document.getElementById('pendingCopyBanner');
-            if (banner) banner.style.display = 'none';
+            const banner = document.getElementById('pendingCopyBanner'); if (banner) banner.style.display = 'none';
         }
-
         function commitPendingCopy() {
             if (!pendingAutoCopyCode) return;
-            const code = pendingAutoCopyCode;
-            const site = pendingAutoCopySite;
-            pendingAutoCopyCode = null;
-            pendingAutoCopySite = null;
+            const code = pendingAutoCopyCode; const site = pendingAutoCopySite;
+            pendingAutoCopyCode = null; pendingAutoCopySite = null;
             hidePendingBanner();
             navigator.clipboard.writeText(code).then(() => {
-                playCopyCode();
-                showToast('Code Copied!', '⚡');
-                if (site === 'nana') { triggerSiteReady('nana'); }
-                else if (site === 'v03') { triggerSiteReady('v03'); }
-                else { triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                playCopyCode(); showToast('Code Copied!', '⚡');
+                if (site === 'nana') { triggerSiteReady('nana'); } else if (site === 'v03') { triggerSiteReady('v03'); } else { triggerSiteReady('nana'); triggerSiteReady('v03'); }
             }).catch(() => {});
         }
 
-        // visibilitychange — اولین تلاش
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && pendingAutoCopyCode) {
-                tryPendingCopy();
-            }
-        });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && pendingAutoCopyCode) tryPendingCopy(); });
+        window.addEventListener('focus', () => { if (pendingAutoCopyCode) tryPendingCopy(); });
+        document.addEventListener('click', () => { if (pendingAutoCopyCode) tryPendingCopy(); }, true);
 
-        // window focus — وقتی کاربر روی تب کلیک میکنه، این یه gesture واقعیه
-        // و مرورگر clipboard رو قبول میکنه
-        window.addEventListener('focus', () => {
-            if (pendingAutoCopyCode) {
-                tryPendingCopy();
-            }
-        });
-
-        // click روی هر جای صفحه — قطعی‌ترین روش
-        document.addEventListener('click', () => {
-            if (pendingAutoCopyCode) {
-                tryPendingCopy();
-            }
-        }, true);
-
-        // =============================================
-        // THEME
-        // =============================================
         function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fa-regular fa-moon';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-regular fa-sun';
-                localStorage.setItem('theme', 'dark');
-            }
+            const body = document.body; const icon = document.getElementById('themeIcon');
+            if (body.getAttribute('data-theme') === 'dark') { body.setAttribute('data-theme', 'light'); icon.className = 'fa-regular fa-moon'; localStorage.setItem('theme', 'light'); } 
+            else { body.setAttribute('data-theme', 'dark'); icon.className = 'fa-regular fa-sun'; localStorage.setItem('theme', 'dark'); }
         }
+        if (localStorage.getItem('theme') === 'light') { document.body.setAttribute('data-theme', 'light'); document.getElementById('themeIcon').className = 'fa-regular fa-moon'; }
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.setAttribute('data-theme', 'light');
-            document.getElementById('themeIcon').className = 'fa-regular fa-moon';
-        }
-
-        // =============================================
-        // GOOGLE LOGIN
-        // =============================================
-
-        // Build a token client once, reuse for all refreshes
         let _tokenClient = null;
         function getTokenClient(loginHint, promptMode) {
-            return google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                prompt: promptMode || '',
-                login_hint: loginHint || undefined,
-                callback: handleTokenResponse
-            });
+            return google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, prompt: promptMode || '', login_hint: loginHint || undefined, callback: handleTokenResponse });
         }
-
         function handleTokenResponse(response) {
-            if (response.error) {
-                // If silent refresh fails, show a non-disruptive "re-auth" banner
-                // instead of throwing user back to the login screen
-                if (baseGmail) {
-                    showReauthBanner();
-                }
-                return;
-            }
-            accessToken = response.access_token;
-            const expiry = Date.now() + (response.expires_in * 1000);
-            localStorage.setItem('gAccessToken', accessToken);
-            localStorage.setItem('gTokenExpiry', expiry.toString());
-            // Schedule next silent refresh 5 min before expiry
-            scheduleTokenRefresh(response.expires_in - 300);
-            hideReauthBanner();
+            if (response.error) { if (baseGmail) { showReauthBanner(); } return; }
+            accessToken = response.access_token; const expiry = Date.now() + (response.expires_in * 1000);
+            localStorage.setItem('gAccessToken', accessToken); localStorage.setItem('gTokenExpiry', expiry.toString());
+            scheduleTokenRefresh(response.expires_in - 300); hideReauthBanner();
         }
-
         function startGoogleLogin() {
             const savedEmail = localStorage.getItem('gBaseEmail');
-            const client = getTokenClient(savedEmail, 'select_account');
-            client.requestAccessToken();
-            // We don't have baseGmail yet — onLoginSuccess will fetch it
-            // Override callback just for first login to call onLoginSuccess
-            const origCallback = handleTokenResponse;
             _tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                prompt: savedEmail ? '' : 'select_account',
-                login_hint: savedEmail || undefined,
+                client_id: CLIENT_ID, scope: SCOPES, prompt: savedEmail ? '' : 'select_account', login_hint: savedEmail || undefined,
                 callback: (response) => {
-                    if (response.error) {
-                        showToast('Login Failed!', '✕');
-                        return;
-                    }
-                    accessToken = response.access_token;
-                    const expiry = Date.now() + (response.expires_in * 1000);
-                    localStorage.setItem('gAccessToken', accessToken);
-                    localStorage.setItem('gTokenExpiry', expiry.toString());
-                    scheduleTokenRefresh(response.expires_in - 300);
-                    onLoginSuccess(false);
+                    if (response.error) { showToast('Login Failed!', '✕'); return; }
+                    accessToken = response.access_token; const expiry = Date.now() + (response.expires_in * 1000);
+                    localStorage.setItem('gAccessToken', accessToken); localStorage.setItem('gTokenExpiry', expiry.toString());
+                    scheduleTokenRefresh(response.expires_in - 300); onLoginSuccess(false);
                 }
             });
             _tokenClient.requestAccessToken();
         }
-
-        // =============================================
-        // SILENT TOKEN REFRESH — runs in background
-        // =============================================
         function scheduleTokenRefresh(secondsUntilRefresh) {
             if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
-            const delay = Math.max(secondsUntilRefresh, 10); // never schedule < 10s
+            const delay = Math.max(secondsUntilRefresh, 10);
             tokenRefreshTimer = setTimeout(doSilentRefresh, delay * 1000);
         }
-
         function doSilentRefresh() {
             if (!baseGmail) return;
             try {
-                // prompt:'' = truly silent, no UI shown
-                // login_hint = tells Google which account, skips account picker
-                const client = google.accounts.oauth2.initTokenClient({
-                    client_id: CLIENT_ID,
-                    scope: SCOPES,
-                    prompt: '',
-                    login_hint: baseGmail,
+                const client = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, prompt: '', login_hint: baseGmail,
                     callback: (response) => {
-                        if (response.error) {
-                            // Silent refresh failed (consent expired).
-                            // Show a small banner asking user to click once — NOT a full logout.
-                            showReauthBanner();
-                            return;
-                        }
-                        accessToken = response.access_token;
-                        const expiry = Date.now() + (response.expires_in * 1000);
-                        localStorage.setItem('gAccessToken', accessToken);
-                        localStorage.setItem('gTokenExpiry', expiry.toString());
-                        scheduleTokenRefresh(response.expires_in - 300);
-                        hideReauthBanner();
+                        if (response.error) { showReauthBanner(); return; }
+                        accessToken = response.access_token; const expiry = Date.now() + (response.expires_in * 1000);
+                        localStorage.setItem('gAccessToken', accessToken); localStorage.setItem('gTokenExpiry', expiry.toString());
+                        scheduleTokenRefresh(response.expires_in - 300); hideReauthBanner();
                     }
                 });
                 client.requestAccessToken();
-            } catch(e) {
-                showReauthBanner();
-            }
+            } catch(e) { showReauthBanner(); }
         }
-
-        // =============================================
-        // RE-AUTH BANNER — shown instead of full logout
-        // A small non-disruptive bar asking one click
-        // =============================================
-        function showReauthBanner() {
-            let banner = document.getElementById('reauthBanner');
-            if (!banner) return;
-            banner.style.display = 'flex';
-        }
-
-        function hideReauthBanner() {
-            let banner = document.getElementById('reauthBanner');
-            if (banner) banner.style.display = 'none';
-        }
-
+        function showReauthBanner() { let banner = document.getElementById('reauthBanner'); if (banner) banner.style.display = 'flex'; }
+        function hideReauthBanner() { let banner = document.getElementById('reauthBanner'); if (banner) banner.style.display = 'none'; }
         function reauthClick() {
-            // One-click reauth: Google already knows the account via login_hint
-            // so it refreshes the token with a minimal popup (often just a flicker)
-            const client = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                prompt: '',
-                login_hint: baseGmail,
+            const client = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, prompt: '', login_hint: baseGmail,
                 callback: (response) => {
-                    if (response.error) {
-                        // If even this fails, fall back to full login
-                        showToast('Re-login required', '🔑');
-                        clearSessionUI();
-                        return;
-                    }
-                    accessToken = response.access_token;
-                    const expiry = Date.now() + (response.expires_in * 1000);
-                    localStorage.setItem('gAccessToken', accessToken);
-                    localStorage.setItem('gTokenExpiry', expiry.toString());
-                    scheduleTokenRefresh(response.expires_in - 300);
-                    hideReauthBanner();
-                    showToast('Session Restored!', '⚡');
+                    if (response.error) { showToast('Re-login required', '🔑'); clearSessionUI(); return; }
+                    accessToken = response.access_token; const expiry = Date.now() + (response.expires_in * 1000);
+                    localStorage.setItem('gAccessToken', accessToken); localStorage.setItem('gTokenExpiry', expiry.toString());
+                    scheduleTokenRefresh(response.expires_in - 300); hideReauthBanner(); showToast('Session Restored!', '⚡');
                 }
             });
             client.requestAccessToken();
         }
-
-        // =============================================
-        // ON LOGIN SUCCESS
-        // =============================================
         async function onLoginSuccess(isRestored) {
             try {
-                const res = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-
-                if (res.status === 401) {
-                    clearSessionUI();
-                    return;
-                }
-
-                const data = await res.json();
-                baseGmail = data.emailAddress;
-                localStorage.setItem('gBaseEmail', baseGmail);
-
+                const res = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (res.status === 401) { clearSessionUI(); return; }
+                const data = await res.json(); baseGmail = data.emailAddress; localStorage.setItem('gBaseEmail', baseGmail);
                 document.getElementById('userEmail').innerText = baseGmail;
-
-                if (isRestored) {
-                    document.getElementById('sessionTag').style.display = 'inline-flex';
-                }
-
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainSection').classList.add('visible');
-
+                if (isRestored) { document.getElementById('sessionTag').style.display = 'inline-flex'; }
+                document.getElementById('loginSection').style.display = 'none'; document.getElementById('mainSection').classList.add('visible');
                 generateNewAlias();
-            } catch(e) {
-                showToast('Error fetching profile', '✕');
-            }
+            } catch(e) { showToast('Error fetching profile', '✕'); }
         }
-
-        // =============================================
-        // LOGOUT
-        // =============================================
         function logout() {
-            if (accessToken) {
-                try { google.accounts.oauth2.revoke(accessToken); } catch(e) {}
-            }
-            localStorage.removeItem('gBaseEmail');
-            clearSessionUI();
+            if (accessToken) { try { google.accounts.oauth2.revoke(accessToken); } catch(e) {} }
+            localStorage.removeItem('gBaseEmail'); clearSessionUI();
         }
-
         function clearSessionUI() {
-            accessToken = null;
-            baseGmail = null;
-            currentAlias = null;
-            if (checkInterval) clearInterval(checkInterval);
-            if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
-            localStorage.removeItem('gAccessToken');
-            localStorage.removeItem('gTokenExpiry');
-
-            document.getElementById('mainSection').classList.remove('visible');
-            document.getElementById('loginSection').style.display = 'flex';
-            document.getElementById('sessionTag').style.display = 'none';
-            hideReauthBanner();
+            accessToken = null; baseGmail = null; currentAlias = null;
+            if (checkInterval) clearInterval(checkInterval); if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
+            localStorage.removeItem('gAccessToken'); localStorage.removeItem('gTokenExpiry');
+            document.getElementById('mainSection').classList.remove('visible'); document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('sessionTag').style.display = 'none'; hideReauthBanner();
             document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
         }
 
-        // =============================================
-        // AUTO-RESTORE SESSION ON PAGE LOAD
-        // Works even after browser restart
-        // =============================================
         window.addEventListener('load', () => {
-            const savedToken   = localStorage.getItem('gAccessToken');
-            const savedExpiry  = localStorage.getItem('gTokenExpiry');
-            const savedEmail   = localStorage.getItem('gBaseEmail');
-
-            if (!savedEmail) return; // Never logged in
-
-            baseGmail = savedEmail;
-            document.getElementById('userEmail').innerText = baseGmail;
-
-            const now      = Date.now();
-            const expiryMs = savedExpiry ? parseInt(savedExpiry) : 0;
-            const secondsLeft = Math.floor((expiryMs - now) / 1000);
+            const savedToken = localStorage.getItem('gAccessToken'); const savedExpiry = localStorage.getItem('gTokenExpiry'); const savedEmail = localStorage.getItem('gBaseEmail');
+            if (!savedEmail) return;
+            baseGmail = savedEmail; document.getElementById('userEmail').innerText = baseGmail;
+            const now = Date.now(); const expiryMs = savedExpiry ? parseInt(savedExpiry) : 0; const secondsLeft = Math.floor((expiryMs - now) / 1000);
 
             if (savedToken && secondsLeft > 60) {
-                // Token still valid — restore immediately
-                accessToken = savedToken;
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainSection').classList.add('visible');
-                document.getElementById('sessionTag').style.display = 'inline-flex';
-
-                // Schedule next refresh for when it expires (minus 5 min buffer)
-                scheduleTokenRefresh(secondsLeft - 300);
-                generateNewAlias();
+                accessToken = savedToken; document.getElementById('loginSection').style.display = 'none'; document.getElementById('mainSection').classList.add('visible'); document.getElementById('sessionTag').style.display = 'inline-flex';
+                scheduleTokenRefresh(secondsLeft - 300); generateNewAlias();
             } else {
-                // Token expired or missing — try silent reauth in background.
-                // Show the main UI immediately (optimistic), hide if reauth fails.
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainSection').classList.add('visible');
-                document.getElementById('sessionTag').style.display = 'inline-flex';
-
+                document.getElementById('loginSection').style.display = 'none'; document.getElementById('mainSection').classList.add('visible'); document.getElementById('sessionTag').style.display = 'inline-flex';
                 try {
-                    const client = google.accounts.oauth2.initTokenClient({
-                        client_id: CLIENT_ID,
-                        scope: SCOPES,
-                        prompt: '',          // silent — no popup if Google still has session
-                        login_hint: savedEmail,
+                    const client = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, prompt: '', login_hint: savedEmail,
                         callback: (response) => {
-                            if (response.error) {
-                                // Google session also expired — need one manual click
-                                // But DON'T throw back to login — show reauth banner instead
-                                accessToken = null;
-                                showReauthBanner();
-                                generateNewAlias(); // alias still works, just can't poll yet
-                                return;
-                            }
-                            accessToken = response.access_token;
-                            const expiry = Date.now() + (response.expires_in * 1000);
-                            localStorage.setItem('gAccessToken', accessToken);
-                            localStorage.setItem('gTokenExpiry', expiry.toString());
-                            scheduleTokenRefresh(response.expires_in - 300);
-                            hideReauthBanner();
-                            generateNewAlias();
+                            if (response.error) { accessToken = null; showReauthBanner(); generateNewAlias(); return; }
+                            accessToken = response.access_token; const expiry = Date.now() + (response.expires_in * 1000);
+                            localStorage.setItem('gAccessToken', accessToken); localStorage.setItem('gTokenExpiry', expiry.toString());
+                            scheduleTokenRefresh(response.expires_in - 300); hideReauthBanner(); generateNewAlias();
                         }
                     });
                     client.requestAccessToken();
-                } catch(e) {
-                    accessToken = null;
-                    showReauthBanner();
-                    generateNewAlias();
-                }
+                } catch(e) { accessToken = null; showReauthBanner(); generateNewAlias(); }
             }
         });
 
-        // =============================================
-        // ALIAS GENERATION
-        // =============================================
         function generateSuffix(length = 6) {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'; let result = '';
+            for (let i = 0; i < length; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
             return result;
         }
-
         function generateNewAlias() {
             if (!baseGmail) return;
-
-            if (checkInterval) clearInterval(checkInterval);
-            knownMessageIds.clear();
-            firstCodeCopied = false;
-
+            if (checkInterval) clearInterval(checkInterval); knownMessageIds.clear();
             currentSuffix = generateSuffix();
-            const localPart = baseGmail.split('@')[0];
-            const domain = baseGmail.split('@')[1];
+            const localPart = baseGmail.split('@')[0]; const domain = baseGmail.split('@')[1];
             currentAlias = `${localPart}+${currentSuffix}@${domain}`;
-
-            const display = document.getElementById('emailDisplay');
-            display.innerText = currentAlias;
-            display.classList.remove('loading');
-
+            const display = document.getElementById('emailDisplay'); display.innerText = currentAlias; display.classList.remove('loading');
             document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
-            document.getElementById('scanStatus').innerText = 'Scanning';
-            document.getElementById('radarDot').style.background = 'var(--accent)';
-
+            document.getElementById('scanStatus').innerText = 'Scanning'; document.getElementById('radarDot').style.background = 'var(--accent)';
             checkInterval = setInterval(checkInbox, 5000);
         }
 
-        // =============================================
-        // INBOX POLLING
-        // =============================================
         async function checkInbox() {
             if (!accessToken || !currentSuffix) return;
-
             try {
                 const query = encodeURIComponent(`to:${currentAlias}`);
-                const res = await fetch(
-                    `https://www.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=10`,
-                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
-                );
-
-                if (res.status === 401) {
-                    document.getElementById('scanStatus').innerText = 'Re-login needed';
-                    document.getElementById('radarDot').style.background = '#ef4444';
-                    clearInterval(checkInterval);
-                    // Attempt silent refresh
-                    silentTokenRefresh();
-                    return;
-                }
-
-                const data = await res.json();
-                const messages = data.messages || [];
-
-                for (const msg of messages) {
-                    if (!knownMessageIds.has(msg.id)) {
-                        knownMessageIds.add(msg.id);
-                        fetchMessageDetails(msg.id);
-                    }
-                }
-            } catch(e) {
-                // silent fail - try again next interval
-            }
+                const res = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=10`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                if (res.status === 401) { document.getElementById('scanStatus').innerText = 'Re-login needed'; document.getElementById('radarDot').style.background = '#ef4444'; clearInterval(checkInterval); doSilentRefresh(); return; }
+                const data = await res.json(); const messages = data.messages || [];
+                for (const msg of messages) { if (!knownMessageIds.has(msg.id)) { knownMessageIds.add(msg.id); fetchMessageDetails(msg.id); } }
+            } catch(e) {}
         }
 
-        // =============================================
-        // EMAIL RELEVANCE FILTER
-        // Only show emails that contain: numeric codes,
-        // alphanumeric codes, letter-only codes, or login links.
-        // Blocks: welcome/confirmation emails, marketing, newsletters.
-        // =============================================
         function isVerificationEmail(subject, bodyText) {
             const fullText = (subject + ' ' + bodyText).toLowerCase();
-
-            // --- BLOCK LIST: skip these outright ---
-            const blockPatterns = [
-                // Welcome / account created
-                /welcome\s+to\b/i,
-                /welcome\s+aboard/i,
-                /account\s+(has\s+been\s+)?(created|registered|activated|confirmed)/i,
-                /you('ve|re| have)\s+(successfully\s+)?(signed\s+up|registered|joined|created)/i,
-                /thanks?\s+for\s+(joining|signing\s+up|registering|creating)/i,
-                /your\s+account\s+is\s+(ready|active|set\s+up)/i,
-                /get\s+started\s+with/i,
-                /start\s+exploring/i,
-                // Marketing / promotional
-                /unsubscribe/i,
-                /newsletter/i,
-                /\bsale\b.*\b(off|discount|deal)\b/i,
-                /\b(limited\s+time|exclusive\s+offer|special\s+offer|flash\s+sale)\b/i,
-                /you\s+might\s+also\s+like/i,
-                /recommended\s+for\s+you/i,
-                /\bpromo\s+code\b/i,
-                // Notification emails (not auth-related)
-                /\b(someone\s+liked|commented\s+on|mentioned\s+you|new\s+follower)\b/i,
-                /\bweekly\s+(digest|summary|report)\b/i,
-                /\bmonthly\s+(digest|summary|report)\b/i,
-            ];
-
-            for (const pattern of blockPatterns) {
-                if (pattern.test(fullText)) return false;
-            }
-
-            // --- ALLOW LIST: must match at least one of these ---
-
-            // 1. Contains a numeric OTP/PIN/code (4-8 digits)
+            const blockPatterns = [ /welcome\s+to\b/i, /welcome\s+aboard/i, /account\s+(has\s+been\s+)?(created|registered|activated|confirmed)/i, /you('ve|re| have)\s+(successfully\s+)?(signed\s+up|registered|joined|created)/i, /thanks?\s+for\s+(joining|signing\s+up|registering|creating)/i, /your\s+account\s+is\s+(ready|active|set\s+up)/i, /get\s+started\s+with/i, /start\s+exploring/i, /unsubscribe/i, /newsletter/i, /\bsale\b.*\b(off|discount|deal)\b/i, /\b(limited\s+time|exclusive\s+offer|special\s+offer|flash\s+sale)\b/i, /you\s+might\s+also\s+like/i, /recommended\s+for\s+you/i, /\bpromo\s+code\b/i, /\b(someone\s+liked|commented\s+on|mentioned\s+you|new\s+follower)\b/i, /\bweekly\s+(digest|summary|report)\b/i, /\bmonthly\s+(digest|summary|report)\b/i, ];
+            for (const pattern of blockPatterns) { if (pattern.test(fullText)) return false; }
             const hasNumericCode = /\b\d{4,8}\b/.test(fullText);
-
-            // 2. Contains alphanumeric code (e.g. aB3xZ9, typical token codes)
-            const hasAlphanumericCode = /\b[a-z0-9]{5,12}\b/i.test(fullText) &&
-                /(?:code|token|otp|pin|verify|confirmation|secret|key)/i.test(fullText);
-
-            // 3. Contains letter-only code with verification context
-            const hasLetterCode = /\b[a-z]{5,10}\b/i.test(fullText) &&
-                /(?:code|token|otp|verify|confirmation|secret|key)/i.test(fullText);
-
-            // 4. Contains a login/verify/magic link
+            const hasAlphanumericCode = /\b[a-z0-9]{5,12}\b/i.test(fullText) && /(?:code|token|otp|pin|verify|confirmation|secret|key)/i.test(fullText);
+            const hasLetterCode = /\b[a-z]{5,10}\b/i.test(fullText) && /(?:code|token|otp|verify|confirmation|secret|key)/i.test(fullText);
             const hasLoginLink = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access)[^\s"'<>]*/i.test(bodyText);
-
-            // 5. Subject explicitly mentions verification/auth
             const hasVerificationSubject = /(?:verify|verification|confirm|otp|one.time|passcode|login\s+code|sign.in\s+code|access\s+code|security\s+code|your\s+code)/i.test(subject);
-
             return hasNumericCode || hasAlphanumericCode || hasLetterCode || hasLoginLink || hasVerificationSubject;
         }
 
         async function fetchMessageDetails(msgId) {
             try {
-                const res = await fetch(
-                    `https://www.googleapis.com/gmail/v1/users/me/messages/${msgId}?format=full`,
-                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
-                );
+                const res = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${msgId}?format=full`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
                 const msgData = await res.json();
-
                 const headers = msgData.payload.headers || [];
-                const fromHeader = headers.find(h => h.name === 'From') || {};
-                const subjectHeader = headers.find(h => h.name === 'Subject') || {};
-                const fromRaw = fromHeader.value || 'Unknown';
-                const subject = subjectHeader.value || '';
-
+                const fromHeader = headers.find(h => h.name === 'From') || {}; const subjectHeader = headers.find(h => h.name === 'Subject') || {};
+                const fromRaw = fromHeader.value || 'Unknown'; const subject = subjectHeader.value || '';
                 let bodyText = '';
                 function extractBody(part) {
-                    if (part.mimeType === 'text/plain' && part.body && part.body.data) {
-                        bodyText += atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                    }
-                    if (part.mimeType === 'text/html' && part.body && part.body.data && !bodyText) {
-                        const html = atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                        bodyText += html.replace(/<[^>]*>/g, ' ');
-                    }
+                    if (part.mimeType === 'text/plain' && part.body && part.body.data) { bodyText += atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/')); }
+                    if (part.mimeType === 'text/html' && part.body && part.body.data && !bodyText) { const html = atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/')); bodyText += html.replace(/<[^>]*>/g, ' '); }
                     if (part.parts) part.parts.forEach(extractBody);
                 }
-                if (msgData.payload.parts) {
-                    msgData.payload.parts.forEach(extractBody);
-                } else if (msgData.payload.body && msgData.payload.body.data) {
-                    bodyText = atob(msgData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                }
-
-                // --- FILTER: skip non-verification emails silently ---
-                if (!isVerificationEmail(subject, bodyText)) {
-                    return; // blocked — don't show in UI
-                }
-
-                // Detect which site sent this
+                if (msgData.payload.parts) { msgData.payload.parts.forEach(extractBody); } else if (msgData.payload.body && msgData.payload.body.data) { bodyText = atob(msgData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/')); }
+                if (!isVerificationEmail(subject, bodyText)) { return; }
                 const site = detectSite(fromRaw);
-
-                // Clear empty-state placeholder only when a real message will be shown
-                if (document.querySelector('.empty-state')) {
-                    document.getElementById('inboxContainer').innerHTML = '';
-                }
-
-                const fullText = subject + ' ' + bodyText;
-                const extractedCode = extractCode(fullText);
-                const extractedLink = extractLoginLink(bodyText);
+                if (document.querySelector('.empty-state')) { document.getElementById('inboxContainer').innerHTML = ''; }
+                const fullText = subject + ' ' + bodyText; const extractedCode = extractCode(fullText); const extractedLink = extractLoginLink(bodyText);
                 const senderName = fromRaw.replace(/<.*>/, '').trim() || fromRaw.split('@')[0];
-
-                const inbox = document.getElementById('inboxContainer');
-                const msgEl = document.createElement('div');
-                msgEl.className = 'message';
-
+                const inbox = document.getElementById('inboxContainer'); const msgEl = document.createElement('div'); msgEl.className = 'message';
                 let html = `<div class="msg-sender">${escapeHtml(senderName)}</div>`;
 
                 if (extractedCode) {
                     html += `<div class="extracted-code" onclick="copyCode('${escapeHtml(extractedCode)}')">${escapeHtml(extractedCode)}</div>`;
-
-                    // Helper: do the copy + feedback
                     const doCopy = (code, siteId) => {
                         navigator.clipboard.writeText(code).then(() => {
-                            playCopyCode();
-                            showToast('Code Auto-Copied!', '⚡');
-                            if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
-                            else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
-                            else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
-                        }).catch(() => {
-                            // Clipboard failed even though tab is visible — queue for next focus
-                            pendingAutoCopyCode = code;
-                            pendingAutoCopySite = siteId;
-                        });
+                            playCopyCode(); showToast('Code Auto-Copied!', '⚡');
+                            if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); } else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); } else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                        }).catch(() => { pendingAutoCopyCode = code; pendingAutoCopySite = siteId; });
                     };
-
-                    if (document.visibilityState === 'visible') {
-                        // Tab is active — copy right now
-                        doCopy(extractedCode, site);
-                    } else {
-                        // Tab is in background — queue it; visibilitychange listener will fire on return
-                        pendingAutoCopyCode = extractedCode;
-                        pendingAutoCopySite = site;
-                        // Still play the site sound so user hears the notification
-                        if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
-                        else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
-                        else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                    if (document.visibilityState === 'visible') { doCopy(extractedCode, site); } else {
+                        pendingAutoCopyCode = extractedCode; pendingAutoCopySite = site;
+                        if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); } else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); } else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
                     }
-
-                    // ── Auto-rotate: 2 minutes after receiving a code, generate new alias ──
                     if (window._autoRotateTimer) clearTimeout(window._autoRotateTimer);
-                    window._autoRotateTimer = setTimeout(() => {
-                        showToast('New alias generated ↻', '🔄');
-                        generateNewAlias();
-                    }, 2 * 60 * 1000);
+                    window._autoRotateTimer = setTimeout(() => { showToast('New alias generated ↻', '🔄'); generateNewAlias(); }, 2 * 60 * 1000);
                 } else if (extractedLink) {
-                    html += `<div class="link-block">
-                        <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
-                        <a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn">
-                            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i>
-                            Open Login Link
-                        </a>
-                    </div>`;
-                } else {
-                    html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`;
-                }
-
-                msgEl.innerHTML = html;
-                inbox.prepend(msgEl);
-
-                // Play site-specific incoming sound
-                if (site === 'nana') {
-                    playNanaSound();
-                } else if (site === 'v03') {
-                    playV03Sound();
-                } else {
-                    playIncomingEmail();
-                }
-
-            } catch(e) {
-                // silent fail
-            }
+                    html += `<div class="link-block"><span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span><a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i> Open Login Link</a></div>`;
+                } else { html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`; }
+                msgEl.innerHTML = html; inbox.prepend(msgEl);
+                if (site === 'nana') { playNanaSound(); } else if (site === 'v03') { playV03Sound(); } else { playIncomingEmail(); }
+            } catch(e) {}
         }
 
-        // =============================================
-        // CODE EXTRACTION
-        // =============================================
-        function extractLoginLink(bodyText) {
-            // Match magic/verify/login links
-            const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i;
-            const match = bodyText.match(linkPattern);
-            return match ? match[0] : null;
-        }
-
+        function extractLoginLink(bodyText) { const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i; const match = bodyText.match(linkPattern); return match ? match[0] : null; }
         function extractCode(text) {
-            const patterns = [
-                // Explicit label + numeric code
-                /(?:verification|confirm|code|OTP|PIN|passcode|secret)[^\d]*(\d{4,8})/i,
-                /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code)/i,
-                // Alphanumeric code with label
-                /(?:code|token|otp|key)[^\w]*([a-z0-9]{5,12})/i,
-                // Standalone 6-digit (most common OTP)
-                /\b(\d{6})\b/,
-                // Any 4–8 digit number
-                /\b(\d{4,8})\b/,
-            ];
-
-            for (const pattern of patterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    const code = match[1] || match[0];
-                    const num = parseInt(code);
-                    if (num >= 1000 && num <= 99999999 && !(num >= 2020 && num <= 2030)) {
-                        return code;
-                    }
-                }
-            }
-            return null;
+            const patterns = [ /(?:verification|confirm|code|OTP|PIN|passcode|secret)[^\d]*(\d{4,8})/i, /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code)/i, /(?:code|token|otp|key)[^\w]*([a-z0-9]{5,12})/i, /\b(\d{6})\b/, /\b(\d{4,8})\b/, ];
+            for (const pattern of patterns) { const match = text.match(pattern); if (match) { const code = match[1] || match[0]; const num = parseInt(code); if (num >= 1000 && num <= 99999999 && !(num >= 2020 && num <= 2030)) { return code; } } } return null;
         }
 
-        // =============================================
-        // UI HELPERS
-        // =============================================
-        async function forceRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spin');
-            await checkInbox();
-            setTimeout(() => btn.classList.remove('spin'), 600);
-        }
-
+        async function forceRefresh() { const btn = document.getElementById('refreshBtn'); btn.classList.add('spin'); await checkInbox(); setTimeout(() => btn.classList.remove('spin'), 600); }
         function copyEmail() {
-            if (currentAlias) {
-                playEmailClick();
-                navigator.clipboard.writeText(currentAlias).then(() => {
-                    showToast('Email Copied!', '✓');
-                    const icon = document.getElementById('copyIcon');
-                    icon.className = 'fa-solid fa-check';
-                    setTimeout(() => icon.className = 'fa-regular fa-copy', 1500);
-                });
-            }
+            if (currentAlias) { playEmailClick(); navigator.clipboard.writeText(currentAlias).then(() => { showToast('Email Copied!', '✓'); const icon = document.getElementById('copyIcon'); icon.className = 'fa-solid fa-check'; setTimeout(() => icon.className = 'fa-regular fa-copy', 1500); }); }
         }
-
-        function copyCode(code) {
-            playCopyCode();
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('Code Copied!', '⚡');
-                // pulse whichever site was last detected
-                if (lastCodeSite) triggerSiteReady(lastCodeSite);
-            });
-        }
-
-        function copyText(text, isCode = false) {
-            if (isCode) {
-                copyCode(text);
-            } else {
-                copyEmail();
-            }
-        }
-
-        function showToast(msg, icon = '✓') {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            const toastIcon = document.getElementById('toastIcon');
-            toastMsg.innerText = msg;
-            toastIcon.innerText = icon;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1800);
-        }
-
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
+        function copyCode(code) { playCopyCode(); navigator.clipboard.writeText(code).then(() => { showToast('Code Copied!', '⚡'); if (lastCodeSite) triggerSiteReady(lastCodeSite); }); }
+        function showToast(msg, icon = '✓') { const toast = document.getElementById('toast'); const toastMsg = document.getElementById('toastMsg'); const toastIcon = document.getElementById('toastIcon'); toastMsg.innerText = msg; toastIcon.innerText = icon; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1800); }
+        function escapeHtml(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     </script>
 </body>
 </html>
