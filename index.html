@@ -16,7 +16,7 @@
 
     <style>
         :root {
-            --bg-body: #09090f;
+            --bg-body: #0b0b10;
             --card-bg: rgba(18, 18, 26, 0.75);
             --card-border: rgba(99, 102, 241, 0.14);
             --text-primary: #f0f2ff;
@@ -46,20 +46,12 @@
             --grid-line: rgba(0, 0, 0, 0.04);
             --grid-dot: rgba(79, 70, 229, 0.12);
         }
-        [data-theme="light"] body,
-        body[data-theme="light"] {
-            background-image: none;
-        }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
-            background-image:
-                radial-gradient(ellipse 120% 80% at 20% 20%, rgba(88, 28, 135, 0.22) 0%, transparent 55%),
-                radial-gradient(ellipse 100% 90% at 80% 80%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
-                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
             color: var(--text-primary);
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
@@ -67,7 +59,6 @@
             position: relative;
             overflow: hidden;
         }
-        [data-theme="light"] body { background-image: none; }
 
         /* =========================================
            BACKGROUND — ultra-thin grid + dot nodes
@@ -200,31 +191,33 @@
         .main-section { display: none; flex-direction: column; gap: 18px; }
         .main-section.visible { display: flex; }
 
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 10px;
+            padding: 6px 12px;
+            justify-content: space-between;
+        }
+
         .user-badge-left { display: flex; align-items: center; gap: 6px; }
 
         .logout-btn {
-            background: rgba(99, 102, 241, 0.07);
-            border: 1px solid rgba(99, 102, 241, 0.22);
-            color: rgba(196, 181, 253, 0.75);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
             cursor: pointer;
-            font-size: 11px;
-            font-weight: 500;
-            padding: 7px 14px;
-            border-radius: 9px;
-            transition: all 0.2s ease;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: color 0.2s;
             font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 0.3px;
-            width: 100%;
         }
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.35);
-            color: rgba(252, 165, 165, 0.9);
-        }
-        .logout-btn:active { transform: scale(0.97); }
+        .logout-btn:hover { color: #ef4444; }
 
         .email-display-group {
             background: var(--box-bg);
@@ -543,135 +536,20 @@
             letter-spacing: 0.5px;
         }
 
-        /* Session restore indicator — icon only with pulse animation */
+        /* Session restore indicator */
         .session-tag {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-            background: rgba(34, 197, 94, 0.12);
-            border: 1px solid rgba(34, 197, 94, 0.25);
-            border-radius: 50%;
-            position: relative;
-        }
-        .session-tag i {
-            font-size: 8px;
+            gap: 4px;
+            font-size: 9px;
+            background: rgba(34, 197, 94, 0.1);
             color: #22c55e;
-            animation: sessionIconPulse 2s ease-in-out infinite;
-        }
-        .session-tag::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(34, 197, 94, 0.35);
-            animation: sessionRing 2s ease-in-out infinite;
-        }
-        @keyframes sessionIconPulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.15); }
-        }
-        @keyframes sessionRing {
-            0% { transform: scale(0.85); opacity: 0.6; }
-            50% { transform: scale(1.25); opacity: 0; }
-            100% { transform: scale(0.85); opacity: 0; }
-        }
-        /* User avatar removed */
-
-        /* Enhanced user badge — solid purple fill */
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: #c4b5fd;
-            background: 
-                radial-gradient(ellipse at 0% 50%, rgba(139, 92, 246, 0.35) 0%, transparent 65%),
-                radial-gradient(ellipse at 100% 50%, rgba(99, 102, 241, 0.28) 0%, transparent 65%),
-                linear-gradient(135deg, rgba(88, 28, 135, 0.55) 0%, rgba(67, 56, 202, 0.45) 50%, rgba(79, 70, 229, 0.4) 100%);
-            border: 1px solid rgba(139, 92, 246, 0.55);
-            border-radius: 11px;
-            padding: 7px 10px 7px 14px;
-            justify-content: space-between;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 18px rgba(99, 102, 241, 0.18), inset 0 1px 0 rgba(167, 139, 250, 0.2);
-        }
-        .user-badge::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent 5%, rgba(196, 181, 253, 0.7) 50%, transparent 95%);
-        }
-        .user-badge::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent 20%, rgba(99, 102, 241, 0.35) 50%, transparent 80%);
-        }
-        .user-badge:hover {
-            border-color: rgba(167, 139, 250, 0.75);
-            box-shadow: 0 0 28px rgba(99, 102, 241, 0.25), inset 0 0 20px rgba(99, 102, 241, 0.08);
-        }
-        #userEmail {
-            font-size: 11.5px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 6px;
+            padding: 2px 6px;
             font-weight: 600;
-            color: #ede9fe;
-            letter-spacing: 0.1px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Enhanced all button/box borders to purple-ish */
-        .email-display-group {
-            border-color: rgba(99, 102, 241, 0.2) !important;
-        }
-        .controls .btn {
-            border-color: rgba(99, 102, 241, 0.2) !important;
-            transition: background-color 0.15s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-        }
-        .controls .btn:hover {
-            background: rgba(99, 102, 241, 0.08) !important;
-            border-color: rgba(99, 102, 241, 0.45) !important;
-            box-shadow: 0 0 14px rgba(99, 102, 241, 0.1);
-        }
-
-        /* Modern card glow */
-        .card {
-            box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04);
-        }
-
-        /* Smoother header title */
-        .header h1 {
-            font-size: 21px;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-        .header h1 span {
-            font-weight: 700;
-            background: linear-gradient(135deg, #6366f1, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Inbox list empty state modern */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 80px;
-            gap: 8px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            font-weight: 300;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -731,16 +609,14 @@
 
                 <div class="user-badge" id="userBadge">
                     <div class="user-badge-left">
+                        <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
                         <span id="userEmail">loading...</span>
                         <span class="session-tag" id="sessionTag" style="display:none;">
-                            <i class="fa-solid fa-bolt"></i>
+                            <i class="fa-solid fa-bolt" style="font-size:8px;"></i> restored
                         </span>
                     </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fa-solid fa-right-from-bracket" style="font-size:10px; margin-right:5px;"></i>
-                    Logout
-                </button>
 
                 <div class="email-display-group" onclick="copyEmail()">
                     <div class="email-text loading" id="emailDisplay">Generating...</div>
