@@ -16,19 +16,19 @@
 
     <style>
         :root {
-            --bg-body: #09090b;
-            --card-bg: rgba(24, 24, 27, 0.65);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
+            --bg-body: #0b0b10;
+            --card-bg: rgba(18, 18, 26, 0.75);
+            --card-border: rgba(99, 102, 241, 0.14);
+            --text-primary: #f0f2ff;
+            --text-secondary: #8892b0;
             --accent: #6366f1;
-            --box-bg: rgba(0, 0, 0, 0.4);
-            --btn-border: rgba(255, 255, 255, 0.08);
-            --code-bg: rgba(99, 102, 241, 0.12);
-            --shadow: 0 20px 40px rgba(0,0,0,0.5);
-            --grid-color: rgba(99, 102, 241, 0.025);
-            --grid-line: rgba(255, 255, 255, 0.028);
-            --grid-dot: rgba(99, 102, 241, 0.18);
+            --box-bg: rgba(12, 12, 20, 0.6);
+            --btn-border: rgba(255, 255, 255, 0.10);
+            --code-bg: rgba(99, 102, 241, 0.14);
+            --shadow: 0 24px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.06);
+            --grid-color: rgba(99, 102, 241, 0.04);
+            --grid-line: rgba(140, 145, 255, 0.055);
+            --grid-dot: rgba(99, 102, 241, 0.42);
         }
 
         [data-theme="light"] {
@@ -105,9 +105,9 @@
         /* Soft ambient glow */
         .bg-glow {
             position: fixed;
-            width: 600px;
-            height: 500px;
-            background: radial-gradient(ellipse, rgba(99, 102, 241, 0.06) 0%, transparent 65%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(99, 102, 241, 0.10) 0%, rgba(99,102,241,0.04) 40%, transparent 70%);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -116,9 +116,21 @@
             animation: glowBreath 8s ease-in-out infinite;
         }
 
+        /* Secondary glow — warm purple tint bottom-right */
+        .bg-glow-2 {
+            position: fixed;
+            width: 500px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(139, 92, 246, 0.07) 0%, transparent 65%);
+            bottom: -80px;
+            right: -80px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         @keyframes glowBreath {
-            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+            0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
         }
 
         /* Floating micro-particles — 3 subtle orbs */
@@ -130,20 +142,20 @@
             filter: blur(60px);
         }
         .bg-orb-1 {
-            width: 180px; height: 180px;
-            background: rgba(99, 102, 241, 0.06);
+            width: 220px; height: 220px;
+            background: rgba(99, 102, 241, 0.09);
             top: 15%; left: 10%;
             animation: orbFloat1 18s ease-in-out infinite;
         }
         .bg-orb-2 {
-            width: 120px; height: 120px;
-            background: rgba(139, 92, 246, 0.05);
+            width: 160px; height: 160px;
+            background: rgba(139, 92, 246, 0.08);
             bottom: 20%; right: 12%;
             animation: orbFloat2 24s ease-in-out infinite;
         }
         .bg-orb-3 {
-            width: 90px; height: 90px;
-            background: rgba(99, 102, 241, 0.04);
+            width: 100px; height: 100px;
+            background: rgba(99, 102, 241, 0.07);
             top: 60%; left: 60%;
             animation: orbFloat3 20s ease-in-out infinite;
         }
@@ -407,6 +419,36 @@
             box-shadow: none;
         }
 
+        .link-block {
+            background: var(--box-bg);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 10px 14px;
+        }
+
+        .login-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .login-link-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
             background: var(--text-primary); color: var(--bg-body);
@@ -453,6 +495,7 @@
     <!-- Background grid -->
     <div class="bg-grid"></div>
     <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
 
     <div id="toast">
         <span class="toast-icon" id="toastIcon">✓</span>
@@ -962,20 +1005,72 @@
                 for (const msg of messages) {
                     if (!knownMessageIds.has(msg.id)) {
                         knownMessageIds.add(msg.id);
-
-                        if (document.querySelector('.empty-state')) {
-                            document.getElementById('inboxContainer').innerHTML = '';
-                        }
-
-                        // Play incoming email sound for new messages
-                        playIncomingEmail();
-
                         fetchMessageDetails(msg.id);
                     }
                 }
             } catch(e) {
                 // silent fail - try again next interval
             }
+        }
+
+        // =============================================
+        // EMAIL RELEVANCE FILTER
+        // Only show emails that contain: numeric codes,
+        // alphanumeric codes, letter-only codes, or login links.
+        // Blocks: welcome/confirmation emails, marketing, newsletters.
+        // =============================================
+        function isVerificationEmail(subject, bodyText) {
+            const fullText = (subject + ' ' + bodyText).toLowerCase();
+
+            // --- BLOCK LIST: skip these outright ---
+            const blockPatterns = [
+                // Welcome / account created
+                /welcome\s+to\b/i,
+                /welcome\s+aboard/i,
+                /account\s+(has\s+been\s+)?(created|registered|activated|confirmed)/i,
+                /you('ve|re| have)\s+(successfully\s+)?(signed\s+up|registered|joined|created)/i,
+                /thanks?\s+for\s+(joining|signing\s+up|registering|creating)/i,
+                /your\s+account\s+is\s+(ready|active|set\s+up)/i,
+                /get\s+started\s+with/i,
+                /start\s+exploring/i,
+                // Marketing / promotional
+                /unsubscribe/i,
+                /newsletter/i,
+                /\bsale\b.*\b(off|discount|deal)\b/i,
+                /\b(limited\s+time|exclusive\s+offer|special\s+offer|flash\s+sale)\b/i,
+                /you\s+might\s+also\s+like/i,
+                /recommended\s+for\s+you/i,
+                /\bpromo\s+code\b/i,
+                // Notification emails (not auth-related)
+                /\b(someone\s+liked|commented\s+on|mentioned\s+you|new\s+follower)\b/i,
+                /\bweekly\s+(digest|summary|report)\b/i,
+                /\bmonthly\s+(digest|summary|report)\b/i,
+            ];
+
+            for (const pattern of blockPatterns) {
+                if (pattern.test(fullText)) return false;
+            }
+
+            // --- ALLOW LIST: must match at least one of these ---
+
+            // 1. Contains a numeric OTP/PIN/code (4-8 digits)
+            const hasNumericCode = /\b\d{4,8}\b/.test(fullText);
+
+            // 2. Contains alphanumeric code (e.g. aB3xZ9, typical token codes)
+            const hasAlphanumericCode = /\b[a-z0-9]{5,12}\b/i.test(fullText) &&
+                /(?:code|token|otp|pin|verify|confirmation|secret|key)/i.test(fullText);
+
+            // 3. Contains letter-only code with verification context
+            const hasLetterCode = /\b[a-z]{5,10}\b/i.test(fullText) &&
+                /(?:code|token|otp|verify|confirmation|secret|key)/i.test(fullText);
+
+            // 4. Contains a login/verify/magic link
+            const hasLoginLink = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access)[^\s"'<>]*/i.test(bodyText);
+
+            // 5. Subject explicitly mentions verification/auth
+            const hasVerificationSubject = /(?:verify|verification|confirm|otp|one.time|passcode|login\s+code|sign.in\s+code|access\s+code|security\s+code|your\s+code)/i.test(subject);
+
+            return hasNumericCode || hasAlphanumericCode || hasLetterCode || hasLoginLink || hasVerificationSubject;
         }
 
         async function fetchMessageDetails(msgId) {
@@ -1009,8 +1104,19 @@
                     bodyText = atob(msgData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
                 }
 
+                // --- FILTER: skip non-verification emails silently ---
+                if (!isVerificationEmail(subject, bodyText)) {
+                    return; // blocked — don't show in UI
+                }
+
+                // Clear empty-state placeholder only when a real message will be shown
+                if (document.querySelector('.empty-state')) {
+                    document.getElementById('inboxContainer').innerHTML = '';
+                }
+
                 const fullText = subject + ' ' + bodyText;
                 const extractedCode = extractCode(fullText);
+                const extractedLink = extractLoginLink(bodyText);
                 const senderName = fromRaw.replace(/<.*>/, '').trim() || fromRaw.split('@')[0];
 
                 const inbox = document.getElementById('inboxContainer');
@@ -1020,7 +1126,8 @@
                 let html = `<div class="msg-sender">${escapeHtml(senderName)}</div>`;
 
                 if (extractedCode) {
-                    html += `<div class="extracted-code" onclick="copyCode('${extractedCode}')">${extractedCode}</div>`;
+                    // Numeric or alphanumeric code
+                    html += `<div class="extracted-code" onclick="copyCode('${escapeHtml(extractedCode)}')">${escapeHtml(extractedCode)}</div>`;
 
                     // Auto-copy first code
                     if (!firstCodeCopied) {
@@ -1030,12 +1137,24 @@
                             showToast('Code Auto-Copied!', '⚡');
                         }).catch(() => {});
                     }
+                } else if (extractedLink) {
+                    // Login link
+                    html += `<div class="link-block">
+                        <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
+                        <a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn">
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i>
+                            Open Login Link
+                        </a>
+                    </div>`;
                 } else {
                     html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`;
                 }
 
                 msgEl.innerHTML = html;
                 inbox.prepend(msgEl);
+
+                // Play sound only for shown messages
+                playIncomingEmail();
 
             } catch(e) {
                 // silent fail
@@ -1045,11 +1164,23 @@
         // =============================================
         // CODE EXTRACTION
         // =============================================
+        function extractLoginLink(bodyText) {
+            // Match magic/verify/login links
+            const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i;
+            const match = bodyText.match(linkPattern);
+            return match ? match[0] : null;
+        }
+
         function extractCode(text) {
             const patterns = [
-                /(?:verification|confirm|code|OTP|PIN)[^\d]*(\d{4,8})/i,
+                // Explicit label + numeric code
+                /(?:verification|confirm|code|OTP|PIN|passcode|secret)[^\d]*(\d{4,8})/i,
                 /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code)/i,
+                // Alphanumeric code with label
+                /(?:code|token|otp|key)[^\w]*([a-z0-9]{5,12})/i,
+                // Standalone 6-digit (most common OTP)
                 /\b(\d{6})\b/,
+                // Any 4–8 digit number
                 /\b(\d{4,8})\b/,
             ];
 
