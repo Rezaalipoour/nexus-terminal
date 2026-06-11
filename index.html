@@ -191,19 +191,6 @@
         .main-section { display: none; flex-direction: column; gap: 18px; }
         .main-section.visible { display: flex; }
 
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 10px;
-            padding: 6px 12px;
-            justify-content: space-between;
-        }
-
         .user-badge-left { display: flex; align-items: center; gap: 6px; }
 
         .logout-btn {
@@ -536,20 +523,121 @@
             letter-spacing: 0.5px;
         }
 
-        /* Session restore indicator */
+        /* Session restore indicator — icon only with pulse animation */
         .session-tag {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            background: rgba(34, 197, 94, 0.1);
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            border-radius: 50%;
+            position: relative;
+        }
+        .session-tag i {
+            font-size: 8px;
             color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            border-radius: 6px;
-            padding: 2px 6px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            animation: sessionIconPulse 2s ease-in-out infinite;
+        }
+        .session-tag::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(34, 197, 94, 0.35);
+            animation: sessionRing 2s ease-in-out infinite;
+        }
+        @keyframes sessionIconPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+        @keyframes sessionRing {
+            0% { transform: scale(0.85); opacity: 0.6; }
+            50% { transform: scale(1.25); opacity: 0; }
+            100% { transform: scale(0.85); opacity: 0; }
+        }
+        /* User avatar — letter circle */
+        .user-avatar {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #6366f1, #818cf8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            letter-spacing: 0;
+            box-shadow: 0 0 0 1.5px rgba(99,102,241,0.35);
             text-transform: uppercase;
+        }
+
+        /* Enhanced user badge */
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--box-bg);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 6px 12px;
+            justify-content: space-between;
+            transition: border-color 0.2s ease;
+        }
+        .user-badge:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        /* Enhanced all button/box borders to purple-ish */
+        .email-display-group {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+        }
+        .controls .btn {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+            transition: background-color 0.15s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+        }
+        .controls .btn:hover {
+            background: rgba(99, 102, 241, 0.08) !important;
+            border-color: rgba(99, 102, 241, 0.45) !important;
+            box-shadow: 0 0 14px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Modern card glow */
+        .card {
+            box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04);
+        }
+
+        /* Smoother header title */
+        .header h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .header h1 span {
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Inbox list empty state modern */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
         }
     </style>
 </head>
@@ -609,10 +697,10 @@
 
                 <div class="user-badge" id="userBadge">
                     <div class="user-badge-left">
-                        <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
+                        <span class="user-avatar" id="userAvatar">A</span>
                         <span id="userEmail">loading...</span>
                         <span class="session-tag" id="sessionTag" style="display:none;">
-                            <i class="fa-solid fa-bolt" style="font-size:8px;"></i> restored
+                            <i class="fa-solid fa-bolt"></i>
                         </span>
                     </div>
                     <button class="logout-btn" onclick="logout()">Logout</button>
@@ -1189,6 +1277,9 @@
                 localStorage.setItem('gBaseEmail', baseGmail);
 
                 document.getElementById('userEmail').innerText = baseGmail;
+                // Set avatar letter
+                const avatarEl = document.getElementById('userAvatar');
+                if (avatarEl) avatarEl.textContent = baseGmail.charAt(0).toUpperCase();
 
                 if (isRestored) {
                     document.getElementById('sessionTag').style.display = 'inline-flex';
@@ -1243,6 +1334,9 @@
 
             baseGmail = savedEmail;
             document.getElementById('userEmail').innerText = baseGmail;
+            // Set avatar letter
+            const avatarEl = document.getElementById('userAvatar');
+            if (avatarEl) avatarEl.textContent = baseGmail.charAt(0).toUpperCase();
 
             const now      = Date.now();
             const expiryMs = savedExpiry ? parseInt(savedExpiry) : 0;
