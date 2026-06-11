@@ -473,63 +473,98 @@
             font-weight: 600;
         }
 
-        /* NanaImage quick-launch button */
-        .nana-btn {
+        /* Site launcher buttons */
+        .launchers {
             display: flex;
+            gap: 10px;
+        }
+
+        .launch-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 13px 20px;
+            gap: 7px;
+            padding: 12px 8px;
             border-radius: 14px;
-            border: 1px solid rgba(250, 204, 21, 0.25);
-            background: rgba(250, 204, 21, 0.06);
-            color: #facc15;
+            border: 1px solid var(--btn-border);
+            background: var(--box-bg);
+            color: var(--text-secondary);
             font-family: inherit;
-            font-size: 14px;
+            font-size: 10px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s ease;
-            letter-spacing: 0.3px;
-        }
-        .nana-btn:hover {
-            background: rgba(250, 204, 21, 0.14);
-            border-color: rgba(250, 204, 21, 0.5);
-            box-shadow: 0 0 18px rgba(250, 204, 21, 0.12);
-            transform: translateY(-1px);
-        }
-        .nana-btn:active { transform: scale(0.97); }
-
-        .nana-btn.pulse-ready {
-            animation: nanaPulse 1.5s ease-in-out 3;
-            border-color: rgba(250, 204, 21, 0.7);
-            background: rgba(250, 204, 21, 0.14);
-        }
-        @keyframes nanaPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.3); }
-            50% { box-shadow: 0 0 0 8px rgba(250, 204, 21, 0); }
-        }
-
-        .nana-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            background: rgba(250, 204, 21, 0.15);
-            border: 1px solid rgba(250, 204, 21, 0.3);
-            border-radius: 6px;
-            padding: 2px 7px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             text-transform: uppercase;
-            color: #facc15;
+            position: relative;
+            overflow: hidden;
         }
-        .nana-badge.ready {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: rgba(34, 197, 94, 0.35);
-            color: #22c55e;
+        .launch-btn svg { flex-shrink: 0; }
+        .launch-btn:hover { transform: translateY(-2px); }
+        .launch-btn:active { transform: scale(0.96); }
+
+        /* NanaImage — purple/indigo tint */
+        .launch-btn.nana {
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #818cf8;
         }
+        .launch-btn.nana:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.55);
+            box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+        }
+
+        /* V03AI — cyan/teal tint */
+        .launch-btn.v03 {
+            border-color: rgba(34, 211, 238, 0.3);
+            color: #22d3ee;
+        }
+        .launch-btn.v03:hover {
+            background: rgba(34, 211, 238, 0.08);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 16px rgba(34, 211, 238, 0.12);
+            color: #67e8f9;
+        }
+
+        /* pulse when code is ready */
+        .launch-btn.pulse-ready {
+            animation: sitePulse 1.2s ease-in-out 4;
+        }
+        .launch-btn.nana.pulse-ready {
+            border-color: rgba(99, 102, 241, 0.8);
+            background: rgba(99, 102, 241, 0.12);
+            color: #a5b4fc;
+        }
+        .launch-btn.v03.pulse-ready {
+            border-color: rgba(34, 211, 238, 0.8);
+            background: rgba(34, 211, 238, 0.1);
+            color: #67e8f9;
+        }
+        @keyframes sitePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(99,102,241,0); }
+        }
+        .launch-btn.v03.pulse-ready { animation-name: sitePulseV03; }
+        @keyframes sitePulseV03 {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,211,238,0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(34,211,238,0); }
+        }
+
+        /* ready dot */
+        .launch-dot {
+            position: absolute;
+            top: 7px; right: 8px;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .launch-btn.pulse-ready .launch-dot { opacity: 1; }
 
         /* Session restore indicator */
         .session-tag {
@@ -629,15 +664,29 @@
                     </button>
                 </div>
 
-                <!-- NanaImage Quick Launch -->
-                <a id="nanaBtn" href="https://nanaimage.ai/text-to-image" target="_blank" class="nana-btn" onclick="onNanaClick()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="3"/>
-                        <path d="M9 9l6 6M15 9l-6 6"/>
-                    </svg>
-                    <span id="nanaBtnText">Open NanaImage</span>
-                    <span class="nana-badge" id="nanaBadge">ready</span>
-                </a>
+                <!-- Site Launchers -->
+                <div class="launchers">
+                    <!-- NanaImage -->
+                    <a id="nanaBtn" href="https://nanaimage.ai/text-to-image" target="_blank" class="launch-btn nana" onclick="onLaunchClick('nana')">
+                        <div class="launch-dot" id="nanaDot"></div>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                            <path d="M3 9h18M9 21V9"/>
+                            <circle cx="16" cy="16" r="2"/>
+                        </svg>
+                        <span>NanaImage</span>
+                    </a>
+                    <!-- V03AI -->
+                    <a id="v03Btn" href="https://v03ai.com/image-to-image" target="_blank" class="launch-btn v03" onclick="onLaunchClick('v03')">
+                        <div class="launch-dot" id="v03Dot"></div>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                        <span>V03 AI</span>
+                    </a>
+                </div>
 
                 <div class="divider"></div>
 
@@ -798,31 +847,77 @@
             } catch(e) {}
         }
 
-        // =============================================
-        // NANAIMAGE QUICK LAUNCH
-        // =============================================
-        function triggerNanaReady() {
-            const btn = document.getElementById('nanaBtn');
-            const badge = document.getElementById('nanaBadge');
-            const text = document.getElementById('nanaBtnText');
-            if (!btn) return;
-            btn.classList.add('pulse-ready');
-            badge.textContent = '✓ code copied — go!';
-            badge.classList.add('ready');
-            text.textContent = 'Open NanaImage & Paste Code';
-            setTimeout(() => {
-                btn.classList.remove('pulse-ready');
-                badge.textContent = 'ready';
-                badge.classList.remove('ready');
-                text.textContent = 'Open NanaImage';
-            }, 12000);
+        // Sound: NanaImage code arrived — warm ascending arpeggio C-E-G (bright, friendly)
+        function playNanaSound() {
+            try {
+                const ctx = getAudioCtx();
+                const now = ctx.currentTime;
+                [523.25, 659.25, 783.99].forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const t = now + i * 0.10;
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, t);
+                    gain.gain.setValueAtTime(0, t);
+                    gain.gain.linearRampToValueAtTime(0.13, t + 0.012);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t); osc.stop(t + 0.55);
+                });
+            } catch(e) {}
         }
 
-        function onNanaClick() {
-            const badge = document.getElementById('nanaBadge');
-            const text = document.getElementById('nanaBtnText');
-            if (badge) { badge.textContent = 'ready'; badge.classList.remove('ready'); }
-            if (text) { text.textContent = 'Open NanaImage'; }
+        // Sound: V03AI code arrived — sharp descending two-tone A5→E5 (techy, distinct)
+        function playV03Sound() {
+            try {
+                const ctx = getAudioCtx();
+                const now = ctx.currentTime;
+                [[880, 0], [659.25, 0.14]].forEach(([freq, delay]) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const filter = ctx.createBiquadFilter();
+                    const t = now + delay;
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, t);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 0.91, t + 0.18);
+                    filter.type = 'highpass'; filter.frequency.value = 400;
+                    gain.gain.setValueAtTime(0, t);
+                    gain.gain.linearRampToValueAtTime(0.15, t + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+                    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+                    osc.start(t); osc.stop(t + 0.25);
+                });
+            } catch(e) {}
+        }
+
+        // =============================================
+        // SITE LAUNCHERS
+        // =============================================
+
+        // Which site last got a code — 'nana' | 'v03' | null
+        let lastCodeSite = null;
+
+        function triggerSiteReady(site) {
+            lastCodeSite = site;
+            const btn = document.getElementById(site === 'nana' ? 'nanaBtn' : 'v03Btn');
+            if (!btn) return;
+            btn.classList.add('pulse-ready');
+            // auto-reset after 15s
+            setTimeout(() => btn.classList.remove('pulse-ready'), 15000);
+        }
+
+        function onLaunchClick(site) {
+            const btn = document.getElementById(site === 'nana' ? 'nanaBtn' : 'v03Btn');
+            if (btn) btn.classList.remove('pulse-ready');
+        }
+
+        // Detect which site sent the email based on sender domain
+        function detectSite(fromRaw) {
+            const from = fromRaw.toLowerCase();
+            if (from.includes('nanaimage') || from.includes('nana') || from.includes('nanobanana')) return 'nana';
+            if (from.includes('v03') || from.includes('v03ai')) return 'v03';
+            return null; // unknown — trigger both
         }
 
         // =============================================
@@ -1298,6 +1393,9 @@
                     return; // blocked — don't show in UI
                 }
 
+                // Detect which site sent this
+                const site = detectSite(fromRaw);
+
                 // Clear empty-state placeholder only when a real message will be shown
                 if (document.querySelector('.empty-state')) {
                     document.getElementById('inboxContainer').innerHTML = '';
@@ -1315,7 +1413,6 @@
                 let html = `<div class="msg-sender">${escapeHtml(senderName)}</div>`;
 
                 if (extractedCode) {
-                    // Numeric or alphanumeric code
                     html += `<div class="extracted-code" onclick="copyCode('${escapeHtml(extractedCode)}')">${escapeHtml(extractedCode)}</div>`;
 
                     // Auto-copy first code
@@ -1324,11 +1421,22 @@
                         navigator.clipboard.writeText(extractedCode).then(() => {
                             playCopyCode();
                             showToast('Code Auto-Copied!', '⚡');
-                            triggerNanaReady();
+                            // Play site-specific sound & pulse correct button
+                            if (site === 'nana') {
+                                playNanaSound();
+                                triggerSiteReady('nana');
+                            } else if (site === 'v03') {
+                                playV03Sound();
+                                triggerSiteReady('v03');
+                            } else {
+                                // unknown sender — pulse both
+                                playNanaSound();
+                                triggerSiteReady('nana');
+                                triggerSiteReady('v03');
+                            }
                         }).catch(() => {});
                     }
                 } else if (extractedLink) {
-                    // Login link
                     html += `<div class="link-block">
                         <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
                         <a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn">
@@ -1343,8 +1451,14 @@
                 msgEl.innerHTML = html;
                 inbox.prepend(msgEl);
 
-                // Play sound only for shown messages
-                playIncomingEmail();
+                // Play site-specific incoming sound
+                if (site === 'nana') {
+                    playNanaSound();
+                } else if (site === 'v03') {
+                    playV03Sound();
+                } else {
+                    playIncomingEmail();
+                }
 
             } catch(e) {
                 // silent fail
@@ -1413,7 +1527,8 @@
             playCopyCode();
             navigator.clipboard.writeText(code).then(() => {
                 showToast('Code Copied!', '⚡');
-                triggerNanaReady();
+                // pulse whichever site was last detected
+                if (lastCodeSite) triggerSiteReady(lastCodeSite);
             });
         }
 
