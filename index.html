@@ -3,202 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusMail — Premium Client</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230071e3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='3'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
+<title>NexusMail</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ─────────────────────────────────────────
-   DESIGN TOKENS — SOPHISTICATED DARK
-───────────────────────────────────────── */
+/* ─── DARK TOKENS ─── */
 :root {
-  --bg-main: #0a0a0c;
-  --bg-panel: #121215;
-  --bg-surface: #1a1a1e;
-  --bg-surface-hover: #222227;
-  
-  --accent: #0071e3;
-  --accent-dim: rgba(0, 113, 227, 0.08);
-  --accent-mid: rgba(0, 113, 227, 0.15);
-  
-  --border: rgba(255, 255, 255, 0.04);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  
-  --text-primary: #f5f5f7;
-  --text-secondary: #86868b;
-  --text-muted: #424245;
-  
-  --success: #30d158;
-  --error: #ff453a;
-  --radius-lg: 16px;
-  --radius-md: 10px;
+  --bg:       #0f1117;
+  --surface:  #181c27;
+  --raised:   #1e2336;
+  --hover:    #242840;
+
+  --accent:        #6366f1;
+  --accent-dim:    rgba(99,102,241,0.10);
+  --accent-mid:    rgba(99,102,241,0.20);
+  --accent-glow:   rgba(99,102,241,0.30);
+
+  --border:        rgba(99,102,241,0.14);
+  --border-hover:  rgba(99,102,241,0.36);
+
+  --text:    #e8eaf6;
+  --text-2:  #6b7280;
+  --text-3:  #374151;
+
+  --green:   #10b981;
+  --red:     #f43f5e;
+
+  --r:  12px;
+  --rs: 8px;
 }
 
-/* ─────────────────────────────────────────
-   DESIGN TOKENS — MUTED LIGHT (Soft & Clean)
-───────────────────────────────────────── */
+/* ─── LIGHT TOKENS ─── */
 [data-theme="light"] {
-  --bg-main: #f5f5f7;
-  --bg-panel: #ffffff;
-  --bg-surface: #fbfbfd;
-  --bg-surface-hover: #f2f2f7;
-  
-  --accent: #0071e3;
-  --accent-dim: rgba(0, 113, 227, 0.06);
-  --accent-mid: rgba(0, 113, 227, 0.12);
-  
-  --border: rgba(0, 0, 0, 0.05);
-  --border-hover: rgba(0, 0, 0, 0.12);
-  
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-muted: #86868b;
-  
-  --success: #34c759;
-  --error: #ff3b30;
+  --bg:       #f8f9ff;
+  --surface:  #ffffff;
+  --raised:   #f1f3fb;
+  --hover:    #e9ecf8;
+
+  --accent:        #4f46e5;
+  --accent-dim:    rgba(79,70,229,0.08);
+  --accent-mid:    rgba(79,70,229,0.16);
+  --accent-glow:   rgba(79,70,229,0.22);
+
+  --border:        rgba(79,70,229,0.12);
+  --border-hover:  rgba(79,70,229,0.32);
+
+  --text:    #0f172a;
+  --text-2:  #64748b;
+  --text-3:  #94a3b8;
+
+  --green:   #059669;
+  --red:     #e11d48;
 }
 
+/* ─── BASE ─── */
 body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-main);
-  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  transition: background 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.3s;
-  overflow: hidden;
+  padding: 24px 16px;
+  transition: background 0.35s, color 0.25s;
 }
 
-/* ─────────────────────────────────────────
-   APP CONTAINER (All elements constrained inside)
-───────────────────────────────────────── */
-.app {
+/* ─── SHELL ─── */
+.shell {
   width: 100%;
   max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: relative;
 }
 
-/* ─────────────────────────────────────────
-   HEADER SECTION
-───────────────────────────────────────── */
-.header {
+/* ─── CARD — single outer container ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.04) inset,
+    0 24px 64px rgba(0,0,0,0.40);
+}
+
+[data-theme="light"] .card {
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.8) inset,
+    0 8px 40px rgba(15,23,42,0.08);
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 9px;
 }
 
-.logo-mark {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo-icon {
+  width: 30px; height: 30px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border-hover);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-icon i { font-size: 13px; color: var(--accent); }
+
+.logo-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.logo-name em {
+  font-style: normal;
   color: var(--accent);
 }
 
-.logo-name {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-}
+.topbar-right { display: flex; align-items: center; gap: 8px; }
 
-.logo-name span {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.theme-btn {
-  width: 36px;
-  height: 36px;
-  background: var(--bg-panel);
+.icon-btn {
+  width: 32px; height: 32px;
+  background: transparent;
   border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--text-secondary);
+  border-radius: var(--rs);
+  color: var(--text-2);
   cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  transition: all 0.18s;
+}
+.icon-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ─── STATUS STRIP (when logged in) ─── */
+.status-strip {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: var(--raised);
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', monospace;
 }
 
-.theme-btn:hover {
-  border-color: var(--border-hover);
-  color: var(--text-primary);
-  transform: scale(1.04);
+.live-row { display: flex; align-items: center; gap: 6px; }
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  animation: pulse 2.8s infinite;
+}
+.dot.off { background: var(--red); animation: none; }
+
+@keyframes pulse {
+  0%,100%{ opacity:.5; box-shadow: none; }
+  50%{ opacity:1; box-shadow: 0 0 0 3px rgba(16,185,129,0.18); }
 }
 
-/* ─────────────────────────────────────────
-   MAIN PANEL
-───────────────────────────────────────── */
-.panel {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+#statusEmail {
+  max-width: 200px;
   overflow: hidden;
-  position: relative;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  transition: background 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-[data-theme="light"] .panel {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.04);
+.signout {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color 0.15s;
+  padding: 0;
 }
+.signout:hover { color: var(--red); }
 
-/* ─────────────────────────────────────────
-   LOGIN VIEW
-───────────────────────────────────────── */
+/* ─── LOGIN VIEW ─── */
 .login-view {
-  padding: 48px 32px;
+  padding: 48px 28px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 28px;
   text-align: center;
 }
 
-.login-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+.login-icon-wrap {
+  width: 64px; height: 64px;
+  border-radius: 16px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border-hover);
+  display: flex; align-items: center; justify-content: center;
+}
+.login-icon-wrap i {
+  font-size: 24px;
   color: var(--accent);
-  margin-bottom: 24px;
 }
 
 .login-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
-  letter-spacing: -0.4px;
-  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+  color: var(--text);
 }
-
 .login-sub {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
 }
 
 .g-btn {
@@ -206,122 +238,100 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 14px 24px;
-  background: var(--text-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  color: var(--bg-panel);
+  gap: 10px;
+  padding: 13px 20px;
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: all 0.2s;
+  letter-spacing: -0.2px;
 }
-
 .g-btn:hover {
-  opacity: 0.95;
+  border-color: var(--border-hover);
+  background: var(--hover);
   transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.20);
 }
+.g-btn:active { transform: scale(0.98); }
 
-.g-icon { width: 16px; height: 16px; }
+.g-icon { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* ─────────────────────────────────────────
-   STATUS SYSTEM
-───────────────────────────────────────── */
-.status-bar {
+/* ─── MAIN BODY ─── */
+.main-body {
+  padding: 18px 20px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-surface);
+  flex-direction: column;
+  gap: 12px;
 }
 
-.s-left {
+/* ─── EMAIL BAR ─── */
+.email-bar {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-#statusEmail {
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--success);
-}
-.live-dot.off { background: var(--error); }
-
-.signout-btn {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.signout-btn:hover { color: var(--error); }
-
-/* ─────────────────────────────────────────
-   MAIN BODY & WORKSPACE
-───────────────────────────────────────── */
-.main-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ── Muted Email Component ── */
-.email-display {
-  background: var(--bg-surface);
+  padding: 10px 12px 10px 14px;
+  background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  border-radius: var(--r);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
 }
-
-.email-display:hover {
-  border-color: var(--border-hover);
-  background: var(--bg-surface-hover);
+.email-bar::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 25%; bottom: 25%;
+  width: 2.5px;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: opacity 0.18s;
+  opacity: 0.6;
 }
+.email-bar:hover { border-color: var(--border-hover); background: var(--hover); }
+.email-bar:hover::before { opacity: 1; }
+.email-bar:active { transform: scale(0.995); }
 
-.email-text {
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--text-primary);
+.email-val {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  letter-spacing: -0.1px;
+  color: var(--text);
 }
-.email-text.loading { color: var(--text-muted); }
-
-.copy-btn {
-  font-size: 13px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
+.email-val.loading {
+  color: var(--text-3);
+  animation: blink 1.4s infinite;
 }
-.email-display:hover .copy-btn { color: var(--accent); }
+@keyframes blink { 0%,100%{opacity:.3} 50%{opacity:.9} }
 
-/* ── Actions Matrix ── */
+.copy-pill {
+  width: 32px; height: 32px;
+  border-radius: var(--rs);
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.email-bar:hover .copy-pill {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* ─── ACTION ROW ─── */
 .actions { display: flex; gap: 8px; }
 
 .act-btn {
@@ -329,218 +339,269 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  background: var(--bg-surface);
+  gap: 6px;
+  padding: 10px;
+  background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
+  border-radius: var(--r);
+  color: var(--text-2);
   font-family: 'Inter', sans-serif;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: all 0.18s;
+  letter-spacing: -0.2px;
 }
-
 .act-btn:hover {
-  background: var(--bg-surface-hover);
   border-color: var(--border-hover);
+  color: var(--text);
+  background: var(--hover);
+  transform: translateY(-1px);
 }
-.act-btn i { font-size: 11px; color: var(--text-secondary); }
-.act-btn.spinning i { animation: spin 0.6s linear infinite; }
+.act-btn:active { transform: scale(0.97); }
+.act-btn i { font-size: 12px; color: var(--accent); }
+.act-btn.spinning i { animation: spin 0.65s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─────────────────────────────────────────
-   THE INBOX TABLE RE-ENGINEERED
-───────────────────────────────────────── */
+/* ─── INBOX SECTION ─── */
 .inbox-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 4px;
+  padding: 0 2px;
 }
-
 .inbox-label {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-secondary);
-}
-
-.scan-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--accent);
-}
-
-.scan-pip {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse-light 1.8s infinite;
-}
-
-@keyframes pulse-light {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-.inbox {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 80px;
-  max-height: 260px;
-  overflow-y: auto;
-}
-.inbox::-webkit-scrollbar { width: 0px; }
-
-.empty {
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  color: var(--text-muted);
-  gap: 8px;
-}
-
-/* ── Premium Message Rows ── */
-.msg {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.msg:hover {
-  border-color: var(--border-hover);
-  background: var(--bg-surface-hover);
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.msg-sender {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
+  letter-spacing: 1.6px;
+  color: var(--text-3);
 }
-
-.code-block {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 4px;
+.scan-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
   color: var(--accent);
-  transition: all 0.2s;
-  user-select: none;
+  opacity: 0.8;
+}
+.scan-pip {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pip 2.2s infinite;
+}
+@keyframes pip {
+  0%,100%{ opacity:0.35; }
+  50%{ opacity:1; box-shadow: 0 0 5px var(--accent); }
 }
 
-.msg:hover .code-block {
-  border-color: var(--accent-mid);
-  background: var(--accent-dim);
+/* ─── TABLE ─── */
+.inbox-table-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  min-height: 80px;
 }
 
-.no-code {
-  font-size: 13px;
-  color: var(--text-secondary);
+.inbox-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  table-layout: fixed;
 }
 
-/* ─────────────────────────────────────────
-   CONSTRAINED NOTIFICATIONS & UI TOKENS
-───────────────────────────────────────── */
-.token-warn {
+.inbox-table thead th {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-3);
+  background: var(--raised);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.inbox-table thead th:nth-child(1) { width: 42%; }
+.inbox-table thead th:nth-child(2) { width: 58%; }
+
+.inbox-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.14s;
+  animation: row-in 0.28s cubic-bezier(0.16,1,0.3,1);
+}
+.inbox-table tbody tr:last-child { border-bottom: none; }
+.inbox-table tbody tr:hover { background: var(--accent-dim); }
+
+@keyframes row-in {
+  from { opacity:0; transform: translateY(-4px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.inbox-table td {
+  padding: 10px 12px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-sender {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.td-code-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-mid);
+  border: 1px solid var(--border-hover);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.code-chip:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 18px var(--accent-glow);
+  letter-spacing: 4px;
+}
+.code-chip:active { transform: scale(0.96); }
+.code-chip .copy-hint {
+  font-size: 9px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+.no-code-tag {
+  font-size: 11px;
+  color: var(--text-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.empty-row td {
+  padding: 28px 12px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── TOKEN WARNING ─── */
+.warn-bar {
   display: none;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
-  background: rgba(255, 69, 58, 0.06);
-  border: 1px solid rgba(255, 69, 58, 0.15);
-  border-radius: var(--radius-md);
-  font-size: 12.5px;
-  color: var(--error);
+  padding: 9px 12px;
+  background: rgba(244,63,94,0.06);
+  border: 1px solid rgba(244,63,94,0.18);
+  border-radius: var(--r);
+  font-size: 12px;
+  color: var(--red);
 }
-.token-warn.visible { display: flex; }
-.reauth {
+.warn-bar.show { display: flex; }
+.warn-bar i { flex-shrink: 0; font-size: 11px; }
+.reauth-btn {
   margin-left: auto;
-  background: none;
+  background: rgba(244,63,94,0.12);
   border: none;
-  color: var(--error);
-  font-weight: 600;
+  color: var(--red);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
-  text-decoration: underline;
+  transition: background 0.15s;
 }
+.reauth-btn:hover { background: rgba(244,63,94,0.24); }
 
-/* Constrained Internal Toast */
+/* ─── TOAST ─── */
 #toast {
-  position: absolute;
-  bottom: 16px;
+  position: fixed;
+  top: 20px;
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  background: var(--text-primary);
-  color: var(--bg-panel);
+  transform: translateX(-50%) translateY(-12px);
+  background: var(--surface);
+  border: 1px solid var(--border-hover);
+  color: var(--accent);
   font-size: 12px;
   font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  padding: 9px 20px;
+  border-radius: 100px;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 10;
+  transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
+  white-space: nowrap;
+  z-index: 999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px var(--border);
+  letter-spacing: -0.1px;
 }
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-@keyframes spin { to { transform: rotate(360deg); } }
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 </head>
-<body>
+<body data-theme="dark">
 
-<div class="app">
+<div id="toast"></div>
 
-  <div class="header">
-    <div class="logo">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="3"/>
-          <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-        </svg>
+<div class="shell">
+  <div class="card">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fa-regular fa-envelope"></i></div>
+        <span class="logo-name">Nexus<em>Mail</em></span>
       </div>
-      <span class="logo-name">Nexus<span>Mail</span></span>
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">
+          <i class="fa-regular fa-moon" id="themeIcon"></i>
+        </button>
+      </div>
     </div>
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
-      <i class="fa-regular fa-moon" id="themeIcon"></i>
-    </button>
-  </div>
 
-  <div class="panel">
-    
-    <div id="toast"></div>
-
-    <div class="login-view" id="loginView">
-      <div class="login-icon">
-        <i class="fa-regular fa-envelope"></i>
+    <!-- STATUS STRIP (hidden until login) -->
+    <div class="status-strip" id="statusStrip" style="display:none;">
+      <div class="live-row">
+        <div class="dot" id="statusDot"></div>
+        <span id="statusEmail">—</span>
       </div>
-      <h2 class="login-title">Connect your inbox</h2>
-      <p class="login-sub">Link Gmail to catch verification codes the instant they arrive.</p>
+      <button class="signout" onclick="logout()">Sign out</button>
+    </div>
+
+    <!-- LOGIN VIEW -->
+    <div class="login-view" id="loginView">
+      <div class="login-icon-wrap"><i class="fa-regular fa-envelope"></i></div>
+      <div>
+        <div class="login-title">Connect your inbox</div>
+        <div class="login-sub">Link Gmail to receive and extract<br>verification codes automatically.</div>
+      </div>
       <button class="g-btn" onclick="startLogin()">
         <svg class="g-icon" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -548,65 +609,69 @@ body {
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
-        <span>Continue with Google</span>
+        Continue with Google
       </button>
     </div>
 
+    <!-- MAIN VIEW -->
     <div id="mainView" style="display:none;">
-
-      <div class="status-bar">
-        <div class="s-left">
-          <div class="live-dot" id="statusDot"></div>
-          <span id="statusEmail">—</span>
-        </div>
-        <button class="signout-btn" onclick="logout()">Sign out</button>
-      </div>
-
       <div class="main-body">
 
-        <div class="token-warn" id="tokenWarning">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          <span>Session expired</span>
-          <button class="reauth" onclick="silentRefresh()">Refresh</button>
+        <div class="warn-bar" id="tokenWarning">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Session expired
+          <button class="reauth-btn" onclick="silentRefresh()">Refresh</button>
         </div>
 
-        <div class="email-display" onclick="copyEmail()" title="Copy alias">
-          <div class="email-text loading" id="emailDisplay">Generating inbox address...</div>
-          <div class="copy-btn">
-            <i class="fa-regular fa-copy" id="copyIcon"></i>
-          </div>
+        <!-- Email alias bar -->
+        <div class="email-bar" onclick="copyEmail()" title="Copy alias">
+          <div class="email-val loading" id="emailDisplay">Generating alias…</div>
+          <div class="copy-pill"><i class="fa-regular fa-copy" id="copyIcon"></i></div>
         </div>
 
+        <!-- Actions -->
         <div class="actions">
           <button class="act-btn" id="refreshBtn" onclick="doRefresh()">
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>Refresh</span>
+            <i class="fa-solid fa-rotate-right"></i> Refresh
           </button>
           <button class="act-btn" onclick="newEmail()">
-            <i class="fa-solid fa-plus"></i>
-            <span>New Address</span>
+            <i class="fa-solid fa-plus"></i> New Alias
           </button>
         </div>
 
+        <!-- Inbox label -->
         <div class="inbox-header">
-          <span class="inbox-label">Incoming Messages</span>
-          <div class="scan-status">
-            <div class="scan-pip"></div>
-            <span>MONITORING</span>
+          <span class="inbox-label">Verification Codes</span>
+          <div class="scan-badge">
+            <div class="scan-pip" id="scanDot"></div>
+            <span id="scanText">Scanning</span>
           </div>
         </div>
 
-        <div class="inbox" id="inbox">
-          <div class="empty">
-            <i class="fa-regular fa-clock"></i>
-            <span>Listening for incoming codes...</span>
-          </div>
+        <!-- Table -->
+        <div class="inbox-table-wrap">
+          <table class="inbox-table">
+            <thead>
+              <tr>
+                <th>Sender</th>
+                <th>Code</th>
+              </tr>
+            </thead>
+            <tbody id="inboxBody">
+              <tr class="empty-row">
+                <td colspan="2"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>Awaiting emails…</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
       </div>
     </div>
 
-  </div></div><script>
+  </div><!-- /card -->
+</div><!-- /shell -->
+
+<script>
 const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
 const SCOPES    = 'https://www.googleapis.com/auth/gmail.readonly';
 
@@ -614,14 +679,13 @@ let accessToken   = null;
 let tokenExpiry   = 0;
 let baseGmail     = null;
 let currentAlias  = null;
-let currentSuffix = null;
 let pollTimer     = null;
 let refreshTimer  = null;
 let knownIds      = new Set();
 let firstCopied   = false;
 let tokenClient   = null;
 
-/* ── Theme Architecture ── */
+/* ── theme ── */
 function toggleTheme() {
   const isDark = document.body.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
@@ -635,26 +699,45 @@ function toggleTheme() {
   document.getElementById('themeIcon').className = t === 'dark' ? 'fa-regular fa-moon' : 'fa-regular fa-sun';
 })();
 
-/* ── Deep Minimal UI Sound Node ── */
+/* ── modern notification sound ── */
 function playNotification() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // A clean, organic double-tap tone instead of a harsh digital beep
-    [{ freq:440, start:0, dur:0.06, vol:0.12 }, { freq:554.37, start:0.04, dur:0.12, vol:0.08 }]
-    .forEach(n => {
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine'; osc.frequency.value = n.freq;
-      gain.gain.setValueAtTime(0, ctx.currentTime + n.start);
-      gain.gain.linearRampToValueAtTime(n.vol, ctx.currentTime + n.start + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.start + n.dur);
-      osc.start(ctx.currentTime + n.start);
-      osc.stop(ctx.currentTime + n.start + n.dur + 0.02);
+    const now = ctx.currentTime;
+
+    // soft high chime: two quick notes with gentle envelope
+    const notes = [
+      { freq: 880,  start: 0,    dur: 0.12, vol: 0.08 },
+      { freq: 1108, start: 0.09, dur: 0.18, vol: 0.06 },
+    ];
+
+    notes.forEach(n => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const lpf  = ctx.createBiquadFilter();
+
+      lpf.type = 'lowpass';
+      lpf.frequency.value = 3200;
+
+      osc.connect(lpf);
+      lpf.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(n.freq, now + n.start);
+      osc.frequency.exponentialRampToValueAtTime(n.freq * 0.98, now + n.start + n.dur);
+
+      gain.gain.setValueAtTime(0, now + n.start);
+      gain.gain.linearRampToValueAtTime(n.vol, now + n.start + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + n.start + n.dur + 0.08);
+
+      osc.start(now + n.start);
+      osc.stop(now + n.start + n.dur + 0.12);
     });
   } catch(e) {}
 }
 
-/* ── Auth Layer ── */
+/* ── auth ── */
 function initTokenClient() {
   if (tokenClient) return;
   tokenClient = google.accounts.oauth2.initTokenClient({
@@ -665,14 +748,14 @@ function initTokenClient() {
 
 function handleTokenResponse(resp) {
   if (resp.error) {
-    document.getElementById('tokenWarning').classList.add('visible');
+    document.getElementById('tokenWarning').classList.add('show');
     setStatus(false); return;
   }
   accessToken = resp.access_token;
   tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
   localStorage.setItem('gToken', accessToken);
   localStorage.setItem('gExpiry', tokenExpiry);
-  document.getElementById('tokenWarning').classList.remove('visible');
+  document.getElementById('tokenWarning').classList.remove('show');
   scheduleTokenRefresh();
 }
 
@@ -680,7 +763,7 @@ function startLogin() {
   const tc = google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID, scope: SCOPES, prompt: 'select_account',
     callback: async (resp) => {
-      if (resp.error) { showToast('Authentication cancelled'); return; }
+      if (resp.error) { showToast('Login cancelled'); return; }
       accessToken = resp.access_token;
       tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
       localStorage.setItem('gToken', accessToken);
@@ -714,17 +797,19 @@ async function fetchProfile() {
     document.getElementById('statusEmail').innerText = baseGmail;
     document.getElementById('loginView').style.display = 'none';
     document.getElementById('mainView').style.display  = 'block';
+    document.getElementById('statusStrip').style.display = 'flex';
     setStatus(true); newEmail();
-  } catch(e) { showToast('Profile initialization failed'); }
+  } catch(e) { showToast('Profile error'); }
 }
 
 function logout() {
   clearInterval(pollTimer); clearTimeout(refreshTimer);
   accessToken = tokenClient = null;
   ['gToken','gExpiry','gEmail'].forEach(k => localStorage.removeItem(k));
-  document.getElementById('mainView').style.display  = 'none';
-  document.getElementById('loginView').style.display = 'flex';
-  document.getElementById('inbox').innerHTML = emptyState();
+  document.getElementById('mainView').style.display   = 'none';
+  document.getElementById('loginView').style.display  = 'flex';
+  document.getElementById('statusStrip').style.display = 'none';
+  resetTable();
 }
 
 window.addEventListener('load', () => {
@@ -734,30 +819,33 @@ window.addEventListener('load', () => {
   if (tok && em && Date.now() < exp) {
     accessToken = tok; tokenExpiry = exp; baseGmail = em;
     document.getElementById('statusEmail').innerText = em;
-    document.getElementById('loginView').style.display = 'none';
-    document.getElementById('mainView').style.display  = 'block';
+    document.getElementById('loginView').style.display  = 'none';
+    document.getElementById('mainView').style.display   = 'block';
+    document.getElementById('statusStrip').style.display = 'flex';
     setStatus(true); initTokenClient(); scheduleTokenRefresh(); newEmail();
   }
 });
 
-/* ── Engine Logic ── */
+/* ── alias ── */
 function randStr(n=6) {
-  const c='abcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from({length:n},()=>c[Math.random()*c.length|0]).join('');
+  const c = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({length:n}, () => c[Math.random()*c.length|0]).join('');
 }
 
 function newEmail() {
   if (!baseGmail) return;
   clearInterval(pollTimer); knownIds.clear(); firstCopied = false;
-  currentSuffix = randStr(6);
+  const sfx = randStr(6);
   const [local,domain] = baseGmail.split('@');
-  currentAlias = `${local}+${currentSuffix}@${domain}`;
+  currentAlias = `${local}+${sfx}@${domain}`;
   const el = document.getElementById('emailDisplay');
   el.innerText = currentAlias; el.classList.remove('loading');
-  document.getElementById('inbox').innerHTML = emptyState();
+  resetTable();
+  document.getElementById('scanText').innerText = 'Scanning';
   pollTimer = setInterval(poll, 5000);
 }
 
+/* ── polling ── */
 async function poll() {
   if (!accessToken || !currentAlias) return;
   if (Date.now() > tokenExpiry) { silentRefresh(); return; }
@@ -772,7 +860,9 @@ async function poll() {
     for (const m of (data.messages || [])) {
       if (!knownIds.has(m.id)) {
         knownIds.add(m.id);
-        if (document.querySelector('.empty')) document.getElementById('inbox').innerHTML = '';
+        // clear empty row on first real message
+        const tbody = document.getElementById('inboxBody');
+        if (tbody.querySelector('.empty-row')) tbody.innerHTML = '';
         fetchMsg(m.id);
       }
     }
@@ -802,12 +892,11 @@ async function fetchMsg(id) {
       body=atob(msg.payload.body.data.replace(/-/g,'+').replace(/_/g,'/'));
     const code   = extractCode(subj+' '+body);
     const sender = from.replace(/<.*>/,'').trim()||from.split('@')[0];
-    renderMsg(sender,code);
+    renderRow(sender, code);
     if (code && !firstCopied) {
-      firstCopied=true;
+      firstCopied = true;
       navigator.clipboard.writeText(code).catch(()=>{});
-      showToast('Code copied automatically'); 
-      playNotification();
+      showToast('Code copied'); playNotification();
     }
   } catch(e) {}
 }
@@ -821,64 +910,59 @@ function extractCode(text) {
   for (const p of pats) {
     const m = text.match(p);
     if (m) {
-      const code=m[1]||m[0]; const n=parseInt(code);
+      const code = m[1]||m[0]; const n = parseInt(code);
       if (n>=1000&&n<=99999999&&!(n>=2020&&n<=2030)) return code;
     }
   }
   return null;
 }
 
-function renderMsg(sender, code) {
-  const inbox = document.getElementById('inbox');
-  const card  = document.createElement('div');
-  card.className = 'msg';
-  card.setAttribute('onclick', 'playNotification()'); // Sound trigger on row click
-  let html = `<div class="msg-sender">${esc(sender)}</div>`;
+function renderRow(sender, code) {
+  const tbody = document.getElementById('inboxBody');
+  const tr = document.createElement('tr');
+  let codeCell = '';
   if (code) {
-    html += `<div class="code-block" onclick="copyCode(event, '${code}')">${code}</div>`;
+    codeCell = `<div class="td-code-cell"><div class="code-chip" onclick="copyCode('${code}')">${code}<span class="copy-hint">copy</span></div></div>`;
   } else {
-    html += `<div class="no-code">// Secure content parsed — No explicit code found</div>`;
+    codeCell = `<span class="no-code-tag">no code</span>`;
   }
-  card.innerHTML = html;
-  inbox.prepend(card);
+  tr.innerHTML = `<td class="td-sender">${esc(sender)}</td><td>${codeCell}</td>`;
+  tbody.prepend(tr);
 }
 
-function emptyState() {
-  return `<div class="empty"><i class="fa-regular fa-clock"></i> <span>Awaiting messages...</span></div>`;
+function resetTable() {
+  document.getElementById('inboxBody').innerHTML =
+    `<tr class="empty-row"><td colspan="2"><i class="fa-regular fa-clock" style="margin-right:6px;"></i>Awaiting emails…</td></tr>`;
 }
 
 async function doRefresh() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning'); await poll();
-  setTimeout(()=>btn.classList.remove('spinning'),600);
+  setTimeout(() => btn.classList.remove('spinning'), 600);
 }
 
 function copyEmail() {
   if (!currentAlias) return;
-  navigator.clipboard.writeText(currentAlias).then(()=>{
-    showToast('Email address copied');
-    const icon=document.getElementById('copyIcon');
-    icon.className='fa-solid fa-check';
-    setTimeout(()=>icon.className='fa-regular fa-copy',1400);
+  navigator.clipboard.writeText(currentAlias).then(() => {
+    showToast('Alias copied');
+    const icon = document.getElementById('copyIcon');
+    icon.className = 'fa-solid fa-check';
+    setTimeout(() => icon.className = 'fa-regular fa-copy', 1400);
   });
 }
 
-function copyCode(e, code) {
-  e.stopPropagation(); // Prevents double sound execution
-  navigator.clipboard.writeText(code).then(()=>{
-    showToast('Code copied to clipboard');
-    playNotification();
-  });
+function copyCode(code) {
+  navigator.clipboard.writeText(code).then(() => showToast('Code copied'));
 }
 
 function setStatus(ok) {
-  document.getElementById('statusDot').className = ok ? 'live-dot' : 'live-dot off';
+  document.getElementById('statusDot').className = ok ? 'dot' : 'dot off';
 }
 
 function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.innerText=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
 }
 
 function esc(s) {
