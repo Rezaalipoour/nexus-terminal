@@ -102,39 +102,8 @@
             100% { transform: translateY(64px) translateX(0); }
         }
 
-        /* Glow/orb elements — beautiful gradient blobs */
-        .bg-glow {
-            display: block;
-            position: fixed;
-            width: 600px; height: 600px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.13) 0%, transparent 70%);
-            top: -150px; left: -150px;
-            pointer-events: none;
-            z-index: 0;
-            animation: orbFloat1 18s ease-in-out infinite alternate;
-        }
-        .bg-glow-2 {
-            display: block;
-            position: fixed;
-            width: 500px; height: 500px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
-            bottom: -100px; right: -100px;
-            pointer-events: none;
-            z-index: 0;
-            animation: orbFloat2 22s ease-in-out infinite alternate;
-        }
-        .bg-orb { display: none; }
-
-        @keyframes orbFloat1 {
-            0%   { transform: translate(0,0) scale(1); }
-            100% { transform: translate(60px, 80px) scale(1.12); }
-        }
-        @keyframes orbFloat2 {
-            0%   { transform: translate(0,0) scale(1); }
-            100% { transform: translate(-50px, -60px) scale(1.08); }
-        }
+        /* Glow/orb elements hidden — uniform background */
+        .bg-glow, .bg-glow-2, .bg-orb { display: none; }
 
         .container {
             width: 100%;
@@ -382,57 +351,33 @@
         }
 
         .link-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            background: var(--code-bg);
-            border: 1px solid rgba(99, 102, 241, 0.25);
+            background: var(--box-bg);
+            border: 1px solid rgba(99, 102, 241, 0.2);
             border-radius: 12px;
-            padding: 14px 16px;
-            text-align: center;
-        }
-
-        .link-block-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            padding: 10px 14px;
         }
 
         .login-link-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 9px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            padding: 11px 28px;
-            font-size: 14px;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 13px;
             font-weight: 600;
             font-family: 'Outfit', sans-serif;
             text-decoration: none;
             cursor: pointer;
-            width: 100%;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35);
-            letter-spacing: 0.3px;
         }
         .login-link-btn:hover {
-            background: #4f46e5;
-            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5);
-            transform: translateY(-1px);
-        }
-        .login-link-btn:active {
-            transform: scale(0.97) translateY(0);
-            box-shadow: none;
-        }
-        .login-link-btn i {
-            font-size: 13px;
-            opacity: 0.9;
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
         #toast {
@@ -591,31 +536,20 @@
             letter-spacing: 0.5px;
         }
 
-        /* Session restore indicator — icon only, no text */
+        /* Session restore indicator */
         .session-tag {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            width: 18px; height: 18px;
-            background: rgba(34, 197, 94, 0.12);
+            gap: 4px;
+            font-size: 9px;
+            background: rgba(34, 197, 94, 0.1);
             color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.22);
-            border-radius: 50%;
-            font-size: 8px;
-            position: relative;
-        }
-        /* Soft pulse ring around the restored icon */
-        .session-tag::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 1px solid rgba(34, 197, 94, 0.18);
-            animation: sessionPulse 2.5s ease-in-out infinite;
-        }
-        @keyframes sessionPulse {
-            0%, 100% { opacity: 0; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -677,8 +611,8 @@
                     <div class="user-badge-left">
                         <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
                         <span id="userEmail">loading...</span>
-                        <span class="session-tag" id="sessionTag" style="display:none;" title="Session restored">
-                            <i class="fa-solid fa-bolt" style="font-size:7px;"></i>
+                        <span class="session-tag" id="sessionTag" style="display:none;">
+                            <i class="fa-solid fa-bolt" style="font-size:8px;"></i> restored
                         </span>
                     </div>
                     <button class="logout-btn" onclick="logout()">Logout</button>
@@ -1446,7 +1380,16 @@
 
             // --- BLOCK LIST: skip these outright ---
             const blockPatterns = [
-                // Pure marketing / promotional (not verification related)
+                // Welcome / account created
+                /welcome\s+to\b/i,
+                /welcome\s+aboard/i,
+                /account\s+(has\s+been\s+)?(created|registered|activated|confirmed)/i,
+                /you('ve|re| have)\s+(successfully\s+)?(signed\s+up|registered|joined|created)/i,
+                /thanks?\s+for\s+(joining|signing\s+up|registering|creating)/i,
+                /your\s+account\s+is\s+(ready|active|set\s+up)/i,
+                /get\s+started\s+with/i,
+                /start\s+exploring/i,
+                // Marketing / promotional
                 /unsubscribe/i,
                 /newsletter/i,
                 /\bsale\b.*\b(off|discount|deal)\b/i,
@@ -1469,24 +1412,21 @@
             // 1. Contains a numeric OTP/PIN/code (4-8 digits)
             const hasNumericCode = /\b\d{4,8}\b/.test(fullText);
 
-            // 2. Contains alphanumeric code with ANY verification context
-            const hasAlphanumericCode = /\b[a-z0-9]{4,12}\b/i.test(fullText) &&
-                /(?:code|token|otp|pin|verify|confirm|secret|key|password|access)/i.test(fullText);
+            // 2. Contains alphanumeric code (e.g. aB3xZ9, typical token codes)
+            const hasAlphanumericCode = /\b[a-z0-9]{5,12}\b/i.test(fullText) &&
+                /(?:code|token|otp|pin|verify|confirmation|secret|key)/i.test(fullText);
 
             // 3. Contains letter-only code with verification context
-            const hasLetterCode = /\b[a-z]{4,12}\b/i.test(fullText) &&
-                /(?:code|token|otp|verify|confirm|secret|key)/i.test(fullText);
+            const hasLetterCode = /\b[a-z]{5,10}\b/i.test(fullText) &&
+                /(?:code|token|otp|verify|confirmation|secret|key)/i.test(fullText);
 
-            // 4. Contains a login/verify/magic/signup link
-            const hasLoginLink = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|sign.?up|register|join|invite|reset|password|callback|redirect|continue)[^\s"'<>]*/i.test(bodyText);
+            // 4. Contains a login/verify/magic link
+            const hasLoginLink = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access)[^\s"'<>]*/i.test(bodyText);
 
-            // 5. Subject explicitly mentions verification/auth/signup
-            const hasVerificationSubject = /(?:verify|verification|confirm|otp|one.time|passcode|login\s+code|sign.?in\s+code|access\s+code|security\s+code|your\s+code|sign\s+up|register|activate|activate|welcome.*code|code.*welcome)/i.test(subject);
+            // 5. Subject explicitly mentions verification/auth
+            const hasVerificationSubject = /(?:verify|verification|confirm|otp|one.time|passcode|login\s+code|sign.in\s+code|access\s+code|security\s+code|your\s+code)/i.test(subject);
 
-            // 6. Email body mentions "enter this code" or similar call to action
-            const hasCodeCTA = /(?:enter|use|input|type|copy|paste)\s+(?:this\s+|your\s+|the\s+)?(?:code|otp|pin|token|password)/i.test(fullText);
-
-            return hasNumericCode || hasAlphanumericCode || hasLetterCode || hasLoginLink || hasVerificationSubject || hasCodeCTA;
+            return hasNumericCode || hasAlphanumericCode || hasLetterCode || hasLoginLink || hasVerificationSubject;
         }
 
         async function fetchMessageDetails(msgId) {
@@ -1583,10 +1523,10 @@
                     }, 2 * 60 * 1000);
                 } else if (extractedLink) {
                     html += `<div class="link-block">
-                        <span class="link-block-label">Sign-up Link</span>
+                        <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
                         <a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            Open Link
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i>
+                            Open Login Link
                         </a>
                     </div>`;
                 } else {
@@ -1614,90 +1554,35 @@
         // CODE EXTRACTION
         // =============================================
         function extractLoginLink(bodyText) {
-            // Match ALL types of action links: verify, confirm, activate, login, signin,
-            // signup, register, auth, magic, token, access, click, join, invite, reset, password
-            const patterns = [
-                // Priority: explicit verify/confirm/activate/magic links
-                /https?:\/\/[^\s"'<>\])\u00A0]+(?:verify|confirm|activate|magic|auth)[^\s"'<>\])\u00A0]*/i,
-                // Signup / register / join / invite links
-                /https?:\/\/[^\s"'<>\])\u00A0]+(?:sign.?up|register|join|invite|welcome)[^\s"'<>\])\u00A0]*/i,
-                // Login / signin / access links
-                /https?:\/\/[^\s"'<>\])\u00A0]+(?:login|sign.?in|access|token|click)[^\s"'<>\])\u00A0]*/i,
-                // Password reset links
-                /https?:\/\/[^\s"'<>\])\u00A0]+(?:reset|password|forgot)[^\s"'<>\])\u00A0]*/i,
-                // Any link with utm/track that might be the CTA button in an email
-                /https?:\/\/[^\s"'<>\])\u00A0]+(?:callback|redirect|continue|proceed)[^\s"'<>\])\u00A0]*/i,
-            ];
-
-            for (const pattern of patterns) {
-                const match = bodyText.match(pattern);
-                if (match) {
-                    // Clean trailing punctuation
-                    return match[0].replace(/[.,;!?]+$/, '');
-                }
-            }
-            return null;
+            // Match magic/verify/login links
+            const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i;
+            const match = bodyText.match(linkPattern);
+            return match ? match[0] : null;
         }
 
         function extractCode(text) {
-            // Step 1: Try to find explicitly labeled codes first (most reliable)
-            const labeledPatterns = [
-                // "Your code is: ABC123" or "Code: 482910"
-                /(?:your\s+)?(?:verification|confirm(?:ation)?|security|login|sign.?in|access|one.time|otp|pin|passcode|secret|auth(?:entication)?)\s*(?:code|is|:)[^\w]*([a-z0-9]{4,12})/i,
-                // "Code ABC123" — label directly before code
-                /\b(?:code|otp|pin|token|passcode|key)\s*[:\-–—]?\s*([a-z0-9]{4,12})\b/i,
-                // "ABC123 is your code" — code before label
-                /\b([a-z0-9]{4,12})\s+(?:is\s+your|is\s+the)\s+(?:code|pin|otp|token|passcode)/i,
-                // "Enter ABC123 to" pattern
-                /\b(?:enter|use|input)\s+([a-z0-9]{4,12})\s+(?:to|as)/i,
+            const patterns = [
+                // Explicit label + numeric code
+                /(?:verification|confirm|code|OTP|PIN|passcode|secret)[^\d]*(\d{4,8})/i,
+                /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code)/i,
+                // Alphanumeric code with label
+                /(?:code|token|otp|key)[^\w]*([a-z0-9]{5,12})/i,
+                // Standalone 6-digit (most common OTP)
+                /\b(\d{6})\b/,
+                // Any 4–8 digit number
+                /\b(\d{4,8})\b/,
             ];
 
-            for (const pattern of labeledPatterns) {
+            for (const pattern of patterns) {
                 const match = text.match(pattern);
-                if (match && match[1]) {
-                    const code = match[1];
-                    // Reject pure years (2020-2030) and very common words
-                    if (/^\d+$/.test(code)) {
-                        const num = parseInt(code);
-                        if (num >= 2020 && num <= 2030) continue;
-                        if (num < 1000) continue;
-                    }
-                    return code;
-                }
-            }
-
-            // Step 2: Standalone 6-digit OTP (most common format)
-            const sixDigit = text.match(/\b(\d{6})\b/);
-            if (sixDigit) {
-                const num = parseInt(sixDigit[1]);
-                if (!(num >= 2020 && num <= 2030)) return sixDigit[1];
-            }
-
-            // Step 3: Any 4–8 digit number
-            const anyDigits = text.match(/\b(\d{4,8})\b/g);
-            if (anyDigits) {
-                for (const candidate of anyDigits) {
-                    const num = parseInt(candidate);
+                if (match) {
+                    const code = match[1] || match[0];
+                    const num = parseInt(code);
                     if (num >= 1000 && num <= 99999999 && !(num >= 2020 && num <= 2030)) {
-                        return candidate;
+                        return code;
                     }
                 }
             }
-
-            // Step 4: Alphanumeric code (e.g. aB3xZ9, hX92kP) — 5-12 chars mixed
-            const alphaMatch = text.match(/\b([a-zA-Z0-9]{5,12})\b/g);
-            if (alphaMatch) {
-                for (const candidate of alphaMatch) {
-                    // Must have both letters and digits to be a real token
-                    if (/[a-zA-Z]/.test(candidate) && /[0-9]/.test(candidate)) {
-                        // Skip common English words
-                        if (!/^(https?|www|com|org|net|the|and|for|you|your|email|click|here|this|that|with|from|have|been|will|they|when|what|which|their|there|about|would|could|should|these|those|other|after|first|into|than|then|some|more|also|just|like|time|very|well|only|such|same|much|over|make|take|know|good|look|most|give|need|long|back|even|both|came|come|done|each|ever|free|full|give|hand|here|home|just|keep|kind|last|left|less|life|line|live|long|look|love|made|many|may|meet|mind|miss|more|most|move|much|must|name|near|need|next|nice|night|open|our|over|part|past|place|plan|play|point|put|read|real|right|room|said|same|see|seem|send|set|show|side|since|still|such|sure|take|tell|than|that|them|then|these|they|this|those|though|three|time|told|took|true|turn|until|upon|used|very|view|want|ways|well|were|what|when|where|which|while|whom|will|with|word|work|year|your|you)\b/i.test(candidate)) {
-                            return candidate;
-                        }
-                    }
-                }
-            }
-
             return null;
         }
 
