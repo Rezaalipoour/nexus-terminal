@@ -194,27 +194,25 @@
         .user-badge-left { display: flex; align-items: center; gap: 6px; }
 
         .logout-btn {
-            background: rgba(239, 68, 68, 0.07);
-            border: 1px solid rgba(239, 68, 68, 0.18);
-            color: rgba(239, 68, 68, 0.7);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            color: rgba(148, 163, 184, 0.7);
             cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 8px;
+            font-size: 10.5px;
+            font-weight: 500;
+            padding: 4px 11px;
+            border-radius: 7px;
             transition: all 0.2s ease;
             font-family: inherit;
             display: flex;
             align-items: center;
-            gap: 5px;
-            letter-spacing: 0.2px;
+            letter-spacing: 0.3px;
             flex-shrink: 0;
         }
         .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.14);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: #ef4444;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.12);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+            color: rgba(203, 213, 225, 0.9);
         }
         .logout-btn:active { transform: scale(0.96); }
 
@@ -571,19 +569,22 @@
         }
         /* User avatar removed */
 
-        /* Enhanced user badge — gradient purple style */
+        /* Enhanced user badge — deep purple mesh */
         .user-badge {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 11px;
             color: #c4b5fd;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.14) 0%, rgba(139, 92, 246, 0.10) 100%);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 10px;
+            background: 
+                radial-gradient(ellipse at 0% 50%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 100% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+                rgba(15, 12, 28, 0.7);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            border-radius: 11px;
             padding: 7px 10px 7px 14px;
             justify-content: space-between;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
             position: relative;
             overflow: hidden;
         }
@@ -592,16 +593,23 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+            background: linear-gradient(90deg, transparent 5%, rgba(167, 139, 250, 0.55) 50%, transparent 95%);
+        }
+        .user-badge::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 20%, rgba(99, 102, 241, 0.2) 50%, transparent 80%);
         }
         .user-badge:hover {
-            border-color: rgba(99, 102, 241, 0.5);
-            box-shadow: 0 0 16px rgba(99, 102, 241, 0.1);
+            border-color: rgba(139, 92, 246, 0.55);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.13), inset 0 0 20px rgba(99, 102, 241, 0.04);
         }
         #userEmail {
             font-size: 11.5px;
             font-weight: 500;
-            color: #c4b5fd;
+            color: #ddd6fe;
             letter-spacing: 0.1px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -717,10 +725,7 @@
                             <i class="fa-solid fa-bolt"></i>
                         </span>
                     </div>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        Logout
-                    </button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
 
                 <div class="email-display-group" onclick="copyEmail()">
