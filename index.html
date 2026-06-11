@@ -544,6 +544,94 @@
         .card { box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04); }
         .header h1 { font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
         .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* --- RADIO PLAYER --- */
+        #radioPlayer {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 40px;
+            padding: 6px 10px 6px 8px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.08);
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+        #radioPlayer:hover {
+            border-color: rgba(99,102,241,0.3);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 0 16px rgba(99,102,241,0.08);
+        }
+        .radio-play-btn {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: var(--accent);
+            font-size: 10px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .radio-play-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .radio-play-btn:active { transform: scale(0.9); }
+        .radio-next-btn {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 9px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .radio-next-btn:hover { color: var(--accent); }
+        .radio-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1;
+        }
+        .radio-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .radio-bars.active { opacity: 1; }
+        .radio-bars span {
+            width: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: radioBeat 0.8s ease-in-out infinite;
+        }
+        .radio-bars span:nth-child(1) { animation-delay: 0s; }
+        .radio-bars span:nth-child(2) { animation-delay: 0.15s; }
+        .radio-bars span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes radioBeat {
+            0%, 100% { height: 3px; }
+            50% { height: 12px; }
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -1092,5 +1180,64 @@
         function showToast(msg, icon = '✓') { const toast = document.getElementById('toast'); const toastMsg = document.getElementById('toastMsg'); const toastIcon = document.getElementById('toastIcon'); toastMsg.innerText = msg; toastIcon.innerText = icon; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1800); }
         function escapeHtml(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     </script>
+
+    <!-- RADIO PLAYER -->
+    <div id="radioPlayer">
+        <button class="radio-play-btn" id="radioPlayBtn" onclick="radioToggle()" title="Play / Pause">
+            <i class="fa-solid fa-play" id="radioPlayIcon"></i>
+        </button>
+        <div class="radio-bars" id="radioBars">
+            <span></span><span></span><span></span>
+        </div>
+        <span class="radio-label" id="radioLabel">Lo-fi Radio</span>
+        <button class="radio-next-btn" onclick="radioNext()" title="Next station">
+            <i class="fa-solid fa-forward-step"></i>
+        </button>
+    </div>
+
+    <audio id="radioAudio" preload="none"></audio>
+
+    <script>
+        const RADIO_STATIONS = [
+            { name: 'Lo-fi Chill', url: 'https://streams.ilovemusic.de/iloveradio17.mp3' },
+            { name: 'Ambient', url: 'https://streams.ilovemusic.de/iloveradio3.mp3' },
+            { name: 'Chillout', url: 'https://streams.ilovemusic.de/iloveradio2.mp3' },
+        ];
+        let radioIndex = 0;
+        let radioPlaying = false;
+        const radioAudio = document.getElementById('radioAudio');
+        const radioPlayIcon = document.getElementById('radioPlayIcon');
+        const radioBars = document.getElementById('radioBars');
+        const radioLabel = document.getElementById('radioLabel');
+
+        function radioToggle() {
+            if (radioPlaying) {
+                radioAudio.pause();
+                radioPlaying = false;
+                radioPlayIcon.className = 'fa-solid fa-play';
+                radioBars.classList.remove('active');
+            } else {
+                radioAudio.src = RADIO_STATIONS[radioIndex].url;
+                radioLabel.textContent = RADIO_STATIONS[radioIndex].name;
+                radioAudio.play().then(() => {
+                    radioPlaying = true;
+                    radioPlayIcon.className = 'fa-solid fa-pause';
+                    radioBars.classList.add('active');
+                }).catch(() => {});
+            }
+        }
+
+        function radioNext() {
+            radioIndex = (radioIndex + 1) % RADIO_STATIONS.length;
+            radioLabel.textContent = RADIO_STATIONS[radioIndex].name;
+            if (radioPlaying) {
+                radioAudio.src = RADIO_STATIONS[radioIndex].url;
+                radioAudio.play().catch(() => {});
+            }
+        }
+
+        radioAudio.addEventListener('error', () => { radioNext(); });
+    </script>
+
 </body>
 </html>
