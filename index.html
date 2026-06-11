@@ -66,7 +66,6 @@
             position: relative;
             overflow: hidden;
         }
-        [data-theme="light"] body { background-image: none; }
 
         .bg-grid {
             position: fixed;
@@ -105,8 +104,6 @@
             100% { transform: translateY(64px) translateX(0); }
         }
 
-        .bg-glow, .bg-glow-2, .bg-orb { display: none; }
-
         .container {
             width: 100%;
             max-width: 440px;
@@ -120,15 +117,15 @@
             border: 1px solid var(--card-border);
             border-radius: 24px;
             padding: 22px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             display: flex; flex-direction: column; gap: 14px;
         }
 
         .header { display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
-        .header h1 span { color: var(--accent); font-weight: 700; }
+        .header h1 { font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
+        .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
         .theme-btn {
             background: transparent; border: none;
@@ -198,7 +195,6 @@
             width: 100%;
         }
 
-        /* User badge - Outlined & Centered */
         .user-badge {
             flex: 1;
             display: flex;
@@ -229,7 +225,6 @@
             white-space: nowrap;
         }
 
-        /* Logout btn - Icon Only */
         .logout-btn {
             flex-shrink: 0;
             background: transparent;
@@ -246,7 +241,6 @@
             justify-content: center;
             padding: 0;
         }
-        .logout-btn i { margin: 0; }
         .logout-btn:hover {
             background: rgba(255, 255, 255, 0.06);
             border-color: rgba(255, 255, 255, 0.18);
@@ -289,7 +283,6 @@
             100% { transform: scale(0.85); opacity: 0; }
         }
 
-        /* Generated Email Box - With Subtle Color */
         .email-display-group {
             background: rgba(99, 102, 241, 0.22);
             border: 1px solid rgba(99, 102, 241, 0.5) !important;
@@ -359,7 +352,6 @@
         }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
 
-        /* Timer bar */
         .timer-row {
             display: flex;
             align-items: center;
@@ -511,7 +503,6 @@
             transition: all 0.2s ease; letter-spacing: 0.4px; text-transform: uppercase;
             position: relative; overflow: hidden;
         }
-        .launch-btn svg { flex-shrink: 0; }
         .launch-btn:hover { transform: translateY(-2px); }
         .launch-btn:active { transform: scale(0.96); }
 
@@ -523,7 +514,6 @@
         .launch-btn.pulse-ready { animation: sitePulse 1.2s ease-in-out 4; }
         .launch-btn.nana.pulse-ready, .launch-btn.v03.pulse-ready { border-color: rgba(99, 102, 241, 0.8); background: rgba(99, 102, 241, 0.12); color: #a5b4fc; }
         @keyframes sitePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.25); } 50% { box-shadow: 0 0 0 7px rgba(99,102,241,0); } }
-        .launch-btn.v03.pulse-ready { animation-name: sitePulse; }
 
         .launch-dot { position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; opacity: 0; transition: opacity 0.3s; }
         .launch-btn.pulse-ready .launch-dot { opacity: 1; }
@@ -540,11 +530,7 @@
         .pending-banner-code { font-size: 20px; font-weight: 700; letter-spacing: 5px; color: #fcd34d; }
         .pending-banner-tap { font-size: 10px; font-weight: 400; color: #fbbf24; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 4px 10px; white-space: nowrap; letter-spacing: 0.5px; }
 
-        .card { box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04); }
-        .header h1 { font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
-        .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-        /* === RADIO PLAYER === */
+        /* === COMPACT AUDIO WIDGET === */
         #radioWidget {
             position: fixed;
             bottom: 28px;
@@ -622,16 +608,11 @@
         @keyframes rBeat {
             0%,100% { height: 4px; } 50% { height: 16px; }
         }
-
-        /* hidden YT iframe */
-        #ytFrame { position:fixed; width:1px; height:1px; opacity:0; pointer-events:none; bottom:0; right:0; }
     </style>
 </head>
 <body data-theme="dark">
 
     <div class="bg-grid"></div>
-    <div class="bg-glow"></div>
-    <div class="bg-glow-2"></div>
 
     <div id="toast">
         <span class="toast-icon" id="toastIcon">✓</span>
@@ -765,6 +746,17 @@
         </div>
     </div>
 
+    <div id="radioWidget">
+        <button class="r-btn" id="rPlayBtn" onclick="rToggle()" title="Play / Pause">
+            <i class="fa-solid fa-play" id="rPlayIcon"></i>
+        </button>
+        <div id="rBars"><span></span><span></span><span></span></div>
+        <span id="rLabel">Piano Calm</span>
+        <button class="r-btn" id="rNextBtn" onclick="rNext()" title="Next Track">
+            <i class="fa-solid fa-forward-step"></i>
+        </button>
+    </div>
+
     <script>
         const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
         const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
@@ -773,28 +765,19 @@
         let audioCtx = null;
 
         function getAudioCtx() {
-            if (!audioCtx) {
-                audioCtx = new AudioCtx();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) { audioCtx = new AudioCtx(); }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             return audioCtx;
         }
 
         function playEmailClick() {
             try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-                const osc1 = ctx.createOscillator();
-                const osc2 = ctx.createOscillator();
-                const gain = ctx.createGain();
-                const filter = ctx.createBiquadFilter();
-
+                const ctx = getAudioCtx(); const now = ctx.currentTime;
+                const osc1 = ctx.createOscillator(); const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain(); const filter = ctx.createBiquadFilter();
                 osc1.type = 'sine'; osc1.frequency.setValueAtTime(880, now); osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
                 osc2.type = 'sine'; osc2.frequency.setValueAtTime(1320, now); osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.05);
                 filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 1.5;
-
                 gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.12, now + 0.01); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
                 osc1.connect(filter); osc2.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
                 osc1.start(now); osc1.stop(now + 0.2); osc2.start(now); osc2.stop(now + 0.15);
@@ -812,11 +795,9 @@
             const osc = ctx.createOscillator(); const gainNode = ctx.createGain();
             osc.type = 'sine'; osc.frequency.setValueAtTime(freq, startTime);
             gainNode.gain.setValueAtTime(0, startTime); gainNode.gain.linearRampToValueAtTime(vol, startTime + 0.015); gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.55);
-            
             const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
             osc2.type = 'sine'; osc2.frequency.setValueAtTime(freq * 2, startTime);
             gain2.gain.setValueAtTime(0, startTime); gain2.gain.linearRampToValueAtTime(vol * 0.3, startTime + 0.01); gain2.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
-            
             osc.connect(gainNode); osc2.connect(gain2); gainNode.connect(ctx.destination); gain2.connect(ctx.destination);
             osc.start(startTime); osc.stop(startTime + 0.6); osc2.start(startTime); osc2.stop(startTime + 0.3);
         }
@@ -854,7 +835,6 @@
                     osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t);
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.11, t + 0.012); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
                     osc.connect(gain); gain.connect(ctx.destination); osc.start(t); osc.stop(t + 0.7);
-
                     const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
                     osc2.type = 'sine'; osc2.frequency.setValueAtTime(freq * 2, t);
                     gain2.gain.setValueAtTime(0, t); gain2.gain.linearRampToValueAtTime(0.028, t + 0.008); gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
@@ -930,19 +910,9 @@
         }
         if (localStorage.getItem('theme') === 'light') { document.body.setAttribute('data-theme', 'light'); document.getElementById('themeIcon').className = 'fa-regular fa-moon'; }
 
-        let _tokenClient = null;
-        function getTokenClient(loginHint, promptMode) {
-            return google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, prompt: promptMode || '', login_hint: loginHint || undefined, callback: handleTokenResponse });
-        }
-        function handleTokenResponse(response) {
-            if (response.error) { if (baseGmail) { showReauthBanner(); } return; }
-            accessToken = response.access_token; const expiry = Date.now() + (response.expires_in * 1000);
-            localStorage.setItem('gAccessToken', accessToken); localStorage.setItem('gTokenExpiry', expiry.toString());
-            scheduleTokenRefresh(response.expires_in - 300); hideReauthBanner();
-        }
         function startGoogleLogin() {
             const savedEmail = localStorage.getItem('gBaseEmail');
-            _tokenClient = google.accounts.oauth2.initTokenClient({
+            const tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: CLIENT_ID, scope: SCOPES, prompt: savedEmail ? '' : 'select_account', login_hint: savedEmail || undefined,
                 callback: (response) => {
                     if (response.error) { showToast('Login Failed!', '✕'); return; }
@@ -951,7 +921,7 @@
                     scheduleTokenRefresh(response.expires_in - 300); onLoginSuccess(false);
                 }
             });
-            _tokenClient.requestAccessToken();
+            tokenClient.requestAccessToken();
         }
         function scheduleTokenRefresh(secondsUntilRefresh) {
             if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
@@ -1170,91 +1140,51 @@
         function escapeHtml(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     </script>
 
-    <div id="radioWidget">
-        <button class="r-btn" id="rPlayBtn" onclick="rToggle()" title="پخش / توقف">
-            <i class="fa-solid fa-play" id="rPlayIcon"></i>
-        </button>
-        <div id="rBars"><span></span><span></span><span></span></div>
-        <span id="rLabel">Lo‑fi Radio</span>
-        <button class="r-btn" id="rNextBtn" onclick="rNext()" title="بعدی">
-            <i class="fa-solid fa-forward-step"></i>
-        </button>
-    </div>
-
-    <div id="ytFrame"></div>
-
     <script>
-    // ── Playlist of known lofi / ambient / classical piano videos ──
+    // ── Playlist of Direct Audio Streams (No Video Overhead) ──
     const R_LIST = [
-        { name: 'Classical Piano', id: 'WJ3-JCZaFs0' }, // Masterpieces: Chopin, Beethoven
-        { name: 'Relaxing Piano',  id: '8UXircX3VdM' }, // 24/7 Calm & Peaceful Piano
-        { name: 'Lofi Hip Hop',    id: 'jfKfPfyJRdk' }, // Lofi Girl – beats to relax
-        { name: 'Ambient Space',   id: 'kPjfO6GAsrg' }, // Dark ambient/space
-        { name: 'Jazz Lofi',       id: 'HuFYqnbVbzY' }, // Lofi jazz
-        { name: 'Chillhop',        id: '5yx6BWlEVcY' }, // Chillhop Music live
+        { name: 'Piano Calm',    url: 'https://strm112.1.fm/aclassic_mobile_mp3' },    // 1.FM Classical Piano
+        { name: 'Lofi Chill',    url: 'https://streams.ilovemusic.de/iloveradio17.mp3' }, // Chillhop / Lofi
+        { name: 'Jazz Relax',    url: 'https://streams.ilovemusic.de/iloveradio16.mp3' }, // Jazz Lounge
+        { name: 'Ambient Space', url: 'https://strm112.1.fm/ambient_mobile_mp3' }      // Deep Ambient
     ];
 
     let rIdx   = 0;
-    let rReady = false;
     let rPlay  = false;
-    let ytPlayer = null;
+    let audio  = new Audio();
+    audio.crossOrigin = "anonymous";
 
     const rPlayIcon = document.getElementById('rPlayIcon');
     const rBars     = document.getElementById('rBars');
     const rLabel    = document.getElementById('rLabel');
 
-    // Load YouTube IFrame API once, lazily
-    function rLoadAPI() {
-        if (window.YT) { rInitPlayer(); return; }
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
-    }
-
-    window.onYouTubeIframeAPIReady = function() { rInitPlayer(); };
-
-    function rInitPlayer() {
-        ytPlayer = new YT.Player('ytFrame', {
-            height: '1', width: '1',
-            videoId: R_LIST[rIdx].id,
-            playerVars: { autoplay: 1, controls: 0, loop: 1, playsinline: 1 },
-            events: {
-                onReady: function(e) {
-                    rReady = true;
-                    e.target.playVideo();
-                    rSetPlaying(true);
-                },
-                onStateChange: function(e) {
-                    // If ended, go next
-                    if (e.data === YT.PlayerState.ENDED) rNext();
-                },
-                onError: function() { rNext(); }
-            }
-        });
-    }
-
     function rToggle() {
-        if (!rReady) {
-            // First press — load API & play
-            rLabel.textContent = 'Loading…';
-            rLoadAPI();
-            return;
+        if (!audio.src) {
+            audio.src = R_LIST[rIdx].url;
+            rLabel.textContent = 'Buffering...';
         }
+        
         if (rPlay) {
-            ytPlayer.pauseVideo();
+            audio.pause();
             rSetPlaying(false);
         } else {
-            ytPlayer.playVideo();
-            rSetPlaying(true);
+            audio.play().then(() => {
+                rSetPlaying(true);
+            }).catch(e => {
+                console.error("Audio play error:", e);
+                rLabel.textContent = 'Network Link Cut';
+            });
         }
     }
 
     function rNext() {
         rIdx = (rIdx + 1) % R_LIST.length;
-        rLabel.textContent = R_LIST[rIdx].name;
-        if (rReady && ytPlayer) {
-            ytPlayer.loadVideoById(R_LIST[rIdx].id);
-            if (rPlay) ytPlayer.playVideo();
+        rLabel.textContent = 'Buffering...';
+        audio.src = R_LIST[rIdx].url;
+        if (rPlay) {
+            audio.play().then(() => rSetPlaying(true)).catch(() => { rLabel.textContent = 'Link Failed'; });
+        } else {
+            rLabel.textContent = R_LIST[rIdx].name;
         }
     }
 
@@ -1264,6 +1194,10 @@
         rBars.classList.toggle('on', on);
         if (on) rLabel.textContent = R_LIST[rIdx].name;
     }
+
+    // Fallback if network drops or stream ends
+    audio.addEventListener('ended', rNext);
+    audio.addEventListener('error', rNext);
     </script>
 
 </body>
