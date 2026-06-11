@@ -3,48 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Gmail Mail</title>
-    
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'></rect><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'></path></svg>" />
+    <title>Nexus | Dashboard</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'><rect x='3' y='3' width='7' height='7' rx='1'/><rect x='14' y='3' width='7' height='7' rx='1'/><rect x='3' y='14' width='7' height='7' rx='1'/><rect x='14' y='14' width='7' height='7' rx='1'/></svg>" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         :root {
             --bg-body: #0b0b10;
-            --card-bg: rgba(18, 18, 26, 0.75);
+            --card-bg: rgba(18, 18, 26, 0.80);
             --card-border: rgba(99, 102, 241, 0.14);
             --text-primary: #f0f2ff;
             --text-secondary: #8892b0;
             --accent: #6366f1;
+            --accent2: #8b5cf6;
             --box-bg: rgba(12, 12, 20, 0.6);
             --btn-border: rgba(255, 255, 255, 0.10);
             --code-bg: rgba(99, 102, 241, 0.14);
             --shadow: 0 24px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.06);
-            --grid-color: rgba(99, 102, 241, 0.04);
             --grid-line: rgba(140, 145, 255, 0.055);
             --grid-dot: rgba(99, 102, 241, 0.42);
-        }
-
-        [data-theme="light"] {
-            --bg-body: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(0, 0, 0, 0.06);
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --accent: #4f46e5;
-            --box-bg: rgba(241, 245, 249, 0.8);
-            --btn-border: rgba(0, 0, 0, 0.08);
-            --code-bg: rgba(79, 70, 229, 0.08);
-            --shadow: 0 10px 30px rgba(0,0,0,0.05);
-            --grid-color: rgba(79, 70, 229, 0.015);
-            --grid-line: rgba(0, 0, 0, 0.04);
-            --grid-dot: rgba(79, 70, 229, 0.12);
+            --green: #22c55e;
+            --yellow: #fbbf24;
+            --red: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -53,29 +36,18 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-primary);
-            display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
-            transition: background-color 0.4s ease, color 0.4s ease;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* =========================================
-           BACKGROUND — ultra-thin grid + dot nodes
-        ========================================= */
+        /* Background */
         .bg-grid {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
         }
-
-        /* Main grid lines — hair-thin, barely visible */
         .bg-grid::before {
             content: '';
-            position: absolute;
-            inset: -10%;
+            position: absolute; inset: -10%;
             background-image:
                 linear-gradient(var(--grid-line) 0.5px, transparent 0.5px),
                 linear-gradient(90deg, var(--grid-line) 0.5px, transparent 0.5px);
@@ -84,443 +56,313 @@
             -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 20%, transparent 100%);
             animation: gridDrift 30s linear infinite;
         }
-
-        /* Dot intersections on top — tiny accent nodes */
         .bg-grid::after {
             content: '';
-            position: absolute;
-            inset: -10%;
+            position: absolute; inset: -10%;
             background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
             background-size: 64px 64px;
             mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
             -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
             animation: gridDrift 30s linear infinite;
         }
-
         @keyframes gridDrift {
-            0% { transform: translateY(0) translateX(0); }
-            100% { transform: translateY(64px) translateX(0); }
+            0% { transform: translateY(0); }
+            100% { transform: translateY(64px); }
         }
-
-        /* Soft ambient glow */
         .bg-glow {
             position: fixed;
-            width: 800px;
-            height: 600px;
-            background: radial-gradient(ellipse, rgba(99, 102, 241, 0.10) 0%, rgba(99,102,241,0.04) 40%, transparent 70%);
-            top: 50%;
-            left: 50%;
+            width: 900px; height: 700px;
+            background: radial-gradient(ellipse, rgba(99,102,241,0.08) 0%, transparent 65%);
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 0;
-            animation: glowBreath 8s ease-in-out infinite;
+            pointer-events: none; z-index: 0;
+            animation: glowBreath 10s ease-in-out infinite;
         }
-
-        /* Secondary glow — warm purple tint bottom-right */
-        .bg-glow-2 {
-            position: fixed;
-            width: 500px;
-            height: 400px;
-            background: radial-gradient(ellipse, rgba(139, 92, 246, 0.07) 0%, transparent 65%);
-            bottom: -80px;
-            right: -80px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
         @keyframes glowBreath {
             0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
         }
 
-        /* Floating micro-particles — 3 subtle orbs */
-        .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            filter: blur(60px);
-        }
-        .bg-orb-1 {
-            width: 220px; height: 220px;
-            background: rgba(99, 102, 241, 0.09);
-            top: 15%; left: 10%;
-            animation: orbFloat1 18s ease-in-out infinite;
-        }
-        .bg-orb-2 {
-            width: 160px; height: 160px;
-            background: rgba(139, 92, 246, 0.08);
-            bottom: 20%; right: 12%;
-            animation: orbFloat2 24s ease-in-out infinite;
-        }
-        .bg-orb-3 {
-            width: 100px; height: 100px;
-            background: rgba(99, 102, 241, 0.07);
-            top: 60%; left: 60%;
-            animation: orbFloat3 20s ease-in-out infinite;
-        }
-        @keyframes orbFloat1 {
-            0%, 100% { transform: translate(0, 0); }
-            33% { transform: translate(20px, -30px); }
-            66% { transform: translate(-15px, 20px); }
-        }
-        @keyframes orbFloat2 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-25px, -20px); }
-        }
-        @keyframes orbFloat3 {
-            0%, 100% { transform: translate(0, 0); }
-            40% { transform: translate(30px, -15px); }
-            80% { transform: translate(-10px, 25px); }
+        /* Layout */
+        .page {
+            position: relative; z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 440px;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .header-left {
+            display: flex; align-items: center; gap: 14px;
+        }
+        .logo { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
+        .logo span { color: var(--accent); font-weight: 700; }
+        .logo small {
+            font-size: 11px; color: var(--text-secondary);
+            background: var(--code-bg); border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 6px; padding: 2px 8px; margin-left: 8px;
+            font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .header-right {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .nexusmail-link {
+            display: flex; align-items: center; gap: 6px;
+            background: var(--box-bg); border: 1px solid var(--btn-border);
+            color: var(--text-secondary); border-radius: 10px;
+            padding: 7px 14px; font-size: 12px; font-weight: 500;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .nexusmail-link:hover { border-color: var(--accent); color: var(--accent); }
+
+        .user-pill {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--box-bg); border: 1px solid var(--btn-border);
+            border-radius: 10px; padding: 7px 14px; font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .user-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+        /* Login screen */
+        #loginScreen {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 70vh; gap: 20px;
+        }
+        .login-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 24px; padding: 36px; width: 100%; max-width: 380px;
+            box-shadow: var(--shadow); backdrop-filter: blur(24px);
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+            text-align: center;
+        }
+        .login-icon {
+            width: 52px; height: 52px; background: var(--code-bg);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--accent);
+        }
+        .login-title { font-size: 18px; font-weight: 600; }
+        .login-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+        .google-btn {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--box-bg); border: 1px solid var(--btn-border);
+            color: var(--text-primary); padding: 12px 24px; border-radius: 14px;
+            font-family: inherit; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center;
+        }
+        .google-btn:hover { border-color: var(--accent); background: rgba(99,102,241,0.08); }
+        .google-icon { width: 20px; height: 20px; }
+
+        /* Dashboard grid */
+        #dashScreen { display: none; }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 680px) {
+            .slots-grid { grid-template-columns: 1fr; }
         }
 
-        .card {
+        /* Slot card */
+        .slot {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 28px;
+            border-radius: 20px;
+            padding: 20px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            display: flex; flex-direction: column; gap: 18px;
+            backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; gap: 14px;
+            transition: border-color 0.3s;
         }
+        .slot.active { border-color: rgba(99,102,241,0.35); }
+        .slot.done { border-color: rgba(34,197,94,0.35); }
 
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
-        .header h1 span { color: var(--accent); font-weight: 600; }
-
-        .theme-btn {
-            background: transparent; border: none;
-            color: var(--text-secondary); font-size: 18px;
-            cursor: pointer; transition: color 0.2s ease;
-        }
-        .theme-btn:hover { color: var(--accent); }
-
-        /* --- LOGIN SECTION --- */
-        .login-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            padding: 24px 0 12px;
-        }
-
-        .login-icon {
-            width: 48px; height: 48px;
-            background: var(--code-bg);
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
-            color: var(--accent);
-        }
-
-        .login-desc {
-            font-size: 13px;
-            color: var(--text-secondary);
-            text-align: center;
-            line-height: 1.7;
-        }
-
-        .google-login-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 14px;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-            justify-content: center;
-        }
-        .google-login-btn:hover {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.08);
-        }
-        .google-login-btn:active { transform: scale(0.97); }
-
-        .google-icon {
-            width: 20px; height: 20px;
-        }
-
-        /* --- MAIN SECTION --- */
-        .main-section { display: none; flex-direction: column; gap: 18px; }
-        .main-section.visible { display: flex; }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 10px;
-            padding: 6px 12px;
-            justify-content: space-between;
-        }
-
-        .user-badge-left { display: flex; align-items: center; gap: 6px; }
-
-        .logout-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 12px;
-            padding: 2px 6px;
-            border-radius: 6px;
-            transition: color 0.2s;
-            font-family: inherit;
-        }
-        .logout-btn:hover { color: #ef4444; }
-
-        .email-display-group {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 16px;
-            padding: 8px 8px 8px 18px;
+        .slot-header {
             display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer;
-            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
         }
-        .email-display-group:hover {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.05);
+        .slot-num {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .email-display-group:active { transform: scale(0.98); }
+        .slot-num-badge {
+            width: 26px; height: 26px; border-radius: 8px;
+            background: var(--code-bg); border: 1px solid rgba(99,102,241,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: var(--accent);
+        }
+        .slot-status {
+            font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+            border-radius: 6px; padding: 3px 8px; text-transform: uppercase;
+        }
+        .slot-status.idle { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+        .slot-status.ready { background: rgba(99,102,241,0.12); color: var(--accent); }
+        .slot-status.registered { background: rgba(34,197,94,0.1); color: var(--green); }
 
-        .email-text {
-            font-size: 15px; font-weight: 500; letter-spacing: 0.2px;
+        /* Email row */
+        .email-row {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .email-box {
+            flex: 1; background: var(--box-bg); border: 1px solid var(--btn-border);
+            border-radius: 10px; padding: 8px 12px;
+            font-size: 12px; color: var(--text-primary);
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            color: var(--text-primary);
+            font-weight: 500;
         }
-        .email-text.loading { color: var(--text-secondary); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-
-        .action-icon-btn {
-            background: var(--btn-border); border: none;
-            width: 42px; height: 42px;
-            border-radius: 12px;
-            color: var(--text-primary); cursor: pointer;
-            display: flex; justify-content: center; align-items: center; font-size: 16px;
-            pointer-events: none;
-            transition: background 0.2s ease, color 0.2s ease;
+        .email-box.placeholder { color: var(--text-secondary); font-weight: 400; }
+        .icon-btn {
+            width: 34px; height: 34px; border-radius: 8px;
+            background: var(--box-bg); border: 1px solid var(--btn-border);
+            color: var(--text-secondary); cursor: pointer; font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0;
         }
-        .email-display-group:hover .action-icon-btn {
-            background: var(--accent); color: #fff;
-        }
-
-        .controls { display: flex; gap: 10px; }
-        .btn {
-            flex: 1; background: transparent; border: 1px solid var(--btn-border);
-            color: var(--text-primary); padding: 12px; border-radius: 12px;
-            font-family: inherit; font-size: 13px; font-weight: 400; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 6px;
-            transition: background-color 0.15s ease, transform 0.1s ease;
-        }
-        .btn:hover { background: var(--btn-border); }
-        .btn:active { transform: scale(0.96); }
-        .spin i { animation: spin 0.8s linear infinite; }
+        .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .icon-btn.spin i { animation: spin 0.6s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .divider { height: 1px; background: var(--btn-border); width: 100%; margin: 2px 0; }
-
-        .inbox-header {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 11px; font-weight: 600; color: var(--text-secondary);
-            text-transform: uppercase; letter-spacing: 1.5px;
+        /* Code display */
+        .code-area {
+            background: var(--box-bg); border: 1px solid var(--btn-border);
+            border-radius: 10px; padding: 10px 14px;
+            min-height: 44px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px;
         }
-
-        .radar { display: flex; align-items: center; gap: 6px; }
-        .dot {
-            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
-            animation: blink 2s infinite;
+        .code-label {
+            font-size: 10px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
-
-        .inbox-list {
-            display: flex; flex-direction: column; gap: 12px;
-            min-height: 80px;
-            max-height: 250px;
-            overflow-y: auto; padding-right: 4px;
+        .code-value {
+            font-size: 22px; font-weight: 700; color: var(--accent);
+            letter-spacing: 6px; cursor: pointer;
+            transition: color 0.2s;
         }
-
-        .inbox-list::-webkit-scrollbar { width: 4px; }
-        .inbox-list::-webkit-scrollbar-thumb { background: var(--btn-border); border-radius: 4px; }
-
-        .empty-state {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 80px; gap: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 300;
+        .code-value:hover { color: #fff; }
+        .code-waiting { font-size: 12px; color: var(--text-secondary); }
+        .code-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent); animation: blink 2s infinite; flex-shrink: 0;
         }
+        @keyframes blink { 0%,100%{opacity:0.3;} 50%{opacity:1; box-shadow: 0 0 6px var(--accent);} }
 
-        .message {
-            background: var(--box-bg);
-            border: 1px solid var(--btn-border);
-            border-radius: 16px;
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            animation: fadeUp 0.3s ease forwards;
-        }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .msg-sender {
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-align: left;
-            width: 100%;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            padding-left: 2px;
-        }
-
-        .extracted-code {
-            background: var(--code-bg);
-            color: var(--accent);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            border-radius: 12px;
-            padding: 8px 20px;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 8px;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            transition: all 0.2s ease;
-            will-change: transform;
-        }
-
-        .extracted-code:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .extracted-code:active {
-            transform: scale(0.97);
-            box-shadow: none;
-        }
-
-        .link-block {
-            background: var(--box-bg);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 12px;
-            padding: 10px 14px;
-        }
-
+        /* Login link button */
         .login-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--accent);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: 'Outfit', sans-serif;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+            color: var(--accent); border-radius: 10px; padding: 9px 14px;
+            font-size: 13px; font-weight: 600; font-family: inherit;
+            text-decoration: none; cursor: pointer; transition: all 0.2s;
+            width: 100%;
         }
         .login-link-btn:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            background: var(--accent); color: #fff;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+        }
+        .login-link-btn.green {
+            background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: var(--green);
+        }
+        .login-link-btn.green:hover { background: var(--green); color: #fff; }
+        .login-link-btn:disabled, .login-link-btn.disabled {
+            opacity: 0.4; pointer-events: none;
         }
 
+        /* Credits display */
+        .credits-row {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: var(--text-secondary);
+        }
+        .credits-badge {
+            display: flex; align-items: center; gap: 4px;
+            background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25);
+            color: var(--yellow); border-radius: 6px; padding: 2px 8px;
+            font-size: 11px; font-weight: 700;
+        }
+
+        /* Bottom bar */
+        .bottom-bar {
+            margin-top: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 14px 20px;
+            backdrop-filter: blur(20px);
+        }
+        .bottom-info { font-size: 12px; color: var(--text-secondary); }
+        .bottom-info span { color: var(--accent); font-weight: 600; }
+        .reset-btn {
+            background: transparent; border: 1px solid var(--btn-border);
+            color: var(--text-secondary); border-radius: 8px;
+            padding: 6px 14px; font-size: 12px; font-family: inherit;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+        /* Toast */
         #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+            position: fixed; top: 20px; left: 50%;
+            transform: translateX(-50%) translateY(-20px);
             background: var(--text-primary); color: var(--bg-body);
             font-size: 13px; font-weight: 600;
             padding: 10px 20px; border-radius: 20px;
             opacity: 0; pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            box-shadow: var(--shadow); z-index: 100;
-            display: flex; align-items: center; gap: 8px;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100; display: flex; align-items: center; gap: 8px;
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .toast-icon { font-size: 14px; }
-
-        .suffix-info {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-align: center;
+        /* Reauth banner */
+        .reauth-bar {
+            display: none; align-items: center; justify-content: space-between;
+            background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25);
+            border-radius: 12px; padding: 10px 16px; margin-bottom: 16px; gap: 10px;
         }
-        .suffix-info span {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* Session restore indicator */
-        .session-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            background: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            border-radius: 6px;
-            padding: 2px 6px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+        .reauth-bar span { font-size: 12px; color: var(--yellow); display: flex; align-items: center; gap: 6px; }
+        .reauth-bar button {
+            background: rgba(234,179,8,0.18); border: 1px solid rgba(234,179,8,0.35);
+            color: var(--yellow); border-radius: 8px; padding: 4px 14px;
+            font-size: 12px; font-family: inherit; font-weight: 600; cursor: pointer;
         }
     </style>
 </head>
-<body data-theme="dark">
-
-    <!-- Background grid -->
+<body>
     <div class="bg-grid"></div>
     <div class="bg-glow"></div>
-    <div class="bg-glow-2"></div>
 
-    <div id="toast">
-        <span class="toast-icon" id="toastIcon">✓</span>
-        <span id="toastMsg">Copied!</span>
-    </div>
+    <div id="toast"><span id="toastIcon">✓</span><span id="toastMsg">Copied!</span></div>
 
-    <div class="container">
-        <div class="card">
+    <div class="page">
 
-            <div class="header">
-                <h1>Nexus<span>Mail</span></h1>
-                <button class="theme-btn" onclick="toggleTheme()" title="Switch Theme">
-                    <i class="fa-regular fa-sun" id="themeIcon"></i>
-                </button>
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">Nexus<span>Dash</span><small>4-Slot</small></div>
             </div>
+            <div class="header-right">
+                <a href="index.html" class="nexusmail-link">
+                    <i class="fa-regular fa-envelope"></i> NexusMail
+                </a>
+                <div class="user-pill" id="userPill" style="display:none;">
+                    <div class="dot"></div>
+                    <span id="userPillEmail">...</span>
+                </div>
+            </div>
+        </div>
 
-            <!-- LOGIN SECTION -->
-            <div class="login-section" id="loginSection">
-                <div class="login-icon"><i class="fa-regular fa-envelope"></i></div>
-                <p class="login-desc">
-                    Sign in with your Gmail account.<br>
-                    One login per browser is enough.
-                </p>
-                <button class="google-login-btn" onclick="startGoogleLogin()">
-                    <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen">
+            <div class="login-card">
+                <div class="login-icon"><i class="fa-solid fa-grid-2"></i></div>
+                <div class="login-title">NexusDash</div>
+                <div class="login-desc">با همون اکانت Google لاگین کن تا ۴ تا اکانت nanaimage.ai رو مدیریت کنی.</div>
+                <button class="google-btn" onclick="doLogin()">
+                    <svg class="google-icon" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -529,821 +371,494 @@
                     Login with Google
                 </button>
             </div>
+        </div>
 
-            <!-- MAIN SECTION (after login) -->
-            <div class="main-section" id="mainSection">
-
-                <!-- Re-auth banner — shown when token silently expired -->
-                <div id="reauthBanner" style="display:none; align-items:center; justify-content:space-between; background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.25); border-radius:12px; padding:8px 14px; gap:10px;">
-                    <span style="font-size:12px; color:#fbbf24; display:flex; align-items:center; gap:6px;">
-                        <i class="fa-solid fa-rotate" style="font-size:11px;"></i>
-                        Session expired — tap to continue
-                    </span>
-                    <button onclick="reauthClick()" style="background:rgba(234,179,8,0.18); border:1px solid rgba(234,179,8,0.35); color:#fbbf24; border-radius:8px; padding:4px 12px; font-size:12px; font-family:inherit; font-weight:600; cursor:pointer;">
-                        Refresh
-                    </button>
-                </div>
-
-                <div class="user-badge" id="userBadge">
-                    <div class="user-badge-left">
-                        <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
-                        <span id="userEmail">loading...</span>
-                        <span class="session-tag" id="sessionTag" style="display:none;">
-                            <i class="fa-solid fa-bolt" style="font-size:8px;"></i> restored
-                        </span>
-                    </div>
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                </div>
-
-                <div class="email-display-group" onclick="copyEmail()">
-                    <div class="email-text loading" id="emailDisplay">Generating...</div>
-                    <button class="action-icon-btn" id="copyBtn">
-                        <i class="fa-regular fa-copy" id="copyIcon"></i>
-                    </button>
-                </div>
-
-                <div class="controls">
-                    <button class="btn" id="refreshBtn" onclick="forceRefresh()">
-                        <i class="fa-solid fa-rotate-right"></i> Refresh
-                    </button>
-                    <button class="btn" onclick="generateNewAlias()">
-                        <i class="fa-solid fa-plus"></i> New Email
-                    </button>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="inbox-header">
-                    <span>Verification Codes</span>
-                    <div class="radar">
-                        <div class="dot" id="radarDot"></div>
-                        <span id="scanStatus" style="font-size: 9px;">Scanning...</span>
-                    </div>
-                </div>
-
-                <div class="inbox-list" id="inboxContainer">
-                    <div class="empty-state">
-                        <span>Awaiting incoming codes...</span>
-                    </div>
-                </div>
-
+        <!-- DASHBOARD -->
+        <div id="dashScreen">
+            <div class="reauth-bar" id="reauthBar">
+                <span><i class="fa-solid fa-rotate"></i> Session expired</span>
+                <button onclick="reauthNow()">Refresh</button>
             </div>
 
+            <div class="slots-grid" id="slotsGrid">
+                <!-- slots injected by JS -->
+            </div>
+
+            <div class="bottom-bar">
+                <div class="bottom-info">
+                    هر اکانت <span>6 کردیت</span> داره (5 اول + 1 دیلی) &nbsp;|&nbsp;
+                    مجموع: <span id="totalCredits">0</span> کردیت
+                </div>
+                <button class="reset-btn" onclick="resetAll()">
+                    <i class="fa-solid fa-trash-can"></i> Reset All
+                </button>
+            </div>
         </div>
+
     </div>
 
     <script>
-        // =============================================
-        // CONFIG
-        // =============================================
         const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
-        const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
+        const SCOPES    = 'https://www.googleapis.com/auth/gmail.readonly';
+        const NANA_SIGNUP = 'https://nanaimage.ai/text-to-image';
+        const NANA_DAILY  = 'https://nanaimage.ai/pricing';
+        const SLOT_COUNT  = 4;
 
-        // =============================================
-        // SOUND ENGINE  
-        // Web Audio API — no external files needed
-        // =============================================
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
-
-        function getAudioCtx() {
-            if (!audioCtx) {
-                audioCtx = new AudioCtx();
-            }
-            // Resume if suspended (browser autoplay policy)
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            return audioCtx;
-        }
-
-        // Sound: email click / copy email — soft modern "tick"
-        function playEmailClick() {
-            try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-
-                const osc1 = ctx.createOscillator();
-                const osc2 = ctx.createOscillator();
-                const gain = ctx.createGain();
-                const filter = ctx.createBiquadFilter();
-
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(880, now);
-                osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
-
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(1320, now);
-                osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.05);
-
-                filter.type = 'bandpass';
-                filter.frequency.value = 1200;
-                filter.Q.value = 1.5;
-
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.12, now + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-                osc1.connect(filter);
-                osc2.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc1.start(now);
-                osc1.stop(now + 0.2);
-                osc2.start(now);
-                osc2.stop(now + 0.15);
-            } catch(e) {}
-        }
-
-        // Sound: new email arrives — gentle two-note chime (modern notification)
-        function playIncomingEmail() {
-            try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-
-                // Note 1: D5
-                playChimeNote(ctx, now, 587.33, 0.14);
-                // Note 2: A5 (a fifth up) after short gap
-                playChimeNote(ctx, now + 0.12, 880, 0.11);
-            } catch(e) {}
-        }
-
-        function playChimeNote(ctx, startTime, freq, vol) {
-            const osc = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            const reverb = ctx.createConvolver();
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-
-            gainNode.gain.setValueAtTime(0, startTime);
-            gainNode.gain.linearRampToValueAtTime(vol, startTime + 0.015);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.55);
-
-            // Harmonic overtone for richness
-            const osc2 = ctx.createOscillator();
-            const gain2 = ctx.createGain();
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(freq * 2, startTime);
-            gain2.gain.setValueAtTime(0, startTime);
-            gain2.gain.linearRampToValueAtTime(vol * 0.3, startTime + 0.01);
-            gain2.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
-
-            osc.connect(gainNode);
-            osc2.connect(gain2);
-            gainNode.connect(ctx.destination);
-            gain2.connect(ctx.destination);
-
-            osc.start(startTime);
-            osc.stop(startTime + 0.6);
-            osc2.start(startTime);
-            osc2.stop(startTime + 0.3);
-        }
-
-        // Sound: copy code — crisp satisfying "pop"
-        function playCopyCode() {
-            try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-
-                // Two-tone quick pop: C6 + E6
-                const freqs = [1046.5, 1318.5];
-                freqs.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    const t = now + i * 0.04;
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, t);
-                    osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t + 0.08);
-
-                    gain.gain.setValueAtTime(0, t);
-                    gain.gain.linearRampToValueAtTime(0.1, t + 0.008);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t);
-                    osc.stop(t + 0.15);
-                });
-            } catch(e) {}
-        }
-
-        // =============================================
-        // STATE
-        // =============================================
         let accessToken = null;
-        let baseGmail = null;
-        let currentSuffix = null;
-        let currentAlias = null;
-        let checkInterval = null;
-        let knownMessageIds = new Set();
-        let firstCodeCopied = false;
+        let baseGmail   = null;
         let tokenRefreshTimer = null;
 
+        // Per-slot state
+        // { alias, suffix, status: 'idle'|'ready'|'registered', code, credits, pollInterval, knownIds }
+        let slots = [];
+
         // =============================================
-        // THEME
+        // INIT
         // =============================================
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fa-regular fa-moon';
-                localStorage.setItem('theme', 'light');
+        function initSlots() {
+            const saved = localStorage.getItem('dashSlots');
+            if (saved) {
+                slots = JSON.parse(saved);
+                // restore polling structures (can't serialise Set/interval)
+                slots.forEach(s => { s.knownIds = new Set(s.knownIdsArr || []); s.pollInterval = null; });
             } else {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-regular fa-sun';
-                localStorage.setItem('theme', 'dark');
+                slots = Array.from({length: SLOT_COUNT}, (_, i) => ({
+                    id: i + 1,
+                    alias: null,
+                    suffix: null,
+                    status: 'idle',
+                    code: null,
+                    credits: 0,
+                    knownIds: new Set(),
+                    knownIdsArr: [],
+                    pollInterval: null
+                }));
             }
         }
 
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.setAttribute('data-theme', 'light');
-            document.getElementById('themeIcon').className = 'fa-regular fa-moon';
+        function saveSlots() {
+            const toSave = slots.map(s => ({...s, knownIds: undefined, pollInterval: undefined, knownIdsArr: [...s.knownIds]}));
+            localStorage.setItem('dashSlots', JSON.stringify(toSave));
         }
 
         // =============================================
-        // GOOGLE LOGIN
+        // RENDER
         // =============================================
-
-        // Build a token client once, reuse for all refreshes
-        let _tokenClient = null;
-        function getTokenClient(loginHint, promptMode) {
-            return google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                prompt: promptMode || '',
-                login_hint: loginHint || undefined,
-                callback: handleTokenResponse
+        function render() {
+            const grid = document.getElementById('slotsGrid');
+            grid.innerHTML = '';
+            let total = 0;
+            slots.forEach((s, i) => {
+                total += s.credits;
+                grid.appendChild(buildSlotEl(s, i));
             });
+            document.getElementById('totalCredits').textContent = total;
         }
 
-        function handleTokenResponse(response) {
-            if (response.error) {
-                // If silent refresh fails, show a non-disruptive "re-auth" banner
-                // instead of throwing user back to the login screen
-                if (baseGmail) {
-                    showReauthBanner();
-                }
-                return;
-            }
-            accessToken = response.access_token;
-            const expiry = Date.now() + (response.expires_in * 1000);
-            localStorage.setItem('gAccessToken', accessToken);
-            localStorage.setItem('gTokenExpiry', expiry.toString());
-            // Schedule next silent refresh 5 min before expiry
-            scheduleTokenRefresh(response.expires_in - 300);
-            hideReauthBanner();
+        function buildSlotEl(s, i) {
+            const div = document.createElement('div');
+            div.className = 'slot' + (s.status === 'idle' ? '' : s.status === 'registered' ? ' done' : ' active');
+            div.id = `slot-${i}`;
+
+            const statusLabel = s.status === 'idle' ? 'idle' : s.status === 'ready' ? 'ready' : 'registered';
+
+            const emailDisplay = s.alias
+                ? `<div class="email-box" title="${s.alias}">${s.alias}</div>`
+                : `<div class="email-box placeholder">No email yet</div>`;
+
+            const codeContent = s.code
+                ? `<span class="code-value" onclick="copyText('${s.code}', ${i})">${s.code}</span>`
+                : `<span class="code-waiting">Waiting for code…</span><div class="code-dot"></div>`;
+
+            const signupBtn = s.alias
+                ? `<a href="${NANA_SIGNUP}?email=${encodeURIComponent(s.alias)}" target="_blank" class="login-link-btn" onclick="markUsed(${i})">
+                        <i class="fa-solid fa-user-plus"></i> ثبت‌نام با این ایمیل
+                   </a>`
+                : `<button class="login-link-btn disabled" disabled>
+                        <i class="fa-solid fa-user-plus"></i> اول ایمیل بساز
+                   </button>`;
+
+            const creditBtn = s.status === 'registered'
+                ? `<a href="${NANA_DAILY}" target="_blank" class="login-link-btn green">
+                        <i class="fa-solid fa-coins"></i> گرفتن کردیت روزانه
+                   </a>`
+                : `<button class="login-link-btn disabled" disabled>
+                        <i class="fa-solid fa-coins"></i> گرفتن کردیت روزانه
+                   </button>`;
+
+            div.innerHTML = `
+                <div class="slot-header">
+                    <div class="slot-num">
+                        <div class="slot-num-badge">${s.id}</div>
+                        Account ${s.id}
+                    </div>
+                    <div class="slot-status ${s.status === 'idle' ? 'idle' : s.status === 'ready' ? 'ready' : 'registered'}">${statusLabel}</div>
+                </div>
+
+                <div class="email-row">
+                    ${emailDisplay}
+                    <button class="icon-btn" id="genBtn-${i}" title="Generate new email" onclick="generateAlias(${i})">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <button class="icon-btn" title="Copy email" onclick="copyEmail(${i})" ${s.alias ? '' : 'disabled style="opacity:0.4;pointer-events:none;"'}>
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="code-area">
+                    <div>
+                        <div class="code-label">Verification Code</div>
+                        ${codeContent}
+                    </div>
+                    ${s.code ? `<button class="icon-btn" title="Copy code" onclick="copyText('${s.code}', ${i})"><i class="fa-regular fa-copy"></i></button>` : ''}
+                </div>
+
+                ${signupBtn}
+                ${creditBtn}
+
+                <div class="credits-row">
+                    <span>Credits:</span>
+                    <div class="credits-badge"><i class="fa-solid fa-bolt" style="font-size:9px;"></i> ${s.credits}/6</div>
+                    <button onclick="addCredit(${i})" style="background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;padding:2px 6px;font-family:inherit;" title="Manually add credit">+1</button>
+                    <button onclick="removeCredit(${i})" style="background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:11px;padding:2px 6px;font-family:inherit;" title="Manually remove credit">-1</button>
+                </div>
+            `;
+
+            return div;
         }
-
-        function startGoogleLogin() {
-            const savedEmail = localStorage.getItem('gBaseEmail');
-            const client = getTokenClient(savedEmail, 'select_account');
-            client.requestAccessToken();
-            // We don't have baseGmail yet — onLoginSuccess will fetch it
-            // Override callback just for first login to call onLoginSuccess
-            const origCallback = handleTokenResponse;
-            _tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                prompt: savedEmail ? '' : 'select_account',
-                login_hint: savedEmail || undefined,
-                callback: (response) => {
-                    if (response.error) {
-                        showToast('Login Failed!', '✕');
-                        return;
-                    }
-                    accessToken = response.access_token;
-                    const expiry = Date.now() + (response.expires_in * 1000);
-                    localStorage.setItem('gAccessToken', accessToken);
-                    localStorage.setItem('gTokenExpiry', expiry.toString());
-                    scheduleTokenRefresh(response.expires_in - 300);
-                    onLoginSuccess(false);
-                }
-            });
-            _tokenClient.requestAccessToken();
-        }
-
-        // =============================================
-        // SILENT TOKEN REFRESH — runs in background
-        // =============================================
-        function scheduleTokenRefresh(secondsUntilRefresh) {
-            if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
-            const delay = Math.max(secondsUntilRefresh, 10); // never schedule < 10s
-            tokenRefreshTimer = setTimeout(doSilentRefresh, delay * 1000);
-        }
-
-        function doSilentRefresh() {
-            if (!baseGmail) return;
-            try {
-                // prompt:'' = truly silent, no UI shown
-                // login_hint = tells Google which account, skips account picker
-                const client = google.accounts.oauth2.initTokenClient({
-                    client_id: CLIENT_ID,
-                    scope: SCOPES,
-                    prompt: '',
-                    login_hint: baseGmail,
-                    callback: (response) => {
-                        if (response.error) {
-                            // Silent refresh failed (consent expired).
-                            // Show a small banner asking user to click once — NOT a full logout.
-                            showReauthBanner();
-                            return;
-                        }
-                        accessToken = response.access_token;
-                        const expiry = Date.now() + (response.expires_in * 1000);
-                        localStorage.setItem('gAccessToken', accessToken);
-                        localStorage.setItem('gTokenExpiry', expiry.toString());
-                        scheduleTokenRefresh(response.expires_in - 300);
-                        hideReauthBanner();
-                    }
-                });
-                client.requestAccessToken();
-            } catch(e) {
-                showReauthBanner();
-            }
-        }
-
-        // =============================================
-        // RE-AUTH BANNER — shown instead of full logout
-        // A small non-disruptive bar asking one click
-        // =============================================
-        function showReauthBanner() {
-            let banner = document.getElementById('reauthBanner');
-            if (!banner) return;
-            banner.style.display = 'flex';
-        }
-
-        function hideReauthBanner() {
-            let banner = document.getElementById('reauthBanner');
-            if (banner) banner.style.display = 'none';
-        }
-
-        function reauthClick() {
-            // One-click reauth: Google already knows the account via login_hint
-            // so it refreshes the token with a minimal popup (often just a flicker)
-            const client = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                prompt: '',
-                login_hint: baseGmail,
-                callback: (response) => {
-                    if (response.error) {
-                        // If even this fails, fall back to full login
-                        showToast('Re-login required', '🔑');
-                        clearSessionUI();
-                        return;
-                    }
-                    accessToken = response.access_token;
-                    const expiry = Date.now() + (response.expires_in * 1000);
-                    localStorage.setItem('gAccessToken', accessToken);
-                    localStorage.setItem('gTokenExpiry', expiry.toString());
-                    scheduleTokenRefresh(response.expires_in - 300);
-                    hideReauthBanner();
-                    showToast('Session Restored!', '⚡');
-                }
-            });
-            client.requestAccessToken();
-        }
-
-        // =============================================
-        // ON LOGIN SUCCESS
-        // =============================================
-        async function onLoginSuccess(isRestored) {
-            try {
-                const res = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-
-                if (res.status === 401) {
-                    clearSessionUI();
-                    return;
-                }
-
-                const data = await res.json();
-                baseGmail = data.emailAddress;
-                localStorage.setItem('gBaseEmail', baseGmail);
-
-                document.getElementById('userEmail').innerText = baseGmail;
-
-                if (isRestored) {
-                    document.getElementById('sessionTag').style.display = 'inline-flex';
-                }
-
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainSection').classList.add('visible');
-
-                generateNewAlias();
-            } catch(e) {
-                showToast('Error fetching profile', '✕');
-            }
-        }
-
-        // =============================================
-        // LOGOUT
-        // =============================================
-        function logout() {
-            if (accessToken) {
-                try { google.accounts.oauth2.revoke(accessToken); } catch(e) {}
-            }
-            localStorage.removeItem('gBaseEmail');
-            clearSessionUI();
-        }
-
-        function clearSessionUI() {
-            accessToken = null;
-            baseGmail = null;
-            currentAlias = null;
-            if (checkInterval) clearInterval(checkInterval);
-            if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
-            localStorage.removeItem('gAccessToken');
-            localStorage.removeItem('gTokenExpiry');
-
-            document.getElementById('mainSection').classList.remove('visible');
-            document.getElementById('loginSection').style.display = 'flex';
-            document.getElementById('sessionTag').style.display = 'none';
-            hideReauthBanner();
-            document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
-        }
-
-        // =============================================
-        // AUTO-RESTORE SESSION ON PAGE LOAD
-        // Works even after browser restart
-        // =============================================
-        window.addEventListener('load', () => {
-            const savedToken   = localStorage.getItem('gAccessToken');
-            const savedExpiry  = localStorage.getItem('gTokenExpiry');
-            const savedEmail   = localStorage.getItem('gBaseEmail');
-
-            if (!savedEmail) return; // Never logged in
-
-            baseGmail = savedEmail;
-            document.getElementById('userEmail').innerText = baseGmail;
-
-            const now      = Date.now();
-            const expiryMs = savedExpiry ? parseInt(savedExpiry) : 0;
-            const secondsLeft = Math.floor((expiryMs - now) / 1000);
-
-            if (savedToken && secondsLeft > 60) {
-                // Token still valid — restore immediately
-                accessToken = savedToken;
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainSection').classList.add('visible');
-                document.getElementById('sessionTag').style.display = 'inline-flex';
-
-                // Schedule next refresh for when it expires (minus 5 min buffer)
-                scheduleTokenRefresh(secondsLeft - 300);
-                generateNewAlias();
-            } else {
-                // Token expired or missing — try silent reauth in background.
-                // Show the main UI immediately (optimistic), hide if reauth fails.
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainSection').classList.add('visible');
-                document.getElementById('sessionTag').style.display = 'inline-flex';
-
-                try {
-                    const client = google.accounts.oauth2.initTokenClient({
-                        client_id: CLIENT_ID,
-                        scope: SCOPES,
-                        prompt: '',          // silent — no popup if Google still has session
-                        login_hint: savedEmail,
-                        callback: (response) => {
-                            if (response.error) {
-                                // Google session also expired — need one manual click
-                                // But DON'T throw back to login — show reauth banner instead
-                                accessToken = null;
-                                showReauthBanner();
-                                generateNewAlias(); // alias still works, just can't poll yet
-                                return;
-                            }
-                            accessToken = response.access_token;
-                            const expiry = Date.now() + (response.expires_in * 1000);
-                            localStorage.setItem('gAccessToken', accessToken);
-                            localStorage.setItem('gTokenExpiry', expiry.toString());
-                            scheduleTokenRefresh(response.expires_in - 300);
-                            hideReauthBanner();
-                            generateNewAlias();
-                        }
-                    });
-                    client.requestAccessToken();
-                } catch(e) {
-                    accessToken = null;
-                    showReauthBanner();
-                    generateNewAlias();
-                }
-            }
-        });
 
         // =============================================
         // ALIAS GENERATION
         // =============================================
-        function generateSuffix(length = 6) {
+        function genSuffix(len = 7) {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
+            let r = '';
+            for (let i = 0; i < len; i++) r += chars[Math.floor(Math.random() * chars.length)];
+            return r;
         }
 
-        function generateNewAlias() {
-            if (!baseGmail) return;
+        function generateAlias(i) {
+            if (!baseGmail) { showToast('Login first', '⚠'); return; }
 
-            if (checkInterval) clearInterval(checkInterval);
-            knownMessageIds.clear();
-            firstCodeCopied = false;
+            // Stop any existing poll
+            if (slots[i].pollInterval) { clearInterval(slots[i].pollInterval); slots[i].pollInterval = null; }
 
-            currentSuffix = generateSuffix();
-            const localPart = baseGmail.split('@')[0];
-            const domain = baseGmail.split('@')[1];
-            currentAlias = `${localPart}+${currentSuffix}@${domain}`;
+            const btn = document.getElementById(`genBtn-${i}`);
+            if (btn) btn.classList.add('spin');
 
-            const display = document.getElementById('emailDisplay');
-            display.innerText = currentAlias;
-            display.classList.remove('loading');
+            const suffix   = genSuffix();
+            const local    = baseGmail.split('@')[0];
+            const domain   = baseGmail.split('@')[1];
+            const alias    = `${local}+${suffix}@${domain}`;
 
-            document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
-            document.getElementById('scanStatus').innerText = 'Scanning';
-            document.getElementById('radarDot').style.background = 'var(--accent)';
+            slots[i].suffix   = suffix;
+            slots[i].alias    = alias;
+            slots[i].code     = null;
+            slots[i].status   = 'ready';
+            slots[i].knownIds = new Set();
+            slots[i].credits  = 0;
 
-            checkInterval = setInterval(checkInbox, 5000);
+            saveSlots();
+            render();
+
+            // Start polling for this slot
+            startPoll(i);
+
+            setTimeout(() => {
+                const b = document.getElementById(`genBtn-${i}`);
+                if (b) b.classList.remove('spin');
+            }, 500);
+        }
+
+        // Generate all 4 at once
+        function generateAll() {
+            for (let i = 0; i < SLOT_COUNT; i++) generateAlias(i);
         }
 
         // =============================================
-        // INBOX POLLING
+        // INBOX POLLING PER SLOT
         // =============================================
-        async function checkInbox() {
-            if (!accessToken || !currentSuffix) return;
+        function startPoll(i) {
+            if (slots[i].pollInterval) clearInterval(slots[i].pollInterval);
+            slots[i].pollInterval = setInterval(() => pollSlot(i), 5000);
+        }
 
+        async function pollSlot(i) {
+            if (!accessToken || !slots[i].alias) return;
             try {
-                const query = encodeURIComponent(`to:${currentAlias}`);
+                const q   = encodeURIComponent(`to:${slots[i].alias}`);
                 const res = await fetch(
-                    `https://www.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=10`,
-                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+                    `https://www.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=5`,
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
                 );
-
-                if (res.status === 401) {
-                    document.getElementById('scanStatus').innerText = 'Re-login needed';
-                    document.getElementById('radarDot').style.background = '#ef4444';
-                    clearInterval(checkInterval);
-                    // Attempt silent refresh
-                    silentTokenRefresh();
-                    return;
-                }
-
+                if (res.status === 401) { showReauth(); return; }
                 const data = await res.json();
-                const messages = data.messages || [];
-
-                for (const msg of messages) {
-                    if (!knownMessageIds.has(msg.id)) {
-                        knownMessageIds.add(msg.id);
-                        fetchMessageDetails(msg.id);
+                for (const msg of (data.messages || [])) {
+                    if (!slots[i].knownIds.has(msg.id)) {
+                        slots[i].knownIds.add(msg.id);
+                        fetchCode(i, msg.id);
                     }
                 }
-            } catch(e) {
-                // silent fail - try again next interval
-            }
+            } catch(e) {}
         }
 
-        // =============================================
-        // EMAIL RELEVANCE FILTER
-        // Only show emails that contain: numeric codes,
-        // alphanumeric codes, letter-only codes, or login links.
-        // Blocks: welcome/confirmation emails, marketing, newsletters.
-        // =============================================
-        function isVerificationEmail(subject, bodyText) {
-            const fullText = (subject + ' ' + bodyText).toLowerCase();
-
-            // --- BLOCK LIST: skip these outright ---
-            const blockPatterns = [
-                // Welcome / account created
-                /welcome\s+to\b/i,
-                /welcome\s+aboard/i,
-                /account\s+(has\s+been\s+)?(created|registered|activated|confirmed)/i,
-                /you('ve|re| have)\s+(successfully\s+)?(signed\s+up|registered|joined|created)/i,
-                /thanks?\s+for\s+(joining|signing\s+up|registering|creating)/i,
-                /your\s+account\s+is\s+(ready|active|set\s+up)/i,
-                /get\s+started\s+with/i,
-                /start\s+exploring/i,
-                // Marketing / promotional
-                /unsubscribe/i,
-                /newsletter/i,
-                /\bsale\b.*\b(off|discount|deal)\b/i,
-                /\b(limited\s+time|exclusive\s+offer|special\s+offer|flash\s+sale)\b/i,
-                /you\s+might\s+also\s+like/i,
-                /recommended\s+for\s+you/i,
-                /\bpromo\s+code\b/i,
-                // Notification emails (not auth-related)
-                /\b(someone\s+liked|commented\s+on|mentioned\s+you|new\s+follower)\b/i,
-                /\bweekly\s+(digest|summary|report)\b/i,
-                /\bmonthly\s+(digest|summary|report)\b/i,
-            ];
-
-            for (const pattern of blockPatterns) {
-                if (pattern.test(fullText)) return false;
-            }
-
-            // --- ALLOW LIST: must match at least one of these ---
-
-            // 1. Contains a numeric OTP/PIN/code (4-8 digits)
-            const hasNumericCode = /\b\d{4,8}\b/.test(fullText);
-
-            // 2. Contains alphanumeric code (e.g. aB3xZ9, typical token codes)
-            const hasAlphanumericCode = /\b[a-z0-9]{5,12}\b/i.test(fullText) &&
-                /(?:code|token|otp|pin|verify|confirmation|secret|key)/i.test(fullText);
-
-            // 3. Contains letter-only code with verification context
-            const hasLetterCode = /\b[a-z]{5,10}\b/i.test(fullText) &&
-                /(?:code|token|otp|verify|confirmation|secret|key)/i.test(fullText);
-
-            // 4. Contains a login/verify/magic link
-            const hasLoginLink = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access)[^\s"'<>]*/i.test(bodyText);
-
-            // 5. Subject explicitly mentions verification/auth
-            const hasVerificationSubject = /(?:verify|verification|confirm|otp|one.time|passcode|login\s+code|sign.in\s+code|access\s+code|security\s+code|your\s+code)/i.test(subject);
-
-            return hasNumericCode || hasAlphanumericCode || hasLetterCode || hasLoginLink || hasVerificationSubject;
-        }
-
-        async function fetchMessageDetails(msgId) {
+        async function fetchCode(i, msgId) {
             try {
                 const res = await fetch(
                     `https://www.googleapis.com/gmail/v1/users/me/messages/${msgId}?format=full`,
-                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
                 );
                 const msgData = await res.json();
+                const headers   = msgData.payload.headers || [];
+                const subject   = (headers.find(h => h.name === 'Subject') || {}).value || '';
 
-                const headers = msgData.payload.headers || [];
-                const fromHeader = headers.find(h => h.name === 'From') || {};
-                const subjectHeader = headers.find(h => h.name === 'Subject') || {};
-                const fromRaw = fromHeader.value || 'Unknown';
-                const subject = subjectHeader.value || '';
-
-                let bodyText = '';
-                function extractBody(part) {
-                    if (part.mimeType === 'text/plain' && part.body && part.body.data) {
-                        bodyText += atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                let body = '';
+                function exBody(part) {
+                    if (part.mimeType === 'text/plain' && part.body?.data)
+                        body += atob(part.body.data.replace(/-/g,'+').replace(/_/g,'/'));
+                    if (part.mimeType === 'text/html' && part.body?.data && !body) {
+                        const html = atob(part.body.data.replace(/-/g,'+').replace(/_/g,'/'));
+                        body += html.replace(/<[^>]*>/g,' ');
                     }
-                    if (part.mimeType === 'text/html' && part.body && part.body.data && !bodyText) {
-                        const html = atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                        bodyText += html.replace(/<[^>]*>/g, ' ');
-                    }
-                    if (part.parts) part.parts.forEach(extractBody);
+                    if (part.parts) part.parts.forEach(exBody);
                 }
-                if (msgData.payload.parts) {
-                    msgData.payload.parts.forEach(extractBody);
-                } else if (msgData.payload.body && msgData.payload.body.data) {
-                    bodyText = atob(msgData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                if (msgData.payload.parts) msgData.payload.parts.forEach(exBody);
+                else if (msgData.payload.body?.data)
+                    body = atob(msgData.payload.body.data.replace(/-/g,'+').replace(/_/g,'/'));
+
+                // Filter non-verification
+                if (!isVerification(subject, body)) return;
+
+                const code = extractCode(subject + ' ' + body);
+                if (code && !slots[i].code) {
+                    slots[i].code = code;
+                    // Auto-copy
+                    navigator.clipboard.writeText(code).catch(()=>{});
+                    saveSlots();
+                    render();
+                    showToast(`Slot ${i+1}: کد ${code} کپی شد!`, '⚡');
                 }
-
-                // --- FILTER: skip non-verification emails silently ---
-                if (!isVerificationEmail(subject, bodyText)) {
-                    return; // blocked — don't show in UI
-                }
-
-                // Clear empty-state placeholder only when a real message will be shown
-                if (document.querySelector('.empty-state')) {
-                    document.getElementById('inboxContainer').innerHTML = '';
-                }
-
-                const fullText = subject + ' ' + bodyText;
-                const extractedCode = extractCode(fullText);
-                const extractedLink = extractLoginLink(bodyText);
-                const senderName = fromRaw.replace(/<.*>/, '').trim() || fromRaw.split('@')[0];
-
-                const inbox = document.getElementById('inboxContainer');
-                const msgEl = document.createElement('div');
-                msgEl.className = 'message';
-
-                let html = `<div class="msg-sender">${escapeHtml(senderName)}</div>`;
-
-                if (extractedCode) {
-                    // Numeric or alphanumeric code
-                    html += `<div class="extracted-code" onclick="copyCode('${escapeHtml(extractedCode)}')">${escapeHtml(extractedCode)}</div>`;
-
-                    // Auto-copy first code
-                    if (!firstCodeCopied) {
-                        firstCodeCopied = true;
-                        navigator.clipboard.writeText(extractedCode).then(() => {
-                            playCopyCode();
-                            showToast('Code Auto-Copied!', '⚡');
-                        }).catch(() => {});
-                    }
-                } else if (extractedLink) {
-                    // Login link
-                    html += `<div class="link-block">
-                        <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
-                        <a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn">
-                            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i>
-                            Open Login Link
-                        </a>
-                    </div>`;
-                } else {
-                    html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`;
-                }
-
-                msgEl.innerHTML = html;
-                inbox.prepend(msgEl);
-
-                // Play sound only for shown messages
-                playIncomingEmail();
-
-            } catch(e) {
-                // silent fail
-            }
+            } catch(e) {}
         }
 
         // =============================================
-        // CODE EXTRACTION
+        // FILTER + EXTRACT (same logic as index.html)
         // =============================================
-        function extractLoginLink(bodyText) {
-            // Match magic/verify/login links
-            const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i;
-            const match = bodyText.match(linkPattern);
-            return match ? match[0] : null;
+        function isVerification(subject, body) {
+            const full = (subject + ' ' + body).toLowerCase();
+            const blocks = [/welcome\s+to\b/i,/welcome\s+aboard/i,/account\s+(has\s+been\s+)?(created|registered|activated|confirmed)/i,/you('ve|re| have)\s+(successfully\s+)?(signed\s+up|registered|joined|created)/i,/thanks?\s+for\s+(joining|signing\s+up|registering|creating)/i,/your\s+account\s+is\s+(ready|active|set\s+up)/i,/unsubscribe/i,/newsletter/i,/\bsale\b.*\b(off|discount|deal)\b/i,/\b(limited\s+time|exclusive\s+offer|special\s+offer|flash\s+sale)\b/i];
+            for (const p of blocks) if (p.test(full)) return false;
+            const hasNum  = /\b\d{4,8}\b/.test(full);
+            const hasAlph = /\b[a-z0-9]{5,12}\b/i.test(full) && /(?:code|token|otp|pin|verify|confirmation|key)/i.test(full);
+            const hasLink = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access)[^\s"'<>]*/i.test(body);
+            const hasSub  = /(?:verify|verification|confirm|otp|one.time|passcode|login\s+code|sign.in\s+code|access\s+code|security\s+code|your\s+code)/i.test(subject);
+            return hasNum || hasAlph || hasLink || hasSub;
         }
 
         function extractCode(text) {
             const patterns = [
-                // Explicit label + numeric code
-                /(?:verification|confirm|code|OTP|PIN|passcode|secret)[^\d]*(\d{4,8})/i,
+                /(?:verification|confirm|code|OTP|PIN|passcode)[^\d]*(\d{4,8})/i,
                 /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code)/i,
-                // Alphanumeric code with label
-                /(?:code|token|otp|key)[^\w]*([a-z0-9]{5,12})/i,
-                // Standalone 6-digit (most common OTP)
                 /\b(\d{6})\b/,
-                // Any 4–8 digit number
                 /\b(\d{4,8})\b/,
             ];
-
-            for (const pattern of patterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    const code = match[1] || match[0];
-                    const num = parseInt(code);
-                    if (num >= 1000 && num <= 99999999 && !(num >= 2020 && num <= 2030)) {
-                        return code;
-                    }
+            for (const p of patterns) {
+                const m = text.match(p);
+                if (m) {
+                    const n = parseInt(m[1] || m[0]);
+                    if (n >= 1000 && n <= 99999999 && !(n >= 2020 && n <= 2030)) return m[1] || m[0];
                 }
             }
             return null;
         }
 
         // =============================================
-        // UI HELPERS
+        // MANUAL ACTIONS
         // =============================================
-        async function forceRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spin');
-            await checkInbox();
-            setTimeout(() => btn.classList.remove('spin'), 600);
+        function copyEmail(i) {
+            if (!slots[i].alias) return;
+            navigator.clipboard.writeText(slots[i].alias).then(() => showToast('Email Copied!', '✓'));
         }
 
-        function copyEmail() {
-            if (currentAlias) {
-                playEmailClick();
-                navigator.clipboard.writeText(currentAlias).then(() => {
-                    showToast('Email Copied!', '✓');
-                    const icon = document.getElementById('copyIcon');
-                    icon.className = 'fa-solid fa-check';
-                    setTimeout(() => icon.className = 'fa-regular fa-copy', 1500);
-                });
-            }
+        function copyText(text, i) {
+            navigator.clipboard.writeText(text).then(() => showToast(`Code ${text} Copied!`, '⚡'));
         }
 
-        function copyCode(code) {
-            playCopyCode();
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('Code Copied!', '⚡');
+        function markUsed(i) {
+            // Called when user clicks signup link — mark as registered after short delay
+            setTimeout(() => {
+                if (slots[i].status === 'ready') {
+                    slots[i].status = 'registered';
+                    slots[i].credits = 5; // 5 signup credits
+                    saveSlots();
+                    render();
+                }
+            }, 3000);
+        }
+
+        function addCredit(i) {
+            slots[i].credits = Math.min(slots[i].credits + 1, 99);
+            saveSlots(); render();
+        }
+        function removeCredit(i) {
+            slots[i].credits = Math.max(slots[i].credits - 1, 0);
+            saveSlots(); render();
+        }
+
+        function resetAll() {
+            if (!confirm('همه اکانت‌ها پاک بشن؟')) return;
+            slots.forEach(s => {
+                if (s.pollInterval) clearInterval(s.pollInterval);
+            });
+            localStorage.removeItem('dashSlots');
+            initSlots();
+            render();
+        }
+
+        // =============================================
+        // AUTH — same robust pattern as index.html
+        // =============================================
+        function doLogin() {
+            const saved = localStorage.getItem('gBaseEmail');
+            const client = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                prompt: saved ? '' : 'select_account',
+                login_hint: saved || undefined,
+                callback: (response) => {
+                    if (response.error) { showToast('Login Failed', '✕'); return; }
+                    accessToken = response.access_token;
+                    const expiry = Date.now() + response.expires_in * 1000;
+                    localStorage.setItem('gAccessToken', accessToken);
+                    localStorage.setItem('gTokenExpiry', expiry.toString());
+                    scheduleRefresh(response.expires_in - 300);
+                    loadProfile(false);
+                }
+            });
+            client.requestAccessToken();
+        }
+
+        async function loadProfile(isRestore) {
+            try {
+                const res  = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', { headers: { Authorization: `Bearer ${accessToken}` } });
+                if (res.status === 401) { clearAuth(); return; }
+                const data = await res.json();
+                baseGmail  = data.emailAddress;
+                localStorage.setItem('gBaseEmail', baseGmail);
+                showDash();
+            } catch(e) { showToast('Profile error', '✕'); }
+        }
+
+        function showDash() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashScreen').style.display  = 'block';
+            document.getElementById('userPill').style.display    = 'flex';
+            document.getElementById('userPillEmail').textContent  = baseGmail;
+
+            initSlots();
+            render();
+
+            // Resume polling for ready/registered slots
+            slots.forEach((s, i) => {
+                if (s.alias && (s.status === 'ready' || s.status === 'registered') && !s.code) startPoll(i);
             });
         }
 
-        function copyText(text, isCode = false) {
-            if (isCode) {
-                copyCode(text);
+        function scheduleRefresh(sec) {
+            if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
+            tokenRefreshTimer = setTimeout(doSilentRefresh, Math.max(sec, 10) * 1000);
+        }
+
+        function doSilentRefresh() {
+            if (!baseGmail) return;
+            google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID, scope: SCOPES,
+                prompt: '', login_hint: baseGmail,
+                callback: (r) => {
+                    if (r.error) { showReauth(); return; }
+                    accessToken = r.access_token;
+                    const expiry = Date.now() + r.expires_in * 1000;
+                    localStorage.setItem('gAccessToken', accessToken);
+                    localStorage.setItem('gTokenExpiry', expiry.toString());
+                    scheduleRefresh(r.expires_in - 300);
+                    hideReauth();
+                }
+            }).requestAccessToken();
+        }
+
+        function reauthNow() {
+            google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID, scope: SCOPES,
+                prompt: '', login_hint: baseGmail,
+                callback: (r) => {
+                    if (r.error) { showToast('Re-login needed', '🔑'); clearAuth(); return; }
+                    accessToken = r.access_token;
+                    const expiry = Date.now() + r.expires_in * 1000;
+                    localStorage.setItem('gAccessToken', accessToken);
+                    localStorage.setItem('gTokenExpiry', expiry.toString());
+                    scheduleRefresh(r.expires_in - 300);
+                    hideReauth();
+                    showToast('Session Restored!', '⚡');
+                }
+            }).requestAccessToken();
+        }
+
+        function showReauth() { document.getElementById('reauthBar').style.display = 'flex'; }
+        function hideReauth() { document.getElementById('reauthBar').style.display = 'none'; }
+
+        function clearAuth() {
+            accessToken = null; baseGmail = null;
+            localStorage.removeItem('gAccessToken');
+            localStorage.removeItem('gTokenExpiry');
+            document.getElementById('dashScreen').style.display  = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('userPill').style.display    = 'none';
+        }
+
+        // =============================================
+        // AUTO-RESTORE
+        // =============================================
+        window.addEventListener('load', () => {
+            const savedToken  = localStorage.getItem('gAccessToken');
+            const savedExpiry = localStorage.getItem('gTokenExpiry');
+            const savedEmail  = localStorage.getItem('gBaseEmail');
+            if (!savedEmail) return;
+
+            baseGmail = savedEmail;
+            const secondsLeft = savedExpiry ? Math.floor((parseInt(savedExpiry) - Date.now()) / 1000) : 0;
+
+            if (savedToken && secondsLeft > 60) {
+                accessToken = savedToken;
+                scheduleRefresh(secondsLeft - 300);
+                showDash();
             } else {
-                copyEmail();
+                // Show dash optimistically, refresh in background
+                showDash();
+                google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID, scope: SCOPES,
+                    prompt: '', login_hint: savedEmail,
+                    callback: (r) => {
+                        if (r.error) { showReauth(); return; }
+                        accessToken = r.access_token;
+                        const expiry = Date.now() + r.expires_in * 1000;
+                        localStorage.setItem('gAccessToken', accessToken);
+                        localStorage.setItem('gTokenExpiry', expiry.toString());
+                        scheduleRefresh(r.expires_in - 300);
+                        hideReauth();
+                    }
+                }).requestAccessToken();
             }
-        }
+        });
 
+        // =============================================
+        // TOAST
+        // =============================================
         function showToast(msg, icon = '✓') {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            const toastIcon = document.getElementById('toastIcon');
-            toastMsg.innerText = msg;
-            toastIcon.innerText = icon;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1800);
-        }
-
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
+            document.getElementById('toastMsg').textContent  = msg;
+            document.getElementById('toastIcon').textContent = icon;
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
     </script>
 </body>
