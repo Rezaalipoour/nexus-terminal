@@ -3,1028 +3,777 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusMail</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234d6fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'/><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>"/>
+    <title>Nexus | Gmail Mail</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='4' width='20' height='16' rx='2'></rect><path d='M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'></path></svg>" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        /* ═══════════════════════════════
-           DARK MODE — crypto.com gradient
-           exact colors extracted from image
-        ═══════════════════════════════ */
         :root {
-            /* gradient stops from image */
-            --grad-deep:    #040c1e;
-            --grad-mid:     #071535;
-            --grad-blue:    #0d2060;
-            --grad-purple:  #1a0d4a;
-            --grad-glow:    #1e2a7a;
-
-            /* glass surfaces */
-            --glass-bg:     rgba(8, 18, 52, 0.55);
-            --glass-bg2:    rgba(6, 14, 42, 0.70);
-            --glass-border: rgba(77, 111, 255, 0.18);
-            --glass-border-hover: rgba(77, 111, 255, 0.55);
-
-            /* text */
-            --text:   #e8eeff;
-            --text-2: #a0b0d8;
-            --muted:  #4e6090;
-
-            /* accent */
-            --accent:      #4d6fff;
-            --accent-2:    #6644dd;
-            --accent-dim:  rgba(77, 111, 255, 0.12);
-            --accent-glow: rgba(77, 111, 255, 0.35);
-            --accent-glow2:rgba(102, 68, 221, 0.25);
-
-            /* status */
-            --green: #22d87a;
-            --red:   #ff4f6a;
-
-            --radius:    16px;
-            --radius-sm: 10px;
-            --blur:      16px;
+            --bg-body: #09090b;
+            --card-bg: rgba(24, 24, 27, 0.65);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #6366f1;
+            --box-bg: rgba(0, 0, 0, 0.4);
+            --btn-border: rgba(255, 255, 255, 0.08);
+            --code-bg: rgba(99, 102, 241, 0.12);
+            --shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
-        /* ═══════════════════════════════
-           LIGHT MODE
-        ═══════════════════════════════ */
         [data-theme="light"] {
-            --grad-deep:    #dce8ff;
-            --grad-mid:     #e8f0ff;
-            --grad-blue:    #f0f4ff;
-            --grad-purple:  #ede8ff;
-            --grad-glow:    #e0d8ff;
-
-            --glass-bg:     rgba(255, 255, 255, 0.65);
-            --glass-bg2:    rgba(240, 244, 255, 0.85);
-            --glass-border: rgba(77, 111, 255, 0.2);
-            --glass-border-hover: rgba(77, 111, 255, 0.6);
-
-            --text:   #0a1540;
-            --text-2: #3050a0;
-            --muted:  #8090c0;
-
-            --accent:      #3a58f0;
-            --accent-2:    #5533cc;
-            --accent-dim:  rgba(58, 88, 240, 0.1);
-            --accent-glow: rgba(58, 88, 240, 0.25);
-            --accent-glow2:rgba(85, 51, 204, 0.15);
-
-            --green: #18b860;
-            --red:   #e03050;
+            --bg-body: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.06);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent: #4f46e5;
+            --box-bg: rgba(241, 245, 249, 0.8);
+            --btn-border: rgba(0, 0, 0, 0.08);
+            --code-bg: rgba(79, 70, 229, 0.08);
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        /* ═══════════════════════════════
-           BODY & BACKGROUND
-        ═══════════════════════════════ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            background:
-                radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(30, 42, 122, 0.7) 0%, transparent 65%),
-                radial-gradient(ellipse 50% 40% at 80% 80%,  rgba(26, 13, 74, 0.6) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 20% 70%,  rgba(7, 21, 53, 0.8) 0%, transparent 55%),
-                linear-gradient(160deg, var(--grad-deep) 0%, var(--grad-mid) 30%, var(--grad-blue) 55%, var(--grad-purple) 80%, var(--grad-deep) 100%);
-            background-attachment: fixed;
-            color: var(--text);
-            transition: background 0.5s, color 0.3s;
-            position: relative;
-            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* subtle noise texture overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 128px;
-            z-index: 0;
-        }
-
-        /* ambient glow orbs */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(circle 300px at 50% 50%, rgba(77,111,255,0.08) 0%, transparent 70%);
-            z-index: 0;
-            animation: orb-drift 8s ease-in-out infinite alternate;
-        }
-
-        @keyframes orb-drift {
-            from { transform: translateY(0px); }
-            to   { transform: translateY(-20px); }
-        }
-
-        .app {
+        .container {
             width: 100%;
-            max-width: 420px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ═══════════════════════════════
-           HEADER
-        ═══════════════════════════════ */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            padding: 0 4px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--text);
-        }
-
-        .logo-icon {
-            width: 30px; height: 30px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 13px;
-            color: #fff;
-            box-shadow: 0 0 16px var(--accent-glow), 0 0 32px var(--accent-glow2);
-            flex-shrink: 0;
-        }
-
-        .header-actions { display: flex; gap: 6px; }
-
-        .icon-btn {
-            width: 36px; height: 36px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            color: var(--text-2);
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 13px;
-            transition: all 0.2s;
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-        }
-        .icon-btn:hover {
-            color: var(--text);
-            border-color: var(--glass-border-hover);
-            background: rgba(77,111,255,0.15);
-            box-shadow: 0 0 12px var(--accent-glow2);
-        }
-
-        /* ═══════════════════════════════
-           CARD — glassmorphism
-        ═══════════════════════════════ */
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            overflow: hidden;
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            box-shadow:
-                0 4px 40px rgba(0,0,0,0.35),
-                0 1px 0 rgba(255,255,255,0.06) inset,
-                0 0 0 0.5px rgba(77,111,255,0.08) inset;
-        }
-
-        .card-body {
+            max-width: 440px;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
         }
 
-        /* ═══════════════════════════════
-           LOGIN VIEW
-        ═══════════════════════════════ */
-        .login-view {
-            padding: 38px 24px 32px;
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex; flex-direction: column; gap: 18px;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.5px; }
+        .header h1 span { color: var(--accent); font-weight: 600; }
+
+        .theme-btn {
+            background: transparent; border: none;
+            color: var(--text-secondary); font-size: 18px;
+            cursor: pointer; transition: color 0.2s ease;
+        }
+        .theme-btn:hover { color: var(--accent); }
+
+        /* --- LOGIN SECTION --- */
+        .login-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
+            padding: 24px 0 12px;
         }
 
-        .login-icon-wrap {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, rgba(77,111,255,0.2), rgba(102,68,221,0.15));
-            border: 1px solid rgba(77,111,255,0.3);
-            border-radius: 18px;
+        .login-icon {
+            width: 48px; height: 48px;
+            background: var(--code-bg);
+            border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 26px;
+            font-size: 22px;
             color: var(--accent);
-            box-shadow: 0 0 24px var(--accent-glow2);
         }
 
-        .login-texts { text-align: center; }
-
-        .login-title {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-            margin-bottom: 7px;
-        }
-
-        .login-sub {
-            font-size: 12.5px;
-            color: var(--text-2);
+        .login-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
             line-height: 1.7;
         }
 
-        .google-btn {
-            width: 100%;
+        .google-login-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-            padding: 13px 20px;
-            background: var(--glass-bg2);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            color: var(--text);
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 14px;
             font-family: inherit;
-            font-size: 13.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            letter-spacing: -0.2px;
-        }
-        .google-btn:hover {
-            border-color: var(--glass-border-hover);
-            background: rgba(77,111,255,0.15);
-            box-shadow: 0 0 20px var(--accent-glow2), 0 4px 16px rgba(0,0,0,0.2);
-            transform: translateY(-1px);
-        }
-        .google-btn:active { transform: scale(0.98) translateY(0); }
-
-        .g-icon { width: 18px; height: 18px; flex-shrink: 0; }
-
-        /* ═══════════════════════════════
-           STATUS BAR
-        ═══════════════════════════════ */
-        .status-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 16px;
-            background: var(--glass-bg2);
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .status-left {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 11.5px;
-            color: var(--text-2);
-            min-width: 0;
-        }
-
-        #statusEmail {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 200px;
-        }
-
-        .status-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 0 2px rgba(34, 216, 122, 0.2);
-            animation: pulse-dot 2.5s infinite;
-            flex-shrink: 0;
-        }
-        .status-dot.inactive { background: var(--red); animation: none; box-shadow: 0 0 0 2px rgba(255,79,106,0.2); }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 0.6; box-shadow: 0 0 0 2px rgba(34,216,122,0.15); }
-            50%       { opacity: 1;   box-shadow: 0 0 0 4px rgba(34,216,122,0.25), 0 0 8px rgba(34,216,122,0.4); }
-        }
-
-        .logout-link {
-            font-size: 11px;
-            color: var(--muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
+            font-size: 14px;
             font-weight: 500;
-            transition: color 0.15s;
-            white-space: nowrap;
-            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            justify-content: center;
         }
-        .logout-link:hover { color: var(--red); }
+        .google-login-btn:hover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.08);
+        }
+        .google-login-btn:active { transform: scale(0.97); }
 
-        /* ═══════════════════════════════
-           EMAIL ROW
-        ═══════════════════════════════ */
-        .email-row {
+        .google-icon {
+            width: 20px; height: 20px;
+        }
+
+        /* --- MAIN SECTION --- */
+        .main-section { display: none; flex-direction: column; gap: 18px; }
+        .main-section.visible { display: flex; }
+
+        .user-badge {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: var(--glass-bg2);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 12px 12px 12px 16px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 10px;
+            padding: 6px 12px;
+            justify-content: space-between;
+        }
+
+        .user-badge-left { display: flex; align-items: center; gap: 6px; }
+
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
-        }
-        .email-row:hover {
-            border-color: var(--glass-border-hover);
-            background: rgba(77,111,255,0.1);
-            box-shadow: 0 0 16px var(--accent-glow2);
-        }
-        .email-row:active { transform: scale(0.99); }
-
-        .email-addr {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            letter-spacing: -0.1px;
-        }
-        .email-addr.loading { color: var(--muted); animation: shimmer 1.5s infinite; }
-        @keyframes shimmer { 0%,100%{opacity:.3} 50%{opacity:.7} }
-
-        .copy-btn-inner {
-            width: 34px; height: 34px;
-            background: var(--accent-dim);
-            border: 1px solid rgba(77,111,255,0.2);
-            border-radius: var(--radius-sm);
-            display: flex; align-items: center; justify-content: center;
             font-size: 12px;
-            color: var(--accent);
-            transition: all 0.2s;
-            flex-shrink: 0;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: color 0.2s;
+            font-family: inherit;
         }
-        .email-row:hover .copy-btn-inner {
+        .logout-btn:hover { color: #ef4444; }
+
+        .email-display-group {
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 16px;
+            padding: 8px 8px 8px 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+        }
+        .email-display-group:hover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .email-display-group:active { transform: scale(0.98); }
+
+        .email-text {
+            font-size: 15px; font-weight: 500; letter-spacing: 0.2px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            color: var(--text-primary);
+        }
+        .email-text.loading { color: var(--text-secondary); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        .action-icon-btn {
+            background: var(--btn-border); border: none;
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            color: var(--text-primary); cursor: pointer;
+            display: flex; justify-content: center; align-items: center; font-size: 16px;
+            pointer-events: none;
+        }
+        .email-display-group:hover .action-icon-btn {
+            background: var(--accent); color: #fff;
+        }
+
+        .controls { display: flex; gap: 10px; }
+        .btn {
+            flex: 1; background: transparent; border: 1px solid var(--btn-border);
+            color: var(--text-primary); padding: 12px; border-radius: 12px;
+            font-family: inherit; font-size: 13px; font-weight: 400; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 6px;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+        .btn:hover { background: var(--btn-border); }
+        .btn:active { transform: scale(0.96); }
+        .spin i { animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .divider { height: 1px; background: var(--btn-border); width: 100%; margin: 2px 0; }
+
+        .inbox-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+
+        .radar { display: flex; align-items: center; gap: 6px; }
+        .dot {
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
+
+        .inbox-list {
+            display: flex; flex-direction: column; gap: 12px;
+            min-height: 80px;
+            max-height: 250px;
+            overflow-y: auto; padding-right: 4px;
+        }
+
+        .inbox-list::-webkit-scrollbar { width: 4px; }
+        .inbox-list::-webkit-scrollbar-thumb { background: var(--btn-border); border-radius: 4px; }
+
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 80px; gap: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 300;
+        }
+
+        .message {
+            background: var(--box-bg);
+            border: 1px solid var(--btn-border);
+            border-radius: 16px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeUp 0.3s ease forwards;
+        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg-sender {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-align: left;
+            width: 100%;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            padding-left: 2px;
+        }
+
+        .extracted-code {
+            background: var(--code-bg);
+            color: var(--accent);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 12px;
+            padding: 8px 20px;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s ease;
+            will-change: transform;
+        }
+
+        .extracted-code:hover {
             background: var(--accent);
             color: #fff;
             border-color: var(--accent);
-            box-shadow: 0 0 12px var(--accent-glow);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
-        /* ═══════════════════════════════
-           ACTION BUTTONS
-        ═══════════════════════════════ */
-        .actions { display: flex; gap: 8px; }
-
-        .action-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            padding: 11px 10px;
-            background: var(--glass-bg2);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            color: var(--text-2);
-            font-family: inherit;
-            font-size: 12.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            letter-spacing: -0.1px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-        .action-btn:hover {
-            border-color: var(--glass-border-hover);
-            background: rgba(77,111,255,0.12);
-            color: var(--text);
-            box-shadow: 0 0 14px var(--accent-glow2);
-            transform: translateY(-1px);
-        }
-        .action-btn:active { transform: scale(0.97) translateY(0); }
-        .action-btn i { font-size: 12px; color: var(--accent); }
-        .action-btn.spinning i { animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ═══════════════════════════════
-           SECTION LABEL
-        ═══════════════════════════════ */
-        .section-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.4px;
-            color: var(--muted);
+        .extracted-code:active {
+            transform: scale(0.97);
+            box-shadow: none;
         }
 
-        .scan-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 9.5px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .scan-dot {
-            width: 5px; height: 5px;
-            border-radius: 50%;
-            background: var(--accent);
-            animation: pulse-dot 2s infinite;
-        }
-
-        /* ═══════════════════════════════
-           INBOX
-        ═══════════════════════════════ */
-        .inbox {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 74px;
-            max-height: 264px;
-            overflow-y: auto;
-            padding-right: 2px;
-        }
-
-        .inbox::-webkit-scrollbar { width: 3px; }
-        .inbox::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
-
-        .empty-state {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 74px;
-            font-size: 12px;
-            color: var(--muted);
-            gap: 8px;
-        }
-
-        .msg-card {
-            background: var(--glass-bg2);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 14px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-        @keyframes slide-in {
-            from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .msg-from {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .code-pill {
-            background: linear-gradient(135deg, rgba(77,111,255,0.12), rgba(102,68,221,0.08));
-            border: 1px solid rgba(77,111,255,0.25);
-            border-radius: 12px;
-            padding: 12px 16px;
-            text-align: center;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: 10px;
-            color: var(--accent);
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            user-select: none;
-            font-variant-numeric: tabular-nums;
-        }
-        .code-pill:hover {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 24px var(--accent-glow), 0 0 48px var(--accent-glow2);
-            letter-spacing: 8px;
-            transform: scale(1.01);
-        }
-        .code-pill:active { transform: scale(0.98); }
-
-        .no-code {
-            font-size: 11.5px;
-            color: var(--muted);
-            text-align: center;
-            padding: 4px 0;
-        }
-
-        /* ═══════════════════════════════
-           TOKEN WARNING
-        ═══════════════════════════════ */
-        .token-warning {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 14px;
-            background: rgba(255,79,106,0.08);
-            border: 1px solid rgba(255,79,106,0.2);
-            border-radius: var(--radius);
-            font-size: 12px;
-            color: #ff8090;
-        }
-        .token-warning.visible { display: flex; }
-        .reauth-btn {
-            margin-left: auto;
-            background: rgba(255,79,106,0.15);
-            border: none;
-            color: #ff8090;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .reauth-btn:hover { background: rgba(255,79,106,0.3); }
-
-        /* ═══════════════════════════════
-           TOAST
-        ═══════════════════════════════ */
         #toast {
-            position: fixed;
-            top: 18px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-12px);
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: #fff;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 9px 20px;
-            border-radius: 30px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.22s, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-            white-space: nowrap;
-            z-index: 999;
-            box-shadow: 0 4px 20px var(--accent-glow), 0 0 40px var(--accent-glow2);
-            letter-spacing: -0.1px;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+            background: var(--text-primary); color: var(--bg-body);
+            font-size: 13px; font-weight: 600;
+            padding: 10px 20px; border-radius: 20px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-shadow: var(--shadow); z-index: 100;
         }
-        #toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* ═══════════════════════════════
-           LIGHT MODE OVERRIDES
-        ═══════════════════════════════ */
-        [data-theme="light"] body,
-        [data-theme="light"] {
-            background:
-                radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(180, 200, 255, 0.6) 0%, transparent 65%),
-                radial-gradient(ellipse 50% 40% at 80% 80%,  rgba(210, 190, 255, 0.5) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 20% 70%,  rgba(200, 215, 255, 0.4) 0%, transparent 55%),
-                linear-gradient(160deg, #dce8ff 0%, #e8f0ff 30%, #f0f4ff 55%, #ede8ff 80%, #dce8ff 100%);
+        .suffix-info {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
         }
-
-        [data-theme="light"] .card {
-            box-shadow:
-                0 4px 40px rgba(77,111,255,0.12),
-                0 1px 0 rgba(255,255,255,0.9) inset,
-                0 0 0 0.5px rgba(77,111,255,0.12) inset;
+        .suffix-info span {
+            color: var(--accent);
+            font-weight: 600;
         }
     </style>
 </head>
 <body data-theme="dark">
 
-<div id="toast"></div>
+    <div id="toast">Copied!</div>
 
-<div class="app">
+    <div class="container">
+        <div class="card">
 
-    <div class="header">
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fa-regular fa-envelope"></i>
-            </div>
-            NexusMail
-        </div>
-        <div class="header-actions">
-            <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" id="themeBtn">
-                <i class="fa-regular fa-moon" id="themeIcon"></i>
-            </button>
-        </div>
-    </div>
-
-    <div class="card">
-
-        <!-- LOGIN VIEW -->
-        <div class="login-view" id="loginView">
-            <div class="login-icon-wrap">
-                <i class="fa-regular fa-envelope"></i>
-            </div>
-            <div class="login-texts">
-                <div class="login-title">Sign in to continue</div>
-                <div class="login-sub">Connect your Gmail to receive<br>verification codes automatically.</div>
-            </div>
-            <button class="google-btn" onclick="startLogin()">
-                <svg class="g-icon" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                Continue with Google
-            </button>
-        </div>
-
-        <!-- MAIN VIEW -->
-        <div id="mainView" style="display:none;">
-
-            <div class="status-bar">
-                <div class="status-left">
-                    <div class="status-dot" id="statusDot"></div>
-                    <span id="statusEmail">—</span>
-                </div>
-                <button class="logout-link" onclick="logout()">Sign out</button>
+            <div class="header">
+                <h1>Nexus<span>Mail</span></h1>
+                <button class="theme-btn" onclick="toggleTheme()" title="Switch Theme">
+                    <i class="fa-regular fa-sun" id="themeIcon"></i>
+                </button>
             </div>
 
-            <div class="card-body">
+            <!-- LOGIN SECTION -->
+            <div class="login-section" id="loginSection">
+                <div class="login-icon"><i class="fa-regular fa-envelope"></i></div>
+                <p class="login-desc">
+                    Sign in with your Gmail account.<br>
+                    One login per browser is enough.
+                </p>
+                <button class="google-login-btn" onclick="startGoogleLogin()">
+                    <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Login with Google
+                </button>
+            </div>
 
-                <!-- Token warning -->
-                <div class="token-warning" id="tokenWarning">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size:12px;"></i>
-                    Session expired
-                    <button class="reauth-btn" onclick="silentRefresh()">Refresh</button>
-                </div>
+            <!-- MAIN SECTION (after login) -->
+            <div class="main-section" id="mainSection">
 
-                <!-- Email address -->
-                <div class="email-row" onclick="copyEmail()" title="Click to copy">
-                    <div class="email-addr loading" id="emailDisplay">Generating...</div>
-                    <div class="copy-btn-inner" id="copyInner">
-                        <i class="fa-regular fa-copy" id="copyIcon"></i>
+                <div class="user-badge" id="userBadge">
+                    <div class="user-badge-left">
+                        <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 11px;"></i>
+                        <span id="userEmail">loading...</span>
                     </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
 
-                <!-- Actions -->
-                <div class="actions">
-                    <button class="action-btn" id="refreshBtn" onclick="doRefresh()">
+                <div class="email-display-group" onclick="copyEmail()">
+                    <div class="email-text loading" id="emailDisplay">Generating...</div>
+                    <button class="action-icon-btn" id="copyBtn">
+                        <i class="fa-regular fa-copy" id="copyIcon"></i>
+                    </button>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" id="refreshBtn" onclick="forceRefresh()">
                         <i class="fa-solid fa-rotate-right"></i> Refresh
                     </button>
-                    <button class="action-btn" onclick="newEmail()">
+                    <button class="btn" onclick="generateNewAlias()">
                         <i class="fa-solid fa-plus"></i> New Email
                     </button>
                 </div>
 
-                <!-- Inbox -->
-                <div class="section-label">
+                <div class="divider"></div>
+
+                <div class="inbox-header">
                     <span>Verification Codes</span>
-                    <div class="scan-indicator">
-                        <div class="scan-dot" id="scanDot"></div>
-                        <span id="scanText">Scanning</span>
+                    <div class="radar">
+                        <div class="dot" id="radarDot"></div>
+                        <span id="scanStatus" style="font-size: 9px;">Scanning...</span>
                     </div>
                 </div>
 
-                <div class="inbox" id="inbox">
+                <div class="inbox-list" id="inboxContainer">
                     <div class="empty-state">
-                        <i class="fa-regular fa-clock"></i>
-                        Awaiting emails...
+                        <span>Awaiting incoming codes...</span>
                     </div>
                 </div>
 
             </div>
+
         </div>
-
     </div>
-</div>
 
-<script>
-const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
-const SCOPES    = 'https://www.googleapis.com/auth/gmail.readonly';
+    <script>
+        // =============================================
+        // CONFIG
+        // =============================================
+        const CLIENT_ID = '159808029273-ml37999iis48lr4ev5m2u9vesj62fouv.apps.googleusercontent.com';
+        const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 
-let accessToken   = null;
-let tokenExpiry   = 0;
-let baseGmail     = null;
-let currentAlias  = null;
-let currentSuffix = null;
-let pollTimer     = null;
-let refreshTimer  = null;
-let knownIds      = new Set();
-let firstCopied   = false;
-let tokenClient   = null;
+        // =============================================
+        // STATE
+        // =============================================
+        let accessToken = null;
+        let baseGmail = null;       // e.g. "yourname@gmail.com"
+        let currentSuffix = null;   // e.g. "kx7p2m"
+        let currentAlias = null;    // e.g. "yourname+kx7p2m@gmail.com"
+        let checkInterval = null;
+        let tokenRefreshTimer = null;
+        let knownMessageIds = new Set();
+        let firstCodeCopied = false;
 
-function toggleTheme() {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('themeIcon').className = isDark ? 'fa-regular fa-sun' : 'fa-regular fa-moon';
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-}
-(function initTheme() {
-    const t = localStorage.getItem('theme') || 'dark';
-    document.body.setAttribute('data-theme', t);
-    document.getElementById('themeIcon').className = t === 'dark' ? 'fa-regular fa-moon' : 'fa-regular fa-sun';
-})();
-
-function playNotification() {
-    try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const notes = [
-            { freq: 880,  start: 0,    dur: 0.12, vol: 0.18 },
-            { freq: 1320, start: 0.1,  dur: 0.18, vol: 0.12 },
-        ];
-        notes.forEach(n => {
-            const osc  = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.value = n.freq;
-            gain.gain.setValueAtTime(0, ctx.currentTime + n.start);
-            gain.gain.linearRampToValueAtTime(n.vol, ctx.currentTime + n.start + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.start + n.dur);
-            osc.start(ctx.currentTime + n.start);
-            osc.stop(ctx.currentTime + n.start + n.dur + 0.05);
-        });
-    } catch(e) {}
-}
-
-function initTokenClient() {
-    if (tokenClient) return;
-    tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        prompt: '',
-        callback: handleTokenResponse
-    });
-}
-
-function handleTokenResponse(resp) {
-    if (resp.error) {
-        document.getElementById('tokenWarning').classList.add('visible');
-        setStatus(false);
-        return;
-    }
-    accessToken = resp.access_token;
-    tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
-    localStorage.setItem('gToken',  accessToken);
-    localStorage.setItem('gExpiry', tokenExpiry);
-    document.getElementById('tokenWarning').classList.remove('visible');
-    scheduleTokenRefresh();
-}
-
-function startLogin() {
-    const tc = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        prompt: 'select_account',
-        callback: async (resp) => {
-            if (resp.error) { showToast('Login cancelled'); return; }
-            accessToken = resp.access_token;
-            tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
-            localStorage.setItem('gToken',  accessToken);
-            localStorage.setItem('gExpiry', tokenExpiry);
-            await fetchProfile();
-            initTokenClient();
-            scheduleTokenRefresh();
+        // =============================================
+        // SOUND (Web Audio — no external files)
+        // =============================================
+        function playCodeSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                [[880, 0, 0.12], [1320, 0.1, 0.15]].forEach(([freq, delay, dur]) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'sine'; osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+                    gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + delay + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+                    osc.start(ctx.currentTime + delay);
+                    osc.stop(ctx.currentTime + delay + dur + 0.05);
+                });
+            } catch(e) {}
         }
-    });
-    tc.requestAccessToken({ prompt: 'select_account' });
-}
 
-function silentRefresh() {
-    if (!tokenClient) initTokenClient();
-    tokenClient.requestAccessToken({ prompt: '' });
-}
-
-function scheduleTokenRefresh() {
-    if (refreshTimer) clearTimeout(refreshTimer);
-    const msUntilExpiry = tokenExpiry - Date.now();
-    if (msUntilExpiry > 0) {
-        refreshTimer = setTimeout(() => { silentRefresh(); }, msUntilExpiry);
-    }
-}
-
-async function fetchProfile() {
-    try {
-        const r = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        const d = await r.json();
-        baseGmail = d.emailAddress;
-        localStorage.setItem('gEmail', baseGmail);
-        document.getElementById('statusEmail').innerText = baseGmail;
-        document.getElementById('loginView').style.display = 'none';
-        document.getElementById('mainView').style.display  = 'block';
-        setStatus(true);
-        newEmail();
-    } catch(e) {
-        showToast('Profile error');
-    }
-}
-
-function logout() {
-    clearInterval(pollTimer);
-    clearTimeout(refreshTimer);
-    accessToken = tokenClient = null;
-    localStorage.removeItem('gToken');
-    localStorage.removeItem('gExpiry');
-    localStorage.removeItem('gEmail');
-    document.getElementById('mainView').style.display  = 'none';
-    document.getElementById('loginView').style.display = 'flex';
-    document.getElementById('inbox').innerHTML = emptyState();
-}
-
-window.addEventListener('load', () => {
-    const tok    = localStorage.getItem('gToken');
-    const expiry = parseInt(localStorage.getItem('gExpiry') || '0');
-    const email  = localStorage.getItem('gEmail');
-    if (tok && email && Date.now() < expiry) {
-        accessToken = tok;
-        tokenExpiry = expiry;
-        baseGmail   = email;
-        document.getElementById('statusEmail').innerText = email;
-        document.getElementById('loginView').style.display = 'none';
-        document.getElementById('mainView').style.display  = 'block';
-        setStatus(true);
-        initTokenClient();
-        scheduleTokenRefresh();
-        newEmail();
-    }
-});
-
-function randStr(n = 6) {
-    const c = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    return Array.from({length: n}, () => c[Math.random()*c.length|0]).join('');
-}
-
-function newEmail() {
-    if (!baseGmail) return;
-    clearInterval(pollTimer);
-    knownIds.clear();
-    firstCopied = false;
-    currentSuffix = randStr(6);
-    const [local, domain] = baseGmail.split('@');
-    currentAlias = `${local}+${currentSuffix}@${domain}`;
-    const el = document.getElementById('emailDisplay');
-    el.innerText = currentAlias;
-    el.classList.remove('loading');
-    document.getElementById('inbox').innerHTML = emptyState();
-    document.getElementById('scanText').innerText = 'Scanning';
-    pollTimer = setInterval(poll, 5000);
-}
-
-async function poll() {
-    if (!accessToken || !currentAlias) return;
-    if (Date.now() > tokenExpiry) { silentRefresh(); return; }
-    try {
-        const q   = encodeURIComponent(`to:${currentAlias}`);
-        const res = await fetch(
-            `https://www.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=15`,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        if (res.status === 401) { silentRefresh(); return; }
-        const data = await res.json();
-        for (const m of (data.messages || [])) {
-            if (!knownIds.has(m.id)) {
-                knownIds.add(m.id);
-                if (document.querySelector('.empty-state')) {
-                    document.getElementById('inbox').innerHTML = '';
-                }
-                fetchMsg(m.id);
+        // =============================================
+        // THEME
+        // =============================================
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fa-regular fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fa-regular fa-sun';
+                localStorage.setItem('theme', 'dark');
             }
         }
-    } catch(e) {}
-}
 
-async function fetchMsg(id) {
-    try {
-        const res = await fetch(
-            `https://www.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        const msg = await res.json();
-        const hdrs    = msg.payload.headers || [];
-        const from    = (hdrs.find(h => h.name === 'From') || {}).value || '';
-        const subject = (hdrs.find(h => h.name === 'Subject') || {}).value || '';
-        let body = '';
-        function extractBody(p) {
-            if (p.mimeType === 'text/plain' && p.body?.data)
-                body += atob(p.body.data.replace(/-/g,'+').replace(/_/g,'/'));
-            else if (p.mimeType === 'text/html' && p.body?.data && !body)
-                body += atob(p.body.data.replace(/-/g,'+').replace(/_/g,'/')).replace(/<[^>]*>/g,' ');
-            if (p.parts) p.parts.forEach(extractBody);
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.setAttribute('data-theme', 'light');
+            document.getElementById('themeIcon').className = 'fa-regular fa-moon';
         }
-        if (msg.payload.parts) msg.payload.parts.forEach(extractBody);
-        else if (msg.payload.body?.data)
-            body = atob(msg.payload.body.data.replace(/-/g,'+').replace(/_/g,'/'));
-        const fullText = subject + ' ' + body;
-        const code     = extractCode(fullText);
-        const sender   = from.replace(/<.*>/,'').trim() || from.split('@')[0];
-        renderMsg(sender, code);
-        if (code && !firstCopied) {
-            firstCopied = true;
-            navigator.clipboard.writeText(code).catch(()=>{});
-            showToast('Code copied!');
-            playNotification();
+
+        // =============================================
+        // GOOGLE LOGIN
+        // =============================================
+        function startGoogleLogin() {
+            const tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (response) => {
+                    if (response.error) { showToast('Login Failed!'); return; }
+                    accessToken = response.access_token;
+                    const expiry = Date.now() + (response.expires_in * 1000);
+                    localStorage.setItem('gAccessToken', accessToken);
+                    localStorage.setItem('gTokenExpiry', expiry);
+                    localStorage.setItem('gBaseEmail', baseGmail || localStorage.getItem('gBaseEmail') || '');
+                    scheduleTokenRefresh(response.expires_in);
+                    onLoginSuccess();
+                }
+            });
+            tokenClient.requestAccessToken({ prompt: 'select_account' });
         }
-    } catch(e) {}
-}
 
-function extractCode(text) {
-    const patterns = [
-        /(?:verification|confirm|code|otp|pin)[^\d]*(\d{4,8})/i,
-        /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code|otp|pin)/i,
-        /\b(\d{6})\b/,
-        /\b(\d{4,8})\b/,
-    ];
-    for (const p of patterns) {
-        const m = text.match(p);
-        if (m) {
-            const code = m[1] || m[0];
-            const n    = parseInt(code);
-            if (n >= 1000 && n <= 99999999 && !(n >= 2020 && n <= 2030)) return code;
+        function scheduleTokenRefresh(expiresIn) {
+            if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
+            // Refresh 5 minutes before expiry
+            const delay = Math.max((expiresIn - 300) * 1000, 10000);
+            tokenRefreshTimer = setTimeout(() => {
+                const silentClient = google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: SCOPES,
+                    prompt: '',
+                    callback: (response) => {
+                        if (!response.error) {
+                            accessToken = response.access_token;
+                            const expiry = Date.now() + (response.expires_in * 1000);
+                            localStorage.setItem('gAccessToken', accessToken);
+                            localStorage.setItem('gTokenExpiry', expiry);
+                            scheduleTokenRefresh(response.expires_in);
+                        }
+                    }
+                });
+                silentClient.requestAccessToken({ prompt: '' });
+            }, delay);
         }
-    }
-    return null;
-}
 
-function renderMsg(sender, code) {
-    const inbox = document.getElementById('inbox');
-    const card  = document.createElement('div');
-    card.className = 'msg-card';
-    let html = `<div class="msg-from">${esc(sender)}</div>`;
-    if (code) {
-        html += `<div class="code-pill" onclick="copyCode('${code}')" title="Click to copy">${code}</div>`;
-    } else {
-        html += `<div class="no-code">No code detected — check Gmail</div>`;
-    }
-    card.innerHTML = html;
-    inbox.prepend(card);
-}
+        async function onLoginSuccess() {
+            // Get user's Gmail address
+            try {
+                const res = await fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const data = await res.json();
+                baseGmail = data.emailAddress;
+                localStorage.setItem('gBaseEmail', baseGmail);
 
-function emptyState() {
-    return `<div class="empty-state"><i class="fa-regular fa-clock"></i> Awaiting emails...</div>`;
-}
+                document.getElementById('userEmail').innerText = baseGmail;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainSection').classList.add('visible');
 
-async function doRefresh() {
-    const btn = document.getElementById('refreshBtn');
-    btn.classList.add('spinning');
-    await poll();
-    setTimeout(() => btn.classList.remove('spinning'), 600);
-}
+                generateNewAlias();
+            } catch(e) {
+                showToast('Error fetching profile');
+            }
+        }
 
-function copyEmail() {
-    if (!currentAlias) return;
-    navigator.clipboard.writeText(currentAlias).then(() => {
-        showToast('Email copied!');
-        const icon = document.getElementById('copyIcon');
-        icon.className = 'fa-solid fa-check';
-        setTimeout(() => icon.className = 'fa-regular fa-copy', 1400);
-    });
-}
+        function logout() {
+            accessToken = null;
+            baseGmail = null;
+            currentAlias = null;
+            if (checkInterval) clearInterval(checkInterval);
+            localStorage.removeItem('gAccessToken');
+            localStorage.removeItem('gTokenExpiry');
+            localStorage.removeItem('gBaseEmail');
 
-function copyCode(code) {
-    navigator.clipboard.writeText(code).then(() => showToast('Code copied!'));
-}
+            document.getElementById('mainSection').classList.remove('visible');
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
+        }
 
-function setStatus(ok) {
-    document.getElementById('statusDot').className = ok ? 'status-dot' : 'status-dot inactive';
-}
+        // =============================================
+        // AUTO-RESTORE SESSION
+        // =============================================
+        window.addEventListener('load', () => {
+            const savedToken = localStorage.getItem('gAccessToken');
+            const savedExpiry = localStorage.getItem('gTokenExpiry');
+            const savedEmail = localStorage.getItem('gBaseEmail');
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.innerText = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1800);
-}
+            if (savedToken && savedExpiry && savedEmail && Date.now() < parseInt(savedExpiry)) {
+                accessToken = savedToken;
+                baseGmail = savedEmail;
+                document.getElementById('userEmail').innerText = baseGmail;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainSection').classList.add('visible');
+                // Schedule refresh for remaining time
+                const remainingSecs = Math.floor((parseInt(savedExpiry) - Date.now()) / 1000);
+                scheduleTokenRefresh(remainingSecs);
+                generateNewAlias();
+            }
+        });
 
-function esc(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-</script>
+        // =============================================
+        // ALIAS GENERATION
+        // =============================================
+        function generateSuffix(length = 6) {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function generateNewAlias() {
+            if (!baseGmail) return;
+
+            if (checkInterval) clearInterval(checkInterval);
+            knownMessageIds.clear();
+            firstCodeCopied = false;
+
+            currentSuffix = generateSuffix();
+            const localPart = baseGmail.split('@')[0];
+            const domain = baseGmail.split('@')[1];
+            currentAlias = `${localPart}+${currentSuffix}@${domain}`;
+
+            const display = document.getElementById('emailDisplay');
+            display.innerText = currentAlias;
+            display.classList.remove('loading');
+
+            document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
+            document.getElementById('scanStatus').innerText = 'Scanning';
+            document.getElementById('radarDot').style.background = 'var(--accent)';
+
+            // Start polling
+            checkInterval = setInterval(checkInbox, 5000);
+        }
+
+        // =============================================
+        // INBOX POLLING
+        // =============================================
+        async function checkInbox() {
+            if (!accessToken || !currentSuffix) return;
+
+            try {
+                // Search for emails sent to this alias (using the suffix as query)
+                const query = encodeURIComponent(`to:${currentAlias}`);
+                const res = await fetch(
+                    `https://www.googleapis.com/gmail/v1/users/me/messages?q=${query}&maxResults=10`,
+                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+                );
+
+                if (res.status === 401) {
+                    // Token expired
+                    document.getElementById('scanStatus').innerText = 'Re-login needed';
+                    document.getElementById('radarDot').style.background = '#ef4444';
+                    clearInterval(checkInterval);
+                    return;
+                }
+
+                const data = await res.json();
+                const messages = data.messages || [];
+
+                for (const msg of messages) {
+                    if (!knownMessageIds.has(msg.id)) {
+                        knownMessageIds.add(msg.id);
+
+                        // Clear empty state on first message
+                        if (document.querySelector('.empty-state')) {
+                            document.getElementById('inboxContainer').innerHTML = '';
+                        }
+
+                        fetchMessageDetails(msg.id);
+                    }
+                }
+            } catch(e) {
+                // silent fail - try again next interval
+            }
+        }
+
+        async function fetchMessageDetails(msgId) {
+            try {
+                const res = await fetch(
+                    `https://www.googleapis.com/gmail/v1/users/me/messages/${msgId}?format=full`,
+                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+                );
+                const msgData = await res.json();
+
+                // Extract sender
+                const headers = msgData.payload.headers || [];
+                const fromHeader = headers.find(h => h.name === 'From') || {};
+                const subjectHeader = headers.find(h => h.name === 'Subject') || {};
+                const fromRaw = fromHeader.value || 'Unknown';
+                const subject = subjectHeader.value || '';
+
+                // Extract body text
+                let bodyText = '';
+                function extractBody(part) {
+                    if (part.mimeType === 'text/plain' && part.body && part.body.data) {
+                        bodyText += atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                    }
+                    if (part.mimeType === 'text/html' && part.body && part.body.data && !bodyText) {
+                        const html = atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                        bodyText += html.replace(/<[^>]*>/g, ' ');
+                    }
+                    if (part.parts) part.parts.forEach(extractBody);
+                }
+                if (msgData.payload.parts) {
+                    msgData.payload.parts.forEach(extractBody);
+                } else if (msgData.payload.body && msgData.payload.body.data) {
+                    bodyText = atob(msgData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                }
+
+                const fullText = subject + ' ' + bodyText;
+
+                // Extract verification code
+                const extractedCode = extractCode(fullText);
+
+                // Render message card
+                const senderName = fromRaw.replace(/<.*>/, '').trim() || fromRaw.split('@')[0];
+
+                const inbox = document.getElementById('inboxContainer');
+                const msgEl = document.createElement('div');
+                msgEl.className = 'message';
+
+                let html = `<div class="msg-sender">${escapeHtml(senderName)}</div>`;
+
+                if (extractedCode) {
+                    html += `<div class="extracted-code" onclick="copyText('${extractedCode}', true)">${extractedCode}</div>`;
+
+                    // Auto-copy first code
+                    if (!firstCodeCopied) {
+                        firstCodeCopied = true;
+                        navigator.clipboard.writeText(extractedCode).then(() => {
+                            showToast('Code Auto-Copied!');
+                            playCodeSound();
+                        }).catch(() => {});
+                    }
+                } else {
+                    html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`;
+                }
+
+                msgEl.innerHTML = html;
+                inbox.prepend(msgEl);
+
+            } catch(e) {
+                // silent fail
+            }
+        }
+
+        // =============================================
+        // CODE EXTRACTION (regex patterns)
+        // =============================================
+        function extractCode(text) {
+            const patterns = [
+                // کدهای صریح با label
+                /(?:verification|confirm|code|کد|تایید|OTP|PIN)[^\d]*(\d{4,8})/i,
+                /(\d{4,8})(?:[^\d]|$).*(?:verification|confirm|code|کد|تایید)/i,
+                // کدهای ۶ رقمی (رایج‌ترین)
+                /\b(\d{6})\b/,
+                // کدهای ۴ تا ۸ رقمی (بدون سال و شماره‌های بلند)
+                /\b(\d{4,8})\b/,
+            ];
+
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    const code = match[1] || match[0];
+                    const num = parseInt(code);
+                    // فیلتر کردن سال‌ها و شماره‌های نامعتبر
+                    if (num >= 1000 && num <= 99999999 && !(num >= 2020 && num <= 2030)) {
+                        return code;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // =============================================
+        // UI HELPERS
+        // =============================================
+        async function forceRefresh() {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('spin');
+            await checkInbox();
+            setTimeout(() => btn.classList.remove('spin'), 600);
+        }
+
+        function copyEmail() {
+            if (currentAlias) {
+                copyText(currentAlias, false);
+            }
+        }
+
+        function copyText(text, isCode = false) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(isCode ? 'Code Copied!' : 'Email Copied!');
+                if (isCode) playCodeSound();
+                if (!isCode) {
+                    const icon = document.getElementById('copyIcon');
+                    icon.className = 'fa-solid fa-check';
+                    setTimeout(() => icon.className = 'fa-regular fa-copy', 1500);
+                }
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1800);
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+    </script>
 </body>
 </html>
