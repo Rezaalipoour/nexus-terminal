@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusMail — Design Studio Edition</title>
+<title>NexusMail — Studio Glass Edition</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -11,54 +11,58 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ─────────────────────────────────────────
-   ARCHITECTURAL MONOCHROME TOKENS (Gemini/Linear Class)
+   HIGH-END NEON GLASSMORPHISM TOKENS
 ───────────────────────────────────────── */
 :root {
-  --bg-main: #0b0b0d;
-  --bg-panel: #111115;
-  --bg-card: #16161c;
-  --bg-card-hover: #1c1c24;
+  --bg-main: #06070d;
   
-  /* Refined Dynamic Colors (No Neon Garbage) */
-  --accent-blue: #2f80ed;
+  /* Advanced Muted Dark UI Surfaces */
+  --bg-panel: rgba(18, 20, 29, 0.75);
+  --bg-card: rgba(255, 255, 255, 0.02);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+  
+  /* Pure Soft Ambient Glow Orbs (No Harsh Strokes) */
+  --glow-cyan: rgba(0, 229, 255, 0.12);
+  --glow-purple: rgba(157, 78, 221, 0.15);
+  
+  --accent-cyan: #00e5ff;
+  --accent-purple: #9d4edd;
   --status-active: #27ae60;
-  --status-active-dim: rgba(39, 174, 96, 0.06);
   --status-error: #eb5757;
   
-  /* Borders - Highly Calibrated & Subtle */
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-medium: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(255, 255, 255, 0.2);
+  /* True Frosted Glass Borders & Backdrops */
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-border-hover: rgba(0, 229, 255, 0.25);
+  --glass-blur: blur(24px);
   
-  /* Typography Scale */
-  --text-main: #f2f2f7;
-  --text-muted: #8e8e93;
-  --text-ghost: #44444a;
+  --text-main: #f5f5f7;
+  --text-muted: #86868b;
+  --text-ghost: #424245;
   
-  --radius-panel: 28px;
-  --radius-element: 12px;
+  --radius-panel: 24px;
+  --radius-element: 14px;
   
-  --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-premium: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="light"] {
-  --bg-main: #f4f4f7;
-  --bg-panel: #ffffff;
-  --bg-card: #f9f9fb;
-  --bg-card-hover: #f0f0f4;
+  --bg-main: #0c0e17; /* High-luxury OLED dark tone preserved to scale soft neon dispersion */
+  --bg-panel: rgba(24, 28, 43, 0.85);
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
   
-  --accent-blue: #0071e3;
-  --status-active: #1d8044;
-  --status-active-dim: rgba(29, 128, 68, 0.04);
-  --status-error: #d93838;
+  --glow-cyan: rgba(244, 63, 94, 0.12); /* Dynamic alternate luxury chromatic palette */
+  --glow-purple: rgba(0, 229, 255, 0.14);
   
-  --border-subtle: rgba(0, 0, 0, 0.04);
-  --border-medium: rgba(0, 0, 0, 0.07);
-  --border-focus: rgba(0, 0, 0, 0.25);
+  --accent-cyan: #ff2a5f;
+  --accent-purple: #00e5ff;
   
-  --text-main: #1c1c1e;
-  --text-muted: #6e6e73;
-  --text-ghost: #aeaeae;
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-hover: rgba(255, 42, 95, 0.3);
+  
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-ghost: #52525b;
 }
 
 body {
@@ -69,42 +73,84 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 20px;
+  overflow: hidden;
+  position: relative;
   -webkit-font-smoothing: antialiased;
 }
 
-.app {
-  width: 100%;
-  max-width: 440px;
-  position: relative;
+/* ── HIGH-END BACKGROUND SOFT HALO ORBS ── */
+body::before, body::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+body::before {
+  top: 15%;
+  left: 20%;
+  background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 70%);
+}
+body::after {
+  bottom: 15%;
+  right: 20%;
+  background: radial-gradient(circle, var(--glow-purple) 0%, transparent 70%);
 }
 
 /* ─────────────────────────────────────────
-   THE PANEL LAYER (Strictly Self-Contained Grid)
+   APP SHELL (Strict Proportional Scaling)
+───────────────────────────────────────── */
+.app {
+  width: 100%;
+  max-width: 380px; /* Scaled down perfectly to prevent stretched rows */
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────
+   THE FROSTED GLASS PANEL
 ───────────────────────────────────────── */
 .panel {
   background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-panel);
-  padding: 32px;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.35);
+  padding: 24px;
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
-  transition: var(--transition-smooth);
+  transition: var(--transition-premium);
 }
 
-[data-theme="light"] .panel {
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.03);
+/* Subtle outer atmospheric panel highlight */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-panel);
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 40%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.05));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* ─────────────────────────────────────────
-   HEADER MODULE (Enclosed Internal)
+   HEADER ARCHITECTURE (Fully Internalized)
 ───────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .logo {
@@ -115,15 +161,15 @@ body {
 
 .logo-mark {
   color: var(--text-main);
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   align-items: center;
 }
 
 .logo-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.3px;
 }
 
 .logo-name span {
@@ -132,47 +178,46 @@ body {
 }
 
 .theme-btn {
-  width: 36px;
-  height: 36px;
-  background: transparent;
-  border: 1px solid var(--border-medium);
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
   border-radius: 50%;
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  transition: var(--transition-smooth);
+  font-size: 11px;
+  transition: var(--transition-premium);
 }
 
 .theme-btn:hover {
-  border-color: var(--border-focus);
+  border-color: rgba(255, 255, 255, 0.2);
   color: var(--text-main);
-  transform: scale(1.05);
 }
 
 /* ─────────────────────────────────────────
-   LOGIN ROUTINE
+   AUTHENTICATION STAGE
 ───────────────────────────────────────── */
 .login-view {
-  padding: 24px 0;
+  padding: 16px 4px;
   display: flex;
   flex-direction: column;
 }
 
 .login-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.4px;
   margin-bottom: 8px;
 }
 
 .login-sub {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.5;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .g-btn {
@@ -180,50 +225,39 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 10px;
+  padding: 14px;
   background: var(--text-main);
   border: none;
   border-radius: var(--radius-element);
-  color: var(--bg-panel);
+  color: var(--bg-main);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: var(--transition-premium);
 }
 
 .g-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  opacity: 0.92;
 }
 
-.g-icon { width: 16px; height: 16px; filter: invert(0); }
-[data-theme="dark"] .g-icon { filter: invert(0); }
-
 /* ─────────────────────────────────────────
-   ENGINE NODE STRUCTURE (No Ugly Horizontal Boxes)
+   CORE ACTIVE NODE MATRIX
 ───────────────────────────────────────── */
 .node-interface {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
+/* Premium Meta Indicators (No Horizontal Long Input Profiles) */
 .status-card {
-  background: var(--status-active-dim);
-  border: 1px solid rgba(39, 174, 96, 0.15);
-  border-radius: var(--radius-element);
-  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: var(--transition-smooth);
-}
-
-.status-card.disconnected {
-  background: rgba(235, 87, 87, 0.03);
-  border-color: rgba(235, 87, 87, 0.15);
+  padding: 2px 4px;
+  transition: var(--transition-premium);
 }
 
 .node-meta {
@@ -233,7 +267,7 @@ body {
 }
 
 .meta-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -241,7 +275,7 @@ body {
 }
 
 #statusEmail {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-main);
 }
@@ -250,19 +284,25 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--status-active);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  background: rgba(39, 174, 96, 0.06);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(39, 174, 96, 0.15);
 }
 .status-card.disconnected .connection-pill {
   color: var(--status-error);
+  background: rgba(235, 87, 87, 0.06);
+  border-color: rgba(235, 87, 87, 0.15);
 }
 
 .connection-pip {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--status-active);
 }
@@ -271,129 +311,127 @@ body {
 }
 
 /* ─────────────────────────────────────────
-   GENERATED ADDRESS CANVAS (With Inner In-Place Copy State)
+   GENERATED COMPONENT AREA WITH INLINE FLASH
 ───────────────────────────────────────── */
 .address-trigger-box {
   background: var(--bg-card);
-  border: 1px solid var(--border-medium);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-element);
-  padding: 20px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: var(--transition-smooth);
+  transition: var(--transition-premium);
 }
 
 .address-trigger-box:hover {
-  border-color: var(--border-focus);
+  border-color: var(--glass-border-hover);
   background: var(--bg-card-hover);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.05);
 }
 
 .address-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
 }
 
 .address-value {
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 600;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
   color: var(--text-main);
   word-break: break-all;
-  padding-right: 10px;
 }
 .address-value.loading { color: var(--text-ghost); }
 
 .action-indicator {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
-  transition: var(--transition-smooth);
 }
-.address-trigger-box:hover .action-indicator { color: var(--text-main); }
 
-/* Unified Massive Internal Confirmation Layer */
+/* Advanced Inline Transformation Screens */
 .inline-copy-overlay {
   position: absolute;
   inset: 0;
-  background: var(--text-main);
-  color: var(--bg-panel);
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  color: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 700;
   letter-spacing: 0.5px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 10;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 5;
 }
 .address-trigger-box.copied .inline-copy-overlay,
-.code-wrapper.copied .inline-copy-overlay {
+.code-container.copied .inline-copy-overlay {
   opacity: 1;
 }
 
 /* ─────────────────────────────────────────
-   ACTION PIPELINES
+   PIPELINE ACTIONS
 ───────────────────────────────────────── */
 .control-hub {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .hub-btn {
   flex: 1;
-  background: transparent;
-  border: 1px solid var(--border-medium);
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-element);
-  padding: 14px;
+  padding: 12px;
   color: var(--text-main);
   font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: var(--transition-smooth);
+  transition: var(--transition-premium);
 }
 
 .hub-btn:hover {
-  background: var(--bg-card);
-  border-color: var(--border-focus);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.15);
 }
-.hub-btn i { font-size: 11px; color: var(--text-muted); }
-.hub-btn.spinning i { animation: spin-loader 0.8s linear infinite; }
+.hub-btn i { font-size: 10px; color: var(--text-muted); }
+.hub-btn.spinning i { animation: spin-loader 0.7s linear infinite; }
 
 @keyframes spin-loader { to { transform: rotate(360deg); } }
 
 /* ─────────────────────────────────────────
-   INBOX / DATA INTERSECT TABLE
+   INBOX / CELL MODULAR MATRIX
 ───────────────────────────────────────── */
 .inbox-section {
-  margin-top: 12px;
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .section-title-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 2px;
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: var(--text-muted);
 }
 
@@ -401,8 +439,8 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10.5px;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
@@ -411,58 +449,57 @@ body {
   height: 4px;
   border-radius: 50%;
   background: var(--text-muted);
-  animation: intercept-pulse 2s infinite ease-in-out;
+  animation: standard-fade 1.8s infinite ease-in-out;
 }
 
-@keyframes intercept-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.1); }
+@keyframes standard-fade {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 .inbox-stream {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 100px;
-  max-height: 290px;
+  gap: 10px;
+  min-height: 90px;
+  max-height: 240px;
   overflow-y: auto;
 }
 .inbox-stream::-webkit-scrollbar { width: 0px; }
 
 .null-state {
-  height: 120px;
+  height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border: 1px dashed var(--border-medium);
+  gap: 6px;
+  border: 1px dashed var(--glass-border);
   border-radius: var(--radius-element);
   color: var(--text-ghost);
-  font-size: 13px;
+  font-size: 12.5px;
 }
-.null-state i { font-size: 16px; }
 
-/* ── Luxury Message Rows ── */
+/* ── Frosted Message Packages ── */
 .message-packet {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-element);
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  animation: packetArrival 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: var(--transition-smooth);
+  gap: 12px;
+  animation: packetFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: var(--transition-premium);
 }
 
 .message-packet:hover {
-  border-color: var(--border-medium);
+  border-color: rgba(255, 255, 255, 0.12);
   background: var(--bg-card-hover);
 }
 
-@keyframes packetArrival {
-  from { opacity: 0; transform: translateY(10px); }
+@keyframes packetFadeUp {
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -474,9 +511,8 @@ body {
 
 .packet-sender {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-main);
-  letter-spacing: -0.1px;
 }
 
 .packet-time {
@@ -486,50 +522,50 @@ body {
 
 .code-container {
   position: relative;
-  border-radius: var(--radius-element);
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
 }
 
 .code-display-block {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-element);
-  padding: 16px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 12px;
   text-align: center;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: 4px;
   color: var(--text-main);
-  transition: var(--transition-smooth);
+  transition: var(--transition-premium);
 }
 
 .code-container:hover .code-display-block {
-  border-color: var(--border-focus);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .no-verification-string {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--text-muted);
   line-height: 1.5;
-  padding-left: 12px;
-  border-left: 1px solid var(--border-focus);
+  padding-left: 10px;
+  border-left: 1px solid var(--glass-border);
 }
 
 /* ─────────────────────────────────────────
-   SESSION MANAGEMENT
+   SESSION DISCONNECT SIGNALS
 ───────────────────────────────────────── */
 .token-barrier {
   display: none;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: rgba(235, 87, 87, 0.04);
   border: 1px solid rgba(235, 87, 87, 0.2);
   border-radius: var(--radius-element);
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--status-error);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .token-barrier.active { display: flex; }
 .barrier-trigger {
@@ -544,16 +580,16 @@ body {
 .system-terminate {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 .terminate-trigger {
   background: none;
   border: none;
   color: var(--text-ghost);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: var(--transition-premium);
 }
 .terminate-trigger:hover { color: var(--status-error); }
 </style>
@@ -563,6 +599,7 @@ body {
 <div class="app">
   <div class="panel">
     
+    <!-- ENCLOSED DESIGN HEADER -->
     <div class="header">
       <div class="logo">
         <div class="logo-mark">
@@ -575,6 +612,7 @@ body {
       </button>
     </div>
 
+    <!-- PIPELINE STAGE A: TERMINATED ROUTE -->
     <div class="login-view" id="loginView">
       <h2 class="login-title">Secure Inbox Tunnel</h2>
       <p class="login-sub">Establish an isolated routing vector via Google OAuth to capture temporary handshake payloads.</p>
@@ -583,6 +621,7 @@ body {
       </button>
     </div>
 
+    <!-- PIPELINE STAGE B: ACTIVE ENGINE -->
     <div id="mainView" style="display:none;">
 
       <div class="token-barrier" id="tokenWarning">
@@ -592,6 +631,7 @@ body {
 
       <div class="node-interface">
         
+        <!-- Highly Integrated Minimal Context Meta Grid -->
         <div class="status-card" id="statusBox">
           <div class="node-meta">
             <span class="meta-label">Identity Module</span>
@@ -603,6 +643,7 @@ body {
           </div>
         </div>
 
+        <!-- Dynamic Micro-Address Component (With Full Internalized Overlay) -->
         <div class="address-trigger-box" id="emailDisplayContainer" onclick="copyEmail()">
           <div class="address-header">
             <span class="meta-label">Active Virtual Address</span>
@@ -612,6 +653,7 @@ body {
           <div class="inline-copy-overlay">COPIED TO CLIPBOARD</div>
         </div>
 
+        <!-- Structural Modifiers -->
         <div class="control-hub">
           <button class="hub-btn" id="refreshBtn" onclick="doRefresh()">
             <i class="fa-solid fa-arrow-rotate-right"></i>
@@ -623,6 +665,7 @@ body {
           </button>
         </div>
 
+        <!-- System Data Stream Core -->
         <div class="inbox-section">
           <div class="section-title-bar">
             <span class="section-title">Captured Payloads</span>
@@ -634,12 +677,12 @@ body {
 
           <div class="inbox-stream" id="inbox">
             <div class="null-state">
-              <i class="fa-solid fa-mound"></i>
               <span>Awaiting incoming transmission vectors...</span>
             </div>
           </div>
         </div>
 
+        <!-- Controlled Soft Exit Execution Trigger -->
         <div class="system-terminate">
           <button class="terminate-trigger" onclick="logout()">Terminate Session</button>
         </div>
@@ -665,32 +708,45 @@ let knownIds      = new Set();
 let firstCopied   = false;
 let tokenClient   = null;
 
-/* ── Sophisticated Studio Audio Engine (Cinematic High-Fidelity Impulse) ── */
+/* ── Deep Geometric Sound Architecture (Acoustically Calibrated Impulse Node) ── */
 function playNotification() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     
-    // High-amplitude production grade layers for extreme definition
-    const frequencies = [523.25, 659.25, 783.99]; // Clean C Major triad harmonics
+    // Multi-frequency parallel execution matrix to produce clean structural high-gain acoustic transients
+    const frequencies = [523.25, 659.25, 783.99, 1046.50]; // Pure high-definition spatial harmonic layers
     const masterGain = ctx.createGain();
     masterGain.connect(ctx.destination);
     masterGain.gain.setValueAtTime(0, ctx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.005); // High volume impulse
-    masterGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    
+    // Driven initial impulse curve configuration
+    masterGain.gain.linearRampToValueAtTime(0.85, ctx.currentTime + 0.003); 
+    masterGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
 
     frequencies.forEach((freq, index) => {
       const osc = ctx.createOscillator();
-      osc.connect(masterGain);
+      const waveShaper = ctx.createWaveShaper(); // Distributes complex underlying acoustic texture
+      
+      // Generate clean soft-curve tube distortion response curves
+      const curve = new Float32Array(2);
+      curve[0] = -0.15; curve[1] = 0.15;
+      waveShaper.curve = curve;
+      
+      osc.connect(waveShaper);
+      waveShaper.connect(masterGain);
+      
       osc.type = 'sine';
-      // Sophisticated micro-delay stagger to expand soundstage presence
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + (index * 0.015));
-      osc.start(ctx.currentTime + (index * 0.015));
-      osc.stop(ctx.currentTime + 0.18);
+      // Multi-layered cinematic stagger variables
+      const calculatedOnset = ctx.currentTime + (index * 0.012);
+      osc.frequency.setValueAtTime(freq, calculatedOnset);
+      
+      osc.start(calculatedOnset);
+      osc.stop(ctx.currentTime + 0.25);
     });
   } catch(e) {}
 }
 
-/* ── System Frame Orchestration ── */
+/* ── UI System Drivers ── */
 function toggleTheme() {
   const isDark = document.body.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
@@ -883,25 +939,25 @@ function renderMsg(sender, code) {
   let html = `
     <div class="packet-meta">
       <div class="packet-sender">${esc(sender)}</div>
-      <div class="packet-time">Received</div>
+      <div class="packet-time">Just Now</div>
     </div>
   `;
   if (code) {
     html += `
       <div class="code-container" onclick="copyCode(event, this, '${code}')">
         <div class="code-display-block">${code}</div>
-        <div class="inline-copy-overlay">CODE COPIED</div>
+        <div class="inline-copy-overlay">CODE CAPTURED</div>
       </div>
     `;
   } else {
-    html += `<div class="no-verification-string">Transmission parsed. Payload contained no structured alpha-numeric authentication string sequences.</div>`;
+    html += `<div class="no-verification-string">Transmission parsed. Block array contained no direct verification tokens.</div>`;
   }
   card.innerHTML = html;
   inbox.prepend(card);
 }
 
 function emptyState() {
-  return `<div class="null-state"><i class="fa-solid fa-mound"></i><span>Awaiting incoming transmission vectors...</span></div>`;
+  return `<div class="null-state"><span>Awaiting incoming transmission vectors...</span></div>`;
 }
 
 async function doRefresh() {
@@ -931,9 +987,7 @@ function copyCode(e, element, code) {
 
 function setStatus(ok) {
   const box = document.getElementById('statusBox');
-  const lbl = document.getElementById('liveLabel');
   const txt = document.getElementById('liveText');
-  
   if(ok) {
     box.classList.remove('disconnected');
     txt.innerText = "Active";
