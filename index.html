@@ -16,19 +16,19 @@
 
     <style>
         :root {
-            --bg-body: #020205;
-            --card-bg: rgba(8, 8, 14, 0.88);
-            --card-border: rgba(99, 102, 241, 0.18);
-            --text-primary: #eaedff;
-            --text-secondary: #7880a0;
+            --bg-body: #09090f;
+            --card-bg: rgba(18, 18, 26, 0.75);
+            --card-border: rgba(99, 102, 241, 0.14);
+            --text-primary: #f0f2ff;
+            --text-secondary: #8892b0;
             --accent: #6366f1;
-            --box-bg: rgba(6, 6, 12, 0.75);
-            --btn-border: rgba(255, 255, 255, 0.09);
-            --code-bg: rgba(99, 102, 241, 0.16);
-            --shadow: 0 32px 70px rgba(0,0,0,0.85), 0 0 0 1px rgba(99,102,241,0.08);
+            --box-bg: rgba(12, 12, 20, 0.6);
+            --btn-border: rgba(255, 255, 255, 0.10);
+            --code-bg: rgba(99, 102, 241, 0.14);
+            --shadow: 0 24px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.06);
             --grid-color: rgba(99, 102, 241, 0.04);
-            --grid-line: rgba(140, 145, 255, 0.045);
-            --grid-dot: rgba(99, 102, 241, 0.35);
+            --grid-line: rgba(140, 145, 255, 0.055);
+            --grid-dot: rgba(99, 102, 241, 0.42);
         }
 
         [data-theme="light"] {
@@ -57,9 +57,9 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
             background-image:
-                radial-gradient(ellipse 120% 80% at 20% 20%, rgba(55, 10, 100, 0.30) 0%, transparent 55%),
-                radial-gradient(ellipse 100% 90% at 80% 80%, rgba(60, 62, 160, 0.20) 0%, transparent 50%),
-                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(80, 40, 160, 0.14) 0%, transparent 60%);
+                radial-gradient(ellipse 120% 80% at 20% 20%, rgba(88, 28, 135, 0.22) 0%, transparent 55%),
+                radial-gradient(ellipse 100% 90% at 80% 80%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 50% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
             color: var(--text-primary);
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
@@ -119,17 +119,17 @@
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 22px;
-            padding: 22px;
+            border-radius: 24px;
+            padding: 28px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            display: flex; flex-direction: column; gap: 14px;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex; flex-direction: column; gap: 18px;
         }
 
         .header { display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
-        .header h1 span { color: var(--accent); font-weight: 600; }
+        .header h1 { font-size: 20px; font-weight: 400; letter-spacing: 0.5px; }
+        .header h1 span { color: var(--accent); font-weight: 500; }
 
         .theme-btn {
             background: transparent; border: none;
@@ -230,17 +230,17 @@
             white-space: nowrap;
         }
 
-        /* Logout btn - Minimal Icon Only */
+        /* Logout btn - Icon Only */
         .logout-btn {
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-secondary);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
             cursor: pointer;
-            font-size: 14px;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            font-size: 15px;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
@@ -249,9 +249,9 @@
         }
         .logout-btn i { margin: 0; }
         .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.14);
-            color: var(--text-primary);
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fecaca;
         }
         .logout-btn:active { transform: scale(0.95); }
 
@@ -290,24 +290,24 @@
             100% { transform: scale(0.85); opacity: 0; }
         }
 
-        /* Generated Email Box - Strong Color */
+        /* Generated Email Box - With Subtle Color */
         .email-display-group {
-            background: rgba(99, 102, 241, 0.22);
-            border: 1px solid rgba(99, 102, 241, 0.50) !important;
-            border-radius: 13px;
-            padding: 5px 5px 5px 13px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3) !important;
+            border-radius: 14px;
+            padding: 6px 6px 6px 14px;
             display: flex; align-items: center; justify-content: space-between;
             cursor: pointer;
             transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
         }
         .email-display-group:hover {
             border-color: var(--accent) !important;
-            background: rgba(99, 102, 241, 0.30);
+            background: rgba(99, 102, 241, 0.18);
         }
         .email-display-group:active { transform: scale(0.98); }
 
         .email-text {
-            font-size: 12.5px; font-weight: 600; letter-spacing: 0.2px;
+            font-size: 13px; font-weight: 400; letter-spacing: 0.2px;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
             color: var(--text-primary);
         }
@@ -327,11 +327,11 @@
             background: var(--accent); color: #fff;
         }
 
-        .controls { display: flex; gap: 8px; }
+        .controls { display: flex; gap: 10px; }
         .btn {
             flex: 1; background: transparent; border: 1px solid var(--btn-border);
-            color: var(--text-primary); padding: 8px; border-radius: 11px;
-            font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer;
+            color: var(--text-primary); padding: 9px; border-radius: 12px;
+            font-family: inherit; font-size: 12px; font-weight: 400; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 6px;
             border-color: rgba(99, 102, 241, 0.2) !important;
             transition: background-color 0.15s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
@@ -345,11 +345,11 @@
         .spin i { animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .divider { height: 1px; background: var(--btn-border); width: 100%; margin: 1px 0; }
+        .divider { height: 1px; background: var(--btn-border); width: 100%; margin: 2px 0; }
 
         .inbox-header {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 10px; font-weight: 600; color: var(--text-secondary);
+            font-size: 11px; font-weight: 400; color: var(--text-secondary);
             text-transform: uppercase; letter-spacing: 1.5px;
         }
 
@@ -361,9 +361,9 @@
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 8px var(--accent); } }
 
         .inbox-list {
-            display: flex; flex-direction: column; gap: 10px;
-            min-height: 70px;
-            max-height: 200px;
+            display: flex; flex-direction: column; gap: 12px;
+            min-height: 80px;
+            max-height: 250px;
             overflow-y: auto; padding-right: 4px;
         }
 
@@ -471,12 +471,12 @@
 
         .toast-icon { font-size: 14px; }
 
-        .launchers { display: flex; gap: 8px; }
+        .launchers { display: flex; gap: 10px; }
         .launch-btn {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
-            padding: 8px 6px; border-radius: 12px; border: 1px solid var(--btn-border);
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            padding: 9px 8px; border-radius: 14px; border: 1px solid var(--btn-border);
             background: var(--box-bg); color: var(--text-secondary); font-family: inherit;
-            font-size: 9.5px; font-weight: 600; cursor: pointer; text-decoration: none;
+            font-size: 10px; font-weight: 400; cursor: pointer; text-decoration: none;
             transition: all 0.2s ease; letter-spacing: 0.4px; text-transform: uppercase;
             position: relative; overflow: hidden;
         }
@@ -497,46 +497,7 @@
         .launch-dot { position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; opacity: 0; transition: opacity 0.3s; }
         .launch-btn.pulse-ready .launch-dot { opacity: 1; }
 
-        /* --- AUTO-ROTATE TIMER --- */
-        .timer-bar-wrap {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .timer-bar-wrap.visible { display: flex; }
-        .timer-bar-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .timer-label {
-            font-size: 9.5px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-        }
-        .timer-countdown {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--accent);
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 0.5px;
-        }
-        .timer-countdown.urgent { color: #f87171; }
-        .timer-track {
-            height: 3px;
-            background: rgba(99,102,241,0.12);
-            border-radius: 99px;
-            overflow: hidden;
-        }
-        .timer-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6366f1, #a78bfa);
-            border-radius: 99px;
-            transition: width 1s linear, background 0.5s ease;
-        }
-        .timer-fill.urgent { background: linear-gradient(90deg, #ef4444, #f87171); }
+        #pendingCopyBanner {
             display: none; align-items: center; justify-content: space-between;
             background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.35);
             border-radius: 14px; padding: 10px 14px; gap: 10px; cursor: pointer;
@@ -549,8 +510,8 @@
         .pending-banner-tap { font-size: 10px; font-weight: 400; color: #fbbf24; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 4px 10px; white-space: nowrap; letter-spacing: 0.5px; }
 
         .card { box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04); }
-        .header h1 { font-size: 21px; font-weight: 700; letter-spacing: 0.3px; }
-        .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header h1 { font-size: 21px; font-weight: 400; letter-spacing: 0.3px; }
+        .header h1 span { font-weight: 400; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     </style>
 </head>
 <body data-theme="dark">
@@ -622,17 +583,6 @@
                     <button class="action-icon-btn" id="copyBtn">
                         <i class="fa-regular fa-copy" id="copyIcon"></i>
                     </button>
-                </div>
-
-                <!-- Auto-rotate timer -->
-                <div class="timer-bar-wrap" id="timerBarWrap">
-                    <div class="timer-bar-row">
-                        <span class="timer-label">Auto Rotate</span>
-                        <span class="timer-countdown" id="timerCountdown">1:00</span>
-                    </div>
-                    <div class="timer-track">
-                        <div class="timer-fill" id="timerFill" style="width:100%"></div>
-                    </div>
                 </div>
 
                 <div class="controls">
@@ -936,7 +886,6 @@
         function clearSessionUI() {
             accessToken = null; baseGmail = null; currentAlias = null;
             if (checkInterval) clearInterval(checkInterval); if (tokenRefreshTimer) clearTimeout(tokenRefreshTimer);
-            stopAliasTimer();
             localStorage.removeItem('gAccessToken'); localStorage.removeItem('gTokenExpiry');
             document.getElementById('mainSection').classList.remove('visible'); document.getElementById('loginSection').style.display = 'flex';
             document.getElementById('sessionTag').style.display = 'none'; hideReauthBanner();
@@ -968,51 +917,6 @@
             }
         });
 
-        // ---- AUTO-ROTATE TIMER ----
-        const TIMER_DURATION = 60; // seconds
-        let timerInterval = null;
-        let timerSecondsLeft = TIMER_DURATION;
-
-        function startAliasTimer() {
-            stopAliasTimer();
-            timerSecondsLeft = TIMER_DURATION;
-            const wrap = document.getElementById('timerBarWrap');
-            const fill = document.getElementById('timerFill');
-            const countdown = document.getElementById('timerCountdown');
-            if (wrap) wrap.classList.add('visible');
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                timerSecondsLeft--;
-                updateTimerDisplay();
-                if (timerSecondsLeft <= 0) {
-                    stopAliasTimer();
-                    showToast('New alias generated ↻', '🔄');
-                    generateNewAlias();
-                }
-            }, 1000);
-        }
-
-        function stopAliasTimer() {
-            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-            const wrap = document.getElementById('timerBarWrap');
-            if (wrap) wrap.classList.remove('visible');
-        }
-
-        function updateTimerDisplay() {
-            const fill = document.getElementById('timerFill');
-            const countdown = document.getElementById('timerCountdown');
-            if (!fill || !countdown) return;
-            const pct = Math.max(0, (timerSecondsLeft / TIMER_DURATION) * 100);
-            fill.style.width = pct + '%';
-            const urgent = timerSecondsLeft <= 10;
-            fill.classList.toggle('urgent', urgent);
-            countdown.classList.toggle('urgent', urgent);
-            const m = Math.floor(timerSecondsLeft / 60);
-            const s = timerSecondsLeft % 60;
-            countdown.textContent = m + ':' + String(s).padStart(2, '0');
-        }
-        // ---- END TIMER ----
-
         function generateSuffix(length = 6) {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'; let result = '';
             for (let i = 0; i < length; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
@@ -1021,7 +925,6 @@
         function generateNewAlias() {
             if (!baseGmail) return;
             if (checkInterval) clearInterval(checkInterval); knownMessageIds.clear();
-            stopAliasTimer();
             currentSuffix = generateSuffix();
             const localPart = baseGmail.split('@')[0]; const domain = baseGmail.split('@')[1];
             currentAlias = `${localPart}+${currentSuffix}@${domain}`;
@@ -1029,7 +932,6 @@
             document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
             document.getElementById('scanStatus').innerText = 'Scanning'; document.getElementById('radarDot').style.background = 'var(--accent)';
             checkInterval = setInterval(checkInbox, 5000);
-            startAliasTimer();
         }
 
         async function checkInbox() {
@@ -1089,6 +991,8 @@
                         pendingAutoCopyCode = extractedCode; pendingAutoCopySite = site;
                         if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); } else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); } else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
                     }
+                    if (window._autoRotateTimer) clearTimeout(window._autoRotateTimer);
+                    window._autoRotateTimer = setTimeout(() => { showToast('New alias generated ↻', '🔄'); generateNewAlias(); }, 2 * 60 * 1000);
                 } else if (extractedLink) {
                     html += `<div class="link-block"><span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span><a href="${escapeHtml(extractedLink)}" target="_blank" rel="noopener noreferrer" class="login-link-btn"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px;"></i> Open Login Link</a></div>`;
                 } else { html += `<div style="font-size: 11px; color: var(--text-secondary); padding: 4px;">Code not found — check Gmail</div>`; }
