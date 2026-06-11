@@ -102,77 +102,8 @@
             100% { transform: translateY(64px) translateX(0); }
         }
 
-        /* Soft ambient glow */
-        .bg-glow {
-            position: fixed;
-            width: 800px;
-            height: 600px;
-            background: radial-gradient(ellipse, rgba(99, 102, 241, 0.10) 0%, rgba(99,102,241,0.04) 40%, transparent 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 0;
-            animation: glowBreath 8s ease-in-out infinite;
-        }
-
-        /* Secondary glow — warm purple tint bottom-right */
-        .bg-glow-2 {
-            position: fixed;
-            width: 500px;
-            height: 400px;
-            background: radial-gradient(ellipse, rgba(139, 92, 246, 0.07) 0%, transparent 65%);
-            bottom: -80px;
-            right: -80px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes glowBreath {
-            0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-        }
-
-        /* Floating micro-particles — 3 subtle orbs */
-        .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            filter: blur(60px);
-        }
-        .bg-orb-1 {
-            width: 220px; height: 220px;
-            background: rgba(99, 102, 241, 0.09);
-            top: 15%; left: 10%;
-            animation: orbFloat1 18s ease-in-out infinite;
-        }
-        .bg-orb-2 {
-            width: 160px; height: 160px;
-            background: rgba(139, 92, 246, 0.08);
-            bottom: 20%; right: 12%;
-            animation: orbFloat2 24s ease-in-out infinite;
-        }
-        .bg-orb-3 {
-            width: 100px; height: 100px;
-            background: rgba(99, 102, 241, 0.07);
-            top: 60%; left: 60%;
-            animation: orbFloat3 20s ease-in-out infinite;
-        }
-        @keyframes orbFloat1 {
-            0%, 100% { transform: translate(0, 0); }
-            33% { transform: translate(20px, -30px); }
-            66% { transform: translate(-15px, 20px); }
-        }
-        @keyframes orbFloat2 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-25px, -20px); }
-        }
-        @keyframes orbFloat3 {
-            0%, 100% { transform: translate(0, 0); }
-            40% { transform: translate(30px, -15px); }
-            80% { transform: translate(-10px, 25px); }
-        }
+        /* Glow/orb elements hidden — uniform background */
+        .bg-glow, .bg-glow-2, .bg-orb { display: none; }
 
         .container {
             width: 100%;
@@ -1583,6 +1514,13 @@
                         else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
                         else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
                     }
+
+                    // ── Auto-rotate: 2 minutes after receiving a code, generate new alias ──
+                    if (window._autoRotateTimer) clearTimeout(window._autoRotateTimer);
+                    window._autoRotateTimer = setTimeout(() => {
+                        showToast('New alias generated ↻', '🔄');
+                        generateNewAlias();
+                    }, 2 * 60 * 1000);
                 } else if (extractedLink) {
                     html += `<div class="link-block">
                         <span style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:6px;">Login Link</span>
