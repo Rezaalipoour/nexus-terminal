@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
@@ -543,88 +544,6 @@
         .card { box-shadow: var(--shadow), 0 0 0 1px rgba(99, 102, 241, 0.08), 0 0 40px rgba(99, 102, 241, 0.04); }
         .header h1 { font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
         .header h1 span { font-weight: 700; background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-        /* === RADIO PLAYER === */
-        #radioWidget {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 50px;
-            padding: 10px 18px 10px 12px;
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.08);
-            transition: border-color 0.3s ease, transform 0.3s ease;
-        }
-        #radioWidget:hover { 
-            border-color: rgba(99,102,241,0.35); 
-            transform: translateY(-2px); 
-        }
-
-        .r-btn {
-            background: none; border: none; cursor: pointer;
-            color: var(--text-secondary); padding: 8px;
-            display: flex; align-items: center; justify-content: center;
-            transition: color 0.2s ease, transform 0.15s ease;
-            line-height: 1;
-        }
-        .r-btn:hover { color: var(--accent); }
-        .r-btn:active { transform: scale(0.9); }
-
-        #rPlayBtn {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(99,102,241,0.12);
-            border: 1px solid rgba(99,102,241,0.25) !important;
-            color: var(--accent);
-            font-size: 15px;
-            transition: all 0.25s ease;
-        }
-        #rPlayBtn:hover { 
-            background: var(--accent); 
-            color: #fff; 
-            border-color: var(--accent) !important; 
-            box-shadow: 0 6px 16px rgba(99,102,241,0.25);
-        }
-
-        #rNextBtn { font-size: 15px; }
-
-        #rLabel {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-primary);
-            letter-spacing: 0.4px;
-            white-space: nowrap;
-            max-width: 140px;
-            min-width: 90px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 0 4px;
-        }
-
-        #rBars {
-            display: flex; align-items: flex-end; gap: 3px;
-            height: 16px; opacity: 0; transition: opacity 0.3s ease;
-        }
-        #rBars.on { opacity: 1; }
-        #rBars span {
-            display: block; width: 3px;
-            background: var(--accent); border-radius: 3px;
-            animation: rBeat 0.8s ease-in-out infinite;
-        }
-        #rBars span:nth-child(2) { animation-delay: 0.2s; }
-        #rBars span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes rBeat {
-            0%,100% { height: 4px; } 50% { height: 16px; }
-        }
-
-        /* hidden YT iframe */
-        #ytFrame { position:fixed; width:1px; height:1px; opacity:0; pointer-events:none; bottom:0; right:0; }
     </style>
 </head>
 <body data-theme="dark">
@@ -648,6 +567,7 @@
                 </button>
             </div>
 
+            <!-- LOGIN SECTION -->
             <div class="login-section" id="loginSection">
                 <div class="login-icon"><i class="fa-regular fa-envelope"></i></div>
                 <p class="login-desc">
@@ -665,6 +585,7 @@
                 </button>
             </div>
 
+            <!-- MAIN SECTION (after login) -->
             <div class="main-section" id="mainSection">
 
                 <div id="reauthBanner" style="display:none; align-items:center; justify-content:space-between; background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.25); border-radius:12px; padding:8px 14px; gap:10px;">
@@ -705,6 +626,7 @@
                     </button>
                 </div>
 
+                <!-- Auto-rotate timer -->
                 <div class="timer-row" id="timerRow" style="display:none;">
                     <div class="timer-bar-track">
                         <div class="timer-bar-fill" id="timerBarFill"></div>
@@ -712,6 +634,7 @@
                     <span class="timer-label" id="timerLabel">2:00</span>
                 </div>
 
+                <!-- Site Launchers -->
                 <div class="launchers">
                     <a id="nanaBtn" href="https://nanaimage.ai/text-to-image" target="_blank" class="launch-btn nana" onclick="onLaunchClick('nana')">
                         <div class="launch-dot" id="nanaDot"></div>
@@ -1169,102 +1092,5 @@
         function showToast(msg, icon = '✓') { const toast = document.getElementById('toast'); const toastMsg = document.getElementById('toastMsg'); const toastIcon = document.getElementById('toastIcon'); toastMsg.innerText = msg; toastIcon.innerText = icon; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1800); }
         function escapeHtml(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     </script>
-
-    <div id="radioWidget">
-        <button class="r-btn" id="rPlayBtn" onclick="rToggle()" title="پخش / توقف">
-            <i class="fa-solid fa-play" id="rPlayIcon"></i>
-        </button>
-        <div id="rBars"><span></span><span></span><span></span></div>
-        <span id="rLabel">Lo‑fi Radio</span>
-        <button class="r-btn" id="rNextBtn" onclick="rNext()" title="بعدی">
-            <i class="fa-solid fa-forward-step"></i>
-        </button>
-    </div>
-
-    <div id="ytFrame"></div>
-
-    <script>
-    // ── Playlist of known lofi / ambient / classical piano videos ──
-    const R_LIST = [
-        { name: 'Classical Piano', id: 'WJ3-JCZaFs0' }, // Masterpieces: Chopin, Beethoven
-        { name: 'Relaxing Piano',  id: '8UXircX3VdM' }, // 24/7 Calm & Peaceful Piano
-        { name: 'Lofi Hip Hop',    id: 'jfKfPfyJRdk' }, // Lofi Girl – beats to relax
-        { name: 'Ambient Space',   id: 'kPjfO6GAsrg' }, // Dark ambient/space
-        { name: 'Jazz Lofi',       id: 'HuFYqnbVbzY' }, // Lofi jazz
-        { name: 'Chillhop',        id: '5yx6BWlEVcY' }, // Chillhop Music live
-    ];
-
-    let rIdx   = 0;
-    let rReady = false;
-    let rPlay  = false;
-    let ytPlayer = null;
-
-    const rPlayIcon = document.getElementById('rPlayIcon');
-    const rBars     = document.getElementById('rBars');
-    const rLabel    = document.getElementById('rLabel');
-
-    // Load YouTube IFrame API once, lazily
-    function rLoadAPI() {
-        if (window.YT) { rInitPlayer(); return; }
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
-    }
-
-    window.onYouTubeIframeAPIReady = function() { rInitPlayer(); };
-
-    function rInitPlayer() {
-        ytPlayer = new YT.Player('ytFrame', {
-            height: '1', width: '1',
-            videoId: R_LIST[rIdx].id,
-            playerVars: { autoplay: 1, controls: 0, loop: 1, playsinline: 1 },
-            events: {
-                onReady: function(e) {
-                    rReady = true;
-                    e.target.playVideo();
-                    rSetPlaying(true);
-                },
-                onStateChange: function(e) {
-                    // If ended, go next
-                    if (e.data === YT.PlayerState.ENDED) rNext();
-                },
-                onError: function() { rNext(); }
-            }
-        });
-    }
-
-    function rToggle() {
-        if (!rReady) {
-            // First press — load API & play
-            rLabel.textContent = 'Loading…';
-            rLoadAPI();
-            return;
-        }
-        if (rPlay) {
-            ytPlayer.pauseVideo();
-            rSetPlaying(false);
-        } else {
-            ytPlayer.playVideo();
-            rSetPlaying(true);
-        }
-    }
-
-    function rNext() {
-        rIdx = (rIdx + 1) % R_LIST.length;
-        rLabel.textContent = R_LIST[rIdx].name;
-        if (rReady && ytPlayer) {
-            ytPlayer.loadVideoById(R_LIST[rIdx].id);
-            if (rPlay) ytPlayer.playVideo();
-        }
-    }
-
-    function rSetPlaying(on) {
-        rPlay = on;
-        rPlayIcon.className = on ? 'fa-solid fa-pause' : 'fa-solid fa-play';
-        rBars.classList.toggle('on', on);
-        if (on) rLabel.textContent = R_LIST[rIdx].name;
-    }
-    </script>
-
 </body>
 </html>
