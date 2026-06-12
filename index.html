@@ -1045,7 +1045,7 @@
 
         function extractLoginLink(bodyText) { const linkPattern = /https?:\/\/[^\s"'<>]+(?:verify|confirm|activate|login|signin|auth|magic|token|access|click)[^\s"'<>]*/i; const match = bodyText.match(linkPattern); return match ? match[0] : null; }
 
-        const ALIAS_TIMER_SECONDS = 120;
+        const ALIAS_TIMER_SECONDS = 60;
         function startAliasTimer() {
             clearAliasTimer();
             const row = document.getElementById('timerRow');
