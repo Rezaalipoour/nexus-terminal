@@ -389,7 +389,7 @@
             transition: width 1s linear, background 0.5s ease;
         }
         .timer-bar-fill.warning {
-            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            background: linear-gradient(90deg, #7c3aed, #a78bfa);
         }
 
         .inbox-list {
@@ -808,6 +808,8 @@
         let accessToken = null; let baseGmail = null; let currentSuffix = null; let currentAlias = null;
         let checkInterval = null; let knownMessageIds = new Set(); let tokenRefreshTimer = null;
         let pendingAutoCopyCode = null; let pendingAutoCopySite = null;
+        // Queue for sequential auto-copy when multiple codes arrive simultaneously
+        let autoCopyQueue = [];
 
         function tryPendingCopy() {
             if (!pendingAutoCopyCode) return;
@@ -823,6 +825,66 @@
                 showPendingBanner(code, site);
                 pendingAutoCopyCode = code; pendingAutoCopySite = site;
             });
+        }
+
+        // Queue-based sequential auto-copy: first code copies immediately,
+        // second waits for you to return to the tab, then auto-copies.
+        function processNextInQueue() {
+            if (autoCopyQueue.length === 0) return;
+            const { code, siteId } = autoCopyQueue[0];
+            const afterCopy = () => {
+                playCopyCode();
+                const queueIndex = autoCopyQueue.indexOf(autoCopyQueue[0]);
+                const remaining = autoCopyQueue.length - 1;
+                if (remaining > 0) {
+                    showToast(`کد ${autoCopyQueue.length - remaining} کپی شد — ${remaining} کد دیگه منتظره`, '⚡');
+                } else {
+                    showToast('Code Auto-Copied!', '⚡');
+                }
+                if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                autoCopyQueue.shift();
+                if (autoCopyQueue.length > 0) {
+                    // Wait for user to switch tabs and come back for next code
+                    scheduleNextQueueCopy();
+                }
+            };
+            if (document.visibilityState === 'visible') {
+                navigator.clipboard.writeText(code).then(afterCopy).catch(() => {
+                    pendingAutoCopyCode = code; pendingAutoCopySite = siteId;
+                    showPendingBanner(code, siteId);
+                });
+            } else {
+                // Tab not visible — play sound so user knows, will copy when they return
+                if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                pendingAutoCopyCode = code; pendingAutoCopySite = siteId;
+                showPendingBanner(code, siteId);
+            }
+        }
+
+        function scheduleNextQueueCopy() {
+            // Copy next code as soon as user returns to tab
+            const copyNext = () => {
+                document.removeEventListener('visibilitychange', onVisible);
+                window.removeEventListener('focus', onVisible);
+                if (autoCopyQueue.length === 0) return;
+                const { code, siteId } = autoCopyQueue[0];
+                navigator.clipboard.writeText(code).then(() => {
+                    playCopyCode();
+                    showToast('کد دوم کپی شد!', '⚡');
+                    if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); }
+                    else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); }
+                    else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
+                    autoCopyQueue.shift();
+                    if (autoCopyQueue.length > 0) scheduleNextQueueCopy();
+                }).catch(() => {});
+            };
+            const onVisible = () => { if (document.visibilityState === 'visible') copyNext(); };
+            document.addEventListener('visibilitychange', onVisible);
+            window.addEventListener('focus', copyNext);
         }
         function showPendingBanner(code, site) {
             const banner = document.getElementById('pendingCopyBanner'); const bannerCode = document.getElementById('pendingBannerCode');
@@ -972,7 +1034,7 @@
             const display = document.getElementById('emailDisplay'); display.innerText = currentAlias; display.classList.remove('loading');
             document.getElementById('inboxContainer').innerHTML = `<div class="empty-state"><span>Awaiting incoming codes...</span></div>`;
             document.getElementById('scanStatus').innerText = 'Scanning'; document.getElementById('radarDot').style.background = 'var(--accent)';
-            checkInterval = setInterval(checkInbox, 5000);
+            checkInterval = setInterval(checkInbox, 500);
         }
 
         async function checkInbox() {
@@ -1022,16 +1084,9 @@
 
                 if (extractedCode) {
                     html += `<div class="extracted-code" onclick="copyCode('${escapeHtml(extractedCode)}')">${escapeHtml(extractedCode)}</div>`;
-                    const doCopy = (code, siteId) => {
-                        navigator.clipboard.writeText(code).then(() => {
-                            playCopyCode(); showToast('Code Auto-Copied!', '⚡');
-                            if (siteId === 'nana') { playNanaSound(); triggerSiteReady('nana'); } else if (siteId === 'v03') { playV03Sound(); triggerSiteReady('v03'); } else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
-                        }).catch(() => { pendingAutoCopyCode = code; pendingAutoCopySite = siteId; });
-                    };
-                    if (document.visibilityState === 'visible') { doCopy(extractedCode, site); } else {
-                        pendingAutoCopyCode = extractedCode; pendingAutoCopySite = site;
-                        if (site === 'nana') { playNanaSound(); triggerSiteReady('nana'); } else if (site === 'v03') { playV03Sound(); triggerSiteReady('v03'); } else { playNanaSound(); triggerSiteReady('nana'); triggerSiteReady('v03'); }
-                    }
+                    // Add to queue and process sequentially
+                    autoCopyQueue.push({ code: extractedCode, siteId: site });
+                    if (autoCopyQueue.length === 1) { processNextInQueue(); }
                     if (window._autoRotateTimer) clearTimeout(window._autoRotateTimer);
                     if (window._autoRotateInterval) clearInterval(window._autoRotateInterval);
                     startAliasTimer();
